@@ -1,0 +1,63 @@
+{
+
+	/** The bot's secret phrase for concluding transactions. 
+		Bot's ADAMANT address will correspond this passPhrase.
+    **/
+	"passPhrase": "qwert yuiop asdfg hjkl zxcvb nmqwe",
+
+	/** List of nodes to fetch transactions.
+    	If one become unavailable, pool will choose live one.
+    **/
+	
+	"node_ADM": [
+		"http://localhost:36666",
+		"https://endless.adamant.im",
+		"https://clown.adamant.im",
+		"https://bid.adamant.im",
+		"https://unusual.adamant.im",
+		"https://debate.adamant.im",
+		"http://185.231.245.26:36666",
+		"https://lake.adamant.im"
+	],
+
+	/** Socket connection is recommended for better user experience **/
+	"socket": true,
+
+	/** Choose socket connection, "ws" or "wss" depending on your server **/
+	"ws_type": "ws",
+	
+    /** List of nodes for Ethereum API work **/
+	"node_ETH": [
+		"https://ethnode1.adamant.im"
+	],	
+		
+    /** List of ADAMANT InfoServices for catching exchange rates **/
+	"infoservice": [
+		"https://info.adamant.im"
+	],	
+	
+	/** List of cryptocurrencies bot can work with. **/
+	"known_crypto": ["ADM", "ETH", "USDS", "RES", "BZ"],
+	
+	/** List of ERC-20 tokens **/
+	"erc20": ["USDS", "RES", "BZ"],
+
+    /** How to reply user in-chat, if first unknown command received. **/
+    "welcome_string": "Hello 😊. This is a stub. I have nothing to say. Please check my config.",
+
+	/** Bot's name for notifications **/
+    "bot_name": "Lovely Bounty Bot",
+
+	/** ADAMANT address for notifications and monitoring (if needed, recommended) **/
+    "adamant_notify": "",
+
+    /** Slack key for notifications and monitoring (if needed) **/
+    "slack": "https://hooks.slack.com/services/",
+
+    /** Port for getting debug info. 
+		Do not set for live exchange bots, use only for debugging. 
+		Allows to get DBs records like http://ip:port/db?tb=incomingTxsDb 
+	**/
+	"api": false
+
+}
