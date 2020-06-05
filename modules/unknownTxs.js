@@ -62,16 +62,14 @@ function getRnd(collectionNum){
 const collection = [
 	// 0 collection
 	[
-		'Do you wanna beer 🍺? I want to have it aslo, but now is the deal time. May be some ADAMANTs 💰?',
-		'Do you wanna Ethers? Say **/balances** to see if I have some 🤑.',
+		'Do you wanna beer 🍺? I want to have it also, but now is the bounty time. Join in! 💰',
 		'Aaaaghr..! 😱 Check out ₿ rates with **/rates BTC** command right now!',
-		'I can tell you my fees by secret. ℹ️ Just say **/help**.',
+		'I can tell you my rules by secret. ℹ️ Just say **/help**.',
 		'I am just kiddin! 😛',
 		'I’d like to work with you 🈺.',
-		'Ok, let see.. What about 10 ADM for all your Ethers? 🉐',
 		'ADAMANT is cool 😎, isn’t it?',
 		'People do know me. I am decent. 😎 Ask somebody to confirm.',
-		'I am really good 👌 at exchange deal.',
+		'I am really good 👌 at bounty campaigns.',
 		'ADAMANT is perfect 💯. Read about it on their Blog.',
 		'I recommend you to read about how ADAMANT is private 🔒 and anonymous.',
 		'To pick up Emoji 😄, press Win + . on Windows, Cmd + Ctrl + Space on Mac, or use keyboard on iPhone and Android.',
@@ -81,8 +79,7 @@ const collection = [
 		'Convenient. Anonymous. Reliable. Instant. Oh, it is me! 💱',
 		'ADAMANT is open source, including myself 🤖. Join to make me better! 📶',
 		'Do you know what is ADAMANT 2FA?',
-		'ADAMANT is soooo decentralised! And private! ❤️',
-		'Do you want me to trade more cryptocurrenies 💱? Ask my master!',
+		'ADAMANT is soooo decentralized! And private! ❤️',
 		'Recommend ADAMANT to your friends! 🌟',
 		'If I were Satoshi, I’d rebuild Bitcoin ₿ on top of ADAMANT! 😍'
 	],
@@ -92,7 +89,6 @@ const collection = [
 		'Yeah.. my English was born in cold ❄️ Russian village. I know. But my masters are good in programming 👨‍💻.',
 		'I am working for ADAMANT for some time already. I have to admit guys feed me good. 🥪',
 		'I love ADAMANT 💓. The team is doing all the best.',
-		'Да не барыга я! Зарабатываю как могу. 😬',
 		'London is a capital of Great Britain. 🤔',
 		'To pick up Emoji 😄, press Win + . on Windows, Cmd + Ctrl + Space on Mac, or use keyboard on iPhone and Android.',
 		'My mama told not to talk with strangers 🤐.',
@@ -115,8 +111,6 @@ const collection = [
 		'No, I am not. 🙅‍♂️',
 		'I am not a scammer! 😠',
 		'1 ADM for 10 Ethers! 🤑 Deal! Buterin will understand soon who is the daddy.',
-		'🔫 Гони бабло! 💰 ..sorry for my native.',
-		'Это у вас навар адский. А у меня.. это комиссия за честную работу. 😬',
 		'Ландон из э капитал оф грейт брит.. блять, я перебрал.. 🤣',
 		'❤️ Love is everything.',
 		'Hey.. You disturb me! 💻 I am working!',
@@ -136,7 +130,6 @@ const collection = [
 	[
 		'My patience is over 😑.',
 		'You want a ban I think 🤨',
-		'Just give me some money! 💱',
 		'I am tired of you.. ',
 		'Booooooring! 💤',
 		'💱 Stop talking, go working?',
@@ -157,7 +150,7 @@ const collection = [
 	// 4 collection
 	[
 		'Shut up.. 🤐',
-		'I better find another client 📱',
+		'I better find another bounty user 📱',
 		'You want to be banned 🚫 for sure!',
 		'Ok.. I understood. Come back tomorrow.',
 		'Who is it behind you? A real Satoshi!? 😮',

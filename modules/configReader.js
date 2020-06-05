@@ -41,7 +41,11 @@ const fields = {
 	},
 	welcome_string: {
 		type: String,
-		default: 'Hello 😊. This is a stub. I have nothing to say. Please check my config.'
+		default: 'Hello 😊. This is a stub. I have nothing to say. If you are my master, check my config.'
+	},
+	help_message: {
+		type: String,
+		default: 'I have nothing to say. If you are my master, check my config.'
 	}
 };
 

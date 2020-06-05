@@ -41,24 +41,9 @@ module.exports = async (cmd, tx, itx) => {
 
 function help() {
 
-	let output = `I am **online** and ready to trade. I can do trading and market making, and also can give you market info.`;
-
-	output += `
-
-Commands:
-
-**/rates**: Find out the market price of the coin and/or the ask and bid prices on the exchange for the trading pair. F. e., */rates ADM* or */rates ADM/BTC*.
-
-**/calc**: Calculate the price of one cryptocurrency in another at the market price and at the exchange prices. Works like this: */calc 2.05 BTC in USDT*.
-
-**/version**: Show bot’s software version
-
-Happy trading!
-`;
-
 return {
 	msgNotify: ``,
-	msgSendBack: `${output}`,
+	msgSendBack: `${config.help_message}`,
 	notifyType: 'log'
 	}
 

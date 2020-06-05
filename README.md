@@ -44,7 +44,8 @@ Parameters:
 * `twitter_follow` <string, array> List of Twitter account user should follow
 * `twitter_retweet` <string, array> List of Twitter posts user should retweet
 
-* `welcome_string` <string> How to reply user in-chat, if first unknown command received. Recommended to put Bounty conditions here
+* `welcome_string` <string> How to reply user in-chat, if first unknown command received
+* `help_message` <string> How to reply to */help* command. Recommended to put Bounty rules here
 
 ## Launching
 
