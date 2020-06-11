@@ -17,6 +17,9 @@ function init() {
 	require('./server');
 	require('./modules/checkTwitterFollow');
 	require('./modules/checkAll');
+	require('./modules/outAddressFetcher');
+	require('./modules/rewardsPayer');
+	require('./modules/sentTxValidator');
 	try {
 
 		if (doClearDB) {

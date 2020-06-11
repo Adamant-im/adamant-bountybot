@@ -6,7 +6,7 @@ const notify = require('../helpers/notify');
 
 module.exports = async () => {
 
-    const {usersDb} = db;
+    const {usersDb, paymentsDb} = db;
 
 	(await usersDb.find({
         isInCheck: true,
@@ -15,9 +15,11 @@ module.exports = async () => {
 		try {
             const {
                 userId,
-                isTwitterFollowCheckPassed,
-                isTwitterRetweetCommentCheckPassed
+                isTwitterFollowCheckPassed
+                // isTwitterRetweetCommentCheckPassed
             } = user;
+
+            let isTwitterRetweetCommentCheckPassed = true;
 
             console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}..`);
 
@@ -40,10 +42,10 @@ module.exports = async () => {
                             outTxid: null,
                             outAddress: null
                         });
-                        await payment.save();
+                        payment.save();
                     })
                     if (config.notifyTasksCompleted)
-                        notify(`${config.notifyName}: User ${userId} completed the Bounty tasks. Payouts are pending.`, 'info');
+                        notify(`${config.notifyName}: User ${userId} completed the Bounty tasks. Payouts are pending.`, 'log');
                     msgSendBack = `Thank you! The Bounty tasks are completed! I am sending the reward to you.`;
                     $u.sendAdmMsg(userId, msgSendBack);
                 }

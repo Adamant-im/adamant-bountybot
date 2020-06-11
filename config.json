@@ -69,11 +69,11 @@
 	/** List rewards for a Bounty campaign here **/
 	"rewards": [
 		{
-			"crypto": "ADM",
+			"currency": "ADM",
 			"amount": 100
 		},
 		{
-			"crypto": "ETH",
+			"currency": "ETH",
 			"amount": 0.01
 		}
 	],

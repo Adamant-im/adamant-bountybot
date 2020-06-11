@@ -9,6 +9,6 @@ const Twitter = require('twitter')({
 module.exports = {
   async checkIfAccountFollowing(twitterAccountLink, followAccount) {
     console.log(`Checking if ${twitterAccountLink} follows ${followAccount}..`)
-    return false;
+    return true;
   }
 }

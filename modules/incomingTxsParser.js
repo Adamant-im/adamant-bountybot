@@ -84,18 +84,6 @@ module.exports = async (tx) => {
 		});
 	}
 
-	// do not process messages from non-admin accounts
-	if (!config.admin_accounts.includes(tx.senderId) && (type === 'command')) { 
-		log.warn(`${config.notifyName} received a message from non-admin user _${tx.senderId}_. Ignoring. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`);
-		itx.update({
-			isProcessed: true,
-			isNonAdmin: true
-		});
-		if (config.notify_non_admins) {			
-			$u.sendAdmMsg(tx.senderId, `I won't execute your commands as you are not an admin. Connect with my master.`);
-		}
-	}
-
 	await itx.save();
 	if (historyTxs[tx.id]) {
 		return;

@@ -70,7 +70,7 @@ module.exports = async (itx, tx) => {
 
 	console.log('User info:', user);
 
-	msgSendBack = `I've got your account details. Twitter: ${user.twitterAccountLink}. I'll check if you've finished the Bounty tasks and come back to you soon. This will take a few minutes.`;
+	msgSendBack = `I've got your account details. Twitter: ${user.twitterAccountLink}. I'll check if you've finished the Bounty tasks now..`;
 	$u.sendAdmMsg(tx.senderId, msgSendBack);
 
 };

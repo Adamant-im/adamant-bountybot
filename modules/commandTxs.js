@@ -17,6 +17,21 @@ module.exports = async (cmd, tx, itx) => {
 			.replace(/  /g, ' ')
 			.split(' ');
 		const methodName = group.shift().trim().toLowerCase().replace('\/', '');
+		console.log(methodName);
+
+		// do not process commands from non-admin accounts
+		if (!config.admin_accounts.includes(tx.senderId) && admin_commands.includes(methodName)) { 
+			log.warn(`${config.notifyName} received an admin command from non-admin user _${tx.senderId}_. Ignoring. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`);
+			itx.update({
+				isProcessed: true,
+				isNonAdmin: true
+			}, true);
+			if (config.notify_non_admins) {			
+				$u.sendAdmMsg(tx.senderId, `I won't execute admin commands as you are not an admin. Connect with my master.`);
+			}
+			return;
+		}
+
 		const m = commands[methodName];
 		if (m) {
 			res = await m(group, tx);
@@ -153,3 +168,7 @@ const commands = {
 	calc,
 	version
 }
+
+const admin_commands = [
+	""
+]

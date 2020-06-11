@@ -118,7 +118,10 @@ module.exports = {
 		let links = {};
 		links.notEmpty = false;
 		links.twitter = this.findLink(message, 'twitter.com');
-		if (links.twitter)
+		links.facebook = this.findLink(message, 'facebook.com');
+		if (links.twitter && config.isTwitterCampaign)
+			links.notEmpty = true;
+		if (links.facebook && config.isFacebookCampaign)
 			links.notEmpty = true;
 		return links;
 	},
@@ -126,11 +129,11 @@ module.exports = {
 		let kLINK_DETECTION_REGEX = /(([a-z]+:\/\/)?(([a-z0-9\-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-\.~]+)*(\/([a-z0-9_\-\.]*)(\?[a-z0-9+_\-\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi;
 		let links = message.match(kLINK_DETECTION_REGEX);
 		let found = '';
-		links.forEach(l => {
-			if (l.includes(link)) {
-				found = l;
+		if (links)
+			for (let i = 0; i < links.length; i++) {
+				if (links[i].includes(link))
+					found = links[i];
 			}
-		});
 		return found;
 	},
 	getModuleName(id) {

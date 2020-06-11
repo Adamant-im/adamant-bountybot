@@ -36,7 +36,7 @@ module.exports = async (itx, tx) => {
 
 	// Validate
 	let msgSendBack = `I got a transfer from you. Thanks, bro.`;
-	let msgNotify = `${config.notifyName} got a transfer transaction from user ${tx.senderId}. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`;
+	let msgNotify = `${config.notifyName} got a transfer of ${inAmountMessage} ${inCurrency} from user ${tx.senderId}. I will not verify the transaction, check it manually. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`;
 	let notifyType = 'log';
 
 	await itx.update({isProcessed: true}, true);

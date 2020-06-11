@@ -44,7 +44,7 @@ module.exports = async () => {
                         isTasksCompleted: false
 					}, true);
                     msgSendBack = `To meet the Bounty campaign rules, you should follow Twitter account ${followAccount}. Follow the account and try again.`;
-                    $u.sendAdmMsg(userId, msgSendBack);
+                    await $u.sendAdmMsg(userId, msgSendBack);
                     break;
                 }
             }
