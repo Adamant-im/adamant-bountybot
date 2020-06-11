@@ -1,7 +1,6 @@
 const db = require('./DB');
 const config = require('./configReader');
 const $u = require('../helpers/utils');
-const Store = require('./Store');
 const log = require('../helpers/log');
 const notify = require('../helpers/notify');
 const twitterapi = require('./twitterapi');
@@ -21,11 +20,11 @@ module.exports = async () => {
                 userId
             } = user;
 
-            console.log(`Running module ${$u.getModuleName(module.id)} for user ${user.userId}..`);
+            console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}..`);
 
-            let msgNotify = null;
-			let msgNotifyType = null;
-            let msgSendBack = null;
+            let msgNotify = '';
+			let msgNotifyType = '';
+            let msgSendBack = '';
             
             let followAccount;
             let isFollowing;
@@ -33,8 +32,9 @@ module.exports = async () => {
                 followAccount = config.twitter_follow[index];
                 isFollowing = await twitterapi.checkIfAccountFollowing(twitterAccountLink, followAccount);
                 console.log('isFollowing:', isFollowing);
+
                 if (isFollowing) {
-                    console.log(`User ${user.userId}.. ${twitterAccountLink} do follows ${followAccount}.`);
+                    console.log(`User ${userId}.. ${twitterAccountLink} do follows ${followAccount}.`);
 
                 } else {
                     console.log(`User ${userId}.. ${twitterAccountLink} do NOT follows ${followAccount}.`);

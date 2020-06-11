@@ -35,14 +35,13 @@ module.exports = async () => {
 			}
 
 			if (isNotEnoughBalance) {
-				log.warn('Not enough balance to send a reward:', outCurrency, outAmount, Store.user[outCurrency].balance);
 				pay.update({
 					error: 15,
 					isFinished: true,
 					isPayed: false
 				}, true);
-				notify(`${config.notifyName} notifies about insufficient balance to send a reward of _${outAmount}_ _${outCurrency}_. Balance of _${outCurrency}_ is _${Store.user[outCurrency].balance}_. ${etherString}User ADAMANT id: ${pay.userId}.`, 'error');
-				$u.sendAdmMsg(pay.senderId, `I can’t transfer a reward of _${outAmount}_ _${outCurrency}_ to you because of insufficient funds (I count blockchain fees also). I have already notified my master.`);
+				notify(`${config.notifyName} notifies about insufficient balance to send a reward of _${outAmount}_ _${outCurrency}_. Balance of _${outCurrency}_ is _${Store.user[outCurrency].balance}_. ${etherString}User ADAMANT id: ${userId}.`, 'error');
+				$u.sendAdmMsg(userId, `I can’t transfer a reward of _${outAmount}_ _${outCurrency}_ to you because of insufficient funds (I count blockchain fees also). I have already notified my master.`);
 				return;
 			}
 
@@ -50,15 +49,17 @@ module.exports = async () => {
 			const result = await $u[outCurrency].send({
 				address: outAddress,
 				value: outAmount,
-				comment: 'Thank you for support! Was it great? Share your experience with your friends!' // if ADM
+				comment: 'Thank you for support! Was it great? Share the experience with your friends!' // if ADM
 			});
 			log.info(`Payout result: ${JSON.stringify(result, 0, 2)}`);
 
 			if (result.success) {
+
 				pay.update({
 					outTxid: result.hash,
 					isPayed: true
 				}, true);
+
 				// Update local balances without unnecessary requests
 				if ($u.isERC20(outCurrency)) {
 					Store.user[outCurrency].balance -= outAmount;
@@ -66,19 +67,22 @@ module.exports = async () => {
 				} else {
 					Store.user[outCurrency].balance -= (outAmount + $u[outCurrency].FEE);
 				}
-				log.info(`Successful payout of ${outAmount} ${outCurrency}. Hash: ${result.hash}.`);
+				log.info(`Successful payout of ${outAmount} ${outCurrency} to ${userId}. Hash: ${result.hash}.`);
+
 			} else { // Can't make a transaction
+
 				if (pay.trySendCounter++ < 50) { // If number of attempts less then 50, just ignore and try again on next tick
-					pay.save();
+					await pay.save();
 					return;
 				};
+
 				pay.update({
 					error: 16,
 					isFinished: true,
 					isPayed: false
 				}, true);
 				notify(`${config.notifyName} cannot make transaction to payout a reward of _${outAmount}_ _${outCurrency}_. Balance of _${outCurrency}_ is _${Store.user[outCurrency].balance}_. ${etherString}User ADAMANT id: ${userId}.`, 'error');
-				$u.sendAdmMsg(pay.senderId, `I’ve tried to make a reward payout of _${outAmount}_ _${outCurrency}_ to you, but something went wrong. I have already notified my master.`);
+				$u.sendAdmMsg(userId, `I’ve tried to make a reward payout of _${outAmount}_ _${outCurrency}_ to you, but something went wrong. I have already notified my master.`);
 			}
 		});
 };

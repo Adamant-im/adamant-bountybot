@@ -1,10 +1,8 @@
 const log = require('../helpers/log');
 const $u = require('../helpers/utils');
 const notify = require('../helpers/notify');
-const Store = require('./Store');
 const config = require('./configReader');
 const db = require('./DB');
-const api = require('./api');
 
 module.exports = async () => {
 
@@ -29,7 +27,7 @@ module.exports = async () => {
 
 			if (!outAddress) {
 				if (pay.tryFetchOutAddressCounter < 20) {
-					log.error(`Can't get ${pay.outCurrency} address from KVS for ${pay.userId}. Out address: ${outAddress}. Will try next time.`);
+					log.error(`Can't get ${pay.outCurrency} address from KVS for ${pay.userId}. Will try next time.`);
 				} else {
 					pay.update({
 						error: 10,

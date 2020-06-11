@@ -54,7 +54,7 @@ module.exports = async (tx, itx) => {
 
 };
 
-function getRnd(collectionNum){
+function getRnd(collectionNum) {
 	const phrases = collection[collectionNum];
 	const num = Math.floor(Math.random() * phrases.length); //The maximum is exclusive and the minimum is inclusive
 	return phrases[num];

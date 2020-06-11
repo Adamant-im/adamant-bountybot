@@ -35,10 +35,11 @@ module.exports = async (tx) => {
 		msg = api.decodeMsg(chat.message, tx.senderPublicKey, config.passPhrase, chat.own_message).trim();
 	}
 
-	if (msg === ''){
+	if (msg === '') {
 		msg = 'NONE';
 	}
 
+	// Parse social accounts from user message
 	let links = $u.getLinks(msg);
 
 	let type = 'unknown';
@@ -50,6 +51,7 @@ module.exports = async (tx) => {
 		type = 'command';
 	}
 
+	// Check if we should notify about spammer, only once per 24 hours
 	const spamerIsNotyfy = await incomingTxsDb.findOne({
 		sender: tx.senderId,
 		isSpam: true,
@@ -100,7 +102,7 @@ module.exports = async (tx) => {
 	}
 	historyTxs[tx.id] = $u.unix();
 
-	if (itx.isSpam && !spamerIsNotyfy){
+	if (itx.isSpam && !spamerIsNotyfy) {
 		notify(`${config.notifyName} notifies _${tx.senderId}_ is a spammer or talks too much. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`, 'warn');
 		$u.sendAdmMsg(tx.senderId, `I’ve _banned_ you. You’ve sent too much transactions to me.`);
 		return;

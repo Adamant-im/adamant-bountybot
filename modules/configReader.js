@@ -93,7 +93,7 @@ try {
 	const address = keys.createAddressFromPublicKey(keysPair.publicKey);
 	config.publicKey = keysPair.publicKey;
 	config.address = address;
-	config.min_confirmations = 2;
+	config.min_confirmations = 2; // Allowing myself to hardcode here
 	config.isTwitterCampaign = (config.twitter_follow.length > 0) || (config.twitter_retweet_w_comment.length > 0);
 
 	if (config.isTwitterCampaign && (!config.twitter_api.consumer_key || !config.twitter_api.consumer_key || !config.twitter_api.access_token_secret || !config.twitter_api.access_token_key)) {

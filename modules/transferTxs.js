@@ -23,10 +23,10 @@ module.exports = async (itx, tx) => {
 			inAmountMessage = Number(json.amount);
 			inTxid = json.hash;
 			outCurrency = json.comments;
-			if (outCurrency === ''){
+			if (outCurrency === '') {
 				outCurrency = 'NONE';
 			}		
-		} catch (e){
+		} catch (e) {
 			inCurrency = 'none';
 		}
 	}
@@ -36,7 +36,7 @@ module.exports = async (itx, tx) => {
 
 	// Validate
 	let msgSendBack = `I got a transfer from you. Thanks, bro.`;
-	let msgNotify = `${config.notifyName} got a transfer transaction. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`;
+	let msgNotify = `${config.notifyName} got a transfer transaction from user ${tx.senderId}. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`;
 	let notifyType = 'log';
 
 	await itx.update({isProcessed: true}, true);
