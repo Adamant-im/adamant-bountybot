@@ -10,78 +10,48 @@ module.exports = async () => {
 	const lastBlockNumber = await $u.getLastBlocksNumbers();
 
 	(await paymentsDb.find({
-		$and: [
-			{isFinished: false},
-			{$or: [
-				{outTxid: {$ne: null}},
-				{sentBackTx: {$ne: null}},
-			]}
-		]
+		isPayed: true,
+		isFinished: false,
+		outTxid: {$ne: null}
 	})).forEach(async pay => {
 		const {
-			inCurrency,
 			outCurrency,
-			admTxId,
+			userId,
 			outAmount,
-			inAmountMessage,
-			sentBackAmount
+			outTxid
 		} = pay;
 
-		pay.tryCounterCheckOutTX = ++pay.tryCounterCheckOutTX || 0;
+		pay.tryVerifyPayoutCounter = ++pay.tryVerifyPayoutCounter || 0;
 		
-		let type,
-			sendCurrency,
-			sendTxId,
-			sendAmount,
-			etherString,
-			notifyType;
-
-		if (pay.outTxid){
-			type = 'exchange';
-			sendCurrency = outCurrency;
-			sendTxId = pay.outTxid;
-			sendAmount = outAmount;
-		} else {
-			type = 'back';
-			sendCurrency = inCurrency;
-			sendTxId = pay.sentBackTx;
-			sendAmount = sentBackAmount;
-		}
-
 		try {
 			let msgNotify = null;
+			let notifyType = null;
 			let msgSendBack = null;
 
-			if (!lastBlockNumber[sendCurrency]) {
-				log.warn('Cannot get lastBlockNumber for ' + sendCurrency + '. Waiting for next try.');
+			if (!lastBlockNumber[outCurrency]) {
+				log.warn('Cannot get lastBlockNumber for ' + outCurrency + '. Waiting for next try.');
 				return;
 			}
 
-			const txData = (await $u[sendCurrency].getTransactionStatus(sendTxId));
-			if (!txData || !txData.blockNumber){
-				if (pay.tryCounterCheckOutTX > 50){
+			const txData = (await $u[outCurrency].getTransactionStatus(outTxid));
+			if (!txData || !txData.blockNumber) {
+				if (pay.tryVerifyPayoutCounter > 50 ) {
 					pay.update({
 						errorCheckOuterTX: 24,
-						isFinished: true,
-						needHumanCheck: true
+						isFinished: true
 					});
-					if (type === 'exchange') {
-						notifyType = 'error';
-						msgNotify = `${config.notifyName} unable to verify exchange transfer of _${inAmountMessage}_ _${inCurrency}_ for _${outAmount}_ _${outCurrency}_. Insufficient balance? Attention needed. Tx hash: _${sendTxId}_. Balance of _${sendCurrency}_ is _${Store.user[sendCurrency].balance}_. ${etherString}Income ADAMANT Tx: https://explorer.adamant.im/tx/${admTxId}.`;
-						msgSendBack = `I’ve tried to make transfer of _${outAmount}_ _${outCurrency}_ to you, but I cannot validate transaction. Tx hash: _${sendTxId}_. I’ve already notified my master. If you wouldn’t receive transfer in two days, contact my master also.`;
-	
-					} else { // type === 'back'
-						notifyType = 'error';
-						msgNotify = `${config.notifyName} unable to verify sent back of _${inAmountMessage} ${inCurrency}_. Insufficient balance? Attention needed. Tx hash: _${sendTxId}_. Balance of _${sendCurrency}_ is _${Store.user[sendCurrency].balance}_. ${etherString}Income ADAMANT Tx: https://explorer.adamant.im/tx/${admTxId}.`;
-						msgSendBack = `I’ve tried to send back transfer to you, but I cannot validate transaction. Tx hash: _${sendTxId}_. I’ve already notified my master. If you wouldn’t receive transfer in two days, contact my master also.`;
-					}
-					
+
+					notifyType = 'error';
+					msgNotify = `${config.notifyName} unable to verify reward payout of _${outAmount}_ _${outCurrency}_. Insufficient balance? Attention needed. Tx hash: _${outTxid}_. Balance of _${outCurrency}_ is _${Store.user[outCurrency].balance}_. ${etherString}User ADAMANT id: ${userId}.`;
+					msgSendBack = `I’ve tried to make reward payout of _${outAmount}_ _${outCurrency}_ to you, but I cannot validate transaction. Tx hash: _${outTxid}_. I’ve already notified my master. If you wouldn’t receive transfer in two days, contact my master also.`;
+						
 					notify(msgNotify, notifyType);
-					$u.sendAdmMsg(pay.senderId, msgSendBack);
+					$u.sendAdmMsg(userId, msgSendBack);
 				}
 				pay.save();
 				return;
 			}
+
 			const {status, blockNumber} = txData;
 
 			if (!blockNumber) {
@@ -90,48 +60,33 @@ module.exports = async () => {
 
 			pay.update({
 				outTxStatus: status,
-				outConfirmations: lastBlockNumber[sendCurrency] - blockNumber
+				outConfirmations: lastBlockNumber[outCurrency] - blockNumber
 			});
 
 			if (status === false) {
 				notifyType = 'error';
-				if (type === 'exchange') {
-					pay.update({
-						errorValidatorSend: 21,
-						outTxid: null
-					});
+				pay.update({
+					errorValidatorSend: 21,
+					outTxid: null,
+					isPayed: false,
+					isFinished: false
+				});
 
-					msgNotify = `${config.notifyName} notifies that exchange transfer of _${inAmountMessage}_ _${inCurrency}_ for _${outAmount}_ _${outCurrency}_ failed. Tx hash: _${sendTxId}_. Will try again. Balance of _${sendCurrency}_ is _${Store.user[sendCurrency].balance}_. ${etherString}Income ADAMANT Tx: https://explorer.adamant.im/tx/${admTxId}.`;
-					msgSendBack = `I’ve tried to make transfer of _${outAmount}_ _${outCurrency}_ to you, but it seems transaction failed. Tx hash: _${sendTxId}_. I will try again. If I’ve said the same several times already, please contact my master.`;
+				msgNotify = `${config.notifyName} notifies that reward payout of _${outAmount}_ _${outCurrency}_ failed. Tx hash: _${outTxid}_. Will try again. Balance of _${outCurrency}_ is _${Store.user[outCurrency].balance}_. ${etherString}User ADAMANT id: ${userId}.`;
+				msgSendBack = `I’ve tried to make payout transfer of _${outAmount}_ _${outCurrency}_ to you, but it seems transaction failed. Tx hash: _${outTxid}_. I will try again. If I’ve said the same several times already, please contact my master.`;
 
-				} else {
-					pay.update({
-						errorValidatorSend: 22,
-						sentBackTx: null
-					});
+				$u.sendAdmMsg(userId, msgSendBack);
 
-					msgNotify = `${config.notifyName} sent back of _${inAmountMessage} ${inCurrency}_ failed. Tx hash: _${sendTxId}_. Will try again. Balance of _${sendCurrency}_ is _${Store.user[sendCurrency].balance}_. ${etherString}Income ADAMANT Tx: https://explorer.adamant.im/tx/${admTxId}.`;
-					msgSendBack = `I’ve tried to send transfer back, but it seems transaction failed. Tx hash: _${sendTxId}_. I will try again. If I’ve said the same several times already, please contact my master.`;
-				}
+			} else if (status && pay.outConfirmations >= config['min_confirmations_' + outCurrency]) {
 
-				$u.sendAdmMsg(pay.senderId, msgSendBack);
-
-			} else if (status && pay.outConfirmations >= config['min_confirmations_' + sendCurrency]){
-
-				if (type === 'exchange') {
 					notifyType = 'info';
-					msgNotify = `${config.notifyName} successfully exchanged _${inAmountMessage} ${inCurrency}_ for _${outAmount} ${outCurrency}_ with Tx hash: _${sendTxId}_. Income ADAMANT Tx: https://explorer.adamant.im/tx/${admTxId}.`;
-					msgSendBack = 'Done! Thank you for business. Hope to see you again.';
+					if (config.notifyRewardReceived)
+						msgNotify = `${config.notifyName} successfully payed a reward of _${outAmount} ${outCurrency}_ to ${userId} with Tx hash _${outTxid}_.`;
+					msgSendBack = 'Thank you for support! Was it great? Share your experience with your friends!';
 
-				} else { // type === 'back'
-					notifyType = 'log';
-					msgNotify = `${config.notifyName} successfully sent back _${inAmountMessage} ${inCurrency}_ with Tx hash: _${sendTxId}_. Income ADAMANT Tx: https://explorer.adamant.im/tx/${admTxId}.`;
-					msgSendBack = 'Here is your refund. Note, some amount spent to cover blockchain fees. Try me again!';
-				}
-
-				if (sendCurrency !== 'ADM'){
-					msgSendBack = `{"type":"${sendCurrency}_transaction","amount":"${sendAmount}","hash":"${sendTxId}","comments":"${msgSendBack}"}`;
-					pay.isFinished = $u.sendAdmMsg(pay.senderId, msgSendBack, 'rich');
+				if (outCurrency !== 'ADM') {
+					msgSendBack = `{"type":"${outCurrency}_transaction","amount":"${outAmount}","hash":"${outTxid}","comments":"${msgSendBack}"}`;
+					pay.isFinished = $u.sendAdmMsg(userId, msgSendBack, 'rich');
 				} else {
 					pay.isFinished = true;
 				}
@@ -142,11 +97,12 @@ module.exports = async () => {
 				notify(msgNotify, notifyType);
 			}
 		} catch (e) {
-			log.error('Error in sendedTxValidator module ', {type, sendAmount, sendCurrency, sendTxId}, e);
+			log.error(`Error in ${$u.getModuleName(module.id)} module: ${e}`);
 		}
 	});
 
 };
+
 setInterval(() => {
 	module.exports();
 }, 15 * 1000);

@@ -4,6 +4,7 @@ const config = require('./configReader');
 
 module.exports = async (tx, itx) => {
 	const {incomingTxsDb} = db;
+	
 	incomingTxsDb.db
 		.find({
 			sender: tx.senderId,

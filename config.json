@@ -51,13 +51,62 @@
 	/** Bot's name for notifications **/
     "bot_name": "Lovely Bounty Bot",
 
+	/** ADAMANT accounts to accept control commands from. Control commands from other accounts will not be executed. **/
+	"admin_accounts": [
+		"U1123..."
+	],
+
+	/** Twitter accounts user should follow **/
+	"twitter_follow": [
+		"@adamant_im"
+	],
+
+	/** Tweets user should retweet with comment **/
+	"twitter_retweet_w_comment": [
+		"https://twitter.com/adamant_im/status/1268836265870397443"
+	],
+
+	/** List rewards for a Bounty campaign here **/
+	"rewards": [
+		{
+			"crypto": "ADM",
+			"amount": 100
+		},
+		{
+			"crypto": "ETH",
+			"amount": 0.01
+		}
+	],
+	
+	/** Your Twitter API credentials. Get on https://apps.twitter.com/app/new **/
+	"twitter_api": {
+		"consumer_key": "",
+		"consumer_secret": "",
+		"access_token_key": "",
+		"access_token_secret": ""
+	},
+
+	/** ADAMANT accounts to accept control commands from. Control commands from other accounts will not be executed. **/
+	"admin_accounts": [
+		"U1123..."
+	],
+
+	/** Notify non-admins that they are not admins. If false, bot will be silent. **/
+	"notify_non_admins": true,
+
 	/** ADAMANT address for notifications and monitoring (if needed, recommended) **/
     "adamant_notify": "",
 
     /** Slack key for notifications and monitoring (if needed) **/
     "slack": "https://hooks.slack.com/services/",
 
-    /** Port for getting debug info. 
+	/** If you want to receive notifications when user completes Bounty tasks **/
+	"notifyTasksCompleted": true,
+
+	/** If you want to receive notifications when user receives a Bounty reward **/
+	"notifyRewardReceived": true,
+
+	/** Port for getting debug info. 
 		Do not set for live exchange bots, use only for debugging. 
 		Allows to get DBs records like http://ip:port/db?tb=incomingTxsDb 
 	**/

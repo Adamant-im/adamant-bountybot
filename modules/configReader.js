@@ -31,13 +31,41 @@ const fields = {
 		type: String,
 		default: null
 	},
+	admin_accounts: {
+		type: Array,
+		default: []
+	},
 	adamant_notify: {
 		type: String,
 		default: null
 	},
+	twitter_follow: {
+		type: Array,
+		default: []
+	},
+	twitter_retweet_w_comment: {
+		type: Array,
+		default: []
+	},
+	rewards: {
+		type: Array,
+		isRequired: true
+	},
+	twitter_api: {
+		type: Object,
+		default: {}
+	},
 	slack: {
 		type: String,
 		default: null
+	},
+	notifyTasksCompleted: {
+		type: Boolean,
+		default: true
+	},
+	notifyRewardReceived: {
+		type: Boolean,
+		default: true
 	},
 	welcome_string: {
 		type: String,
@@ -66,6 +94,11 @@ try {
 	config.publicKey = keysPair.publicKey;
 	config.address = address;
 	config.min_confirmations = 2;
+	config.isTwitterCampaign = (config.twitter_follow.length > 0) || (config.twitter_retweet_w_comment.length > 0);
+
+	if (config.isTwitterCampaign && (!config.twitter_api.consumer_key || !config.twitter_api.consumer_key || !config.twitter_api.access_token_secret || !config.twitter_api.access_token_key)) {
+		// exit(`Bot's ${address} config is wrong. To run Twitter campaign, set Twitter API credentials (twitter_api). Cannot start Bot.`);
+	}
 
 	Object.keys(fields).forEach(f => {
 		if (!config[f] && fields[f].isRequired) {

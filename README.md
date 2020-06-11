@@ -43,6 +43,11 @@ Parameters:
 
 * `twitter_follow` <string, array> List of Twitter account user should follow
 * `twitter_retweet` <string, array> List of Twitter posts user should retweet
+* `twitter_api` <string, object> Your Twitter API credentials. Get on https://apps.twitter.com/app/new
+
+* `notifyTasksCompleted` <boolean> If you want to receive notifications when user completes Bounty tasks
+* `notifyRewardReceived` <boolean> If you want to receive notifications when user receives a Bounty reward
+* `rewards` <object, array> List rewards for a Bounty campaign: cryptos and amounts
 
 * `welcome_string` <string> How to reply user in-chat, if first unknown command received
 * `help_message` <string> How to reply to */help* command. Recommended to put Bounty rules here

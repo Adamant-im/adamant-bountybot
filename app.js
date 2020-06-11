@@ -15,10 +15,8 @@ setTimeout(init, 5000);
 function init() {
 	require('./helpers/utils/erc20_utils');
 	require('./server');
-	require('./modules/confirmationsCounter');
-	require('./modules/exchangePayer');
-	require('./modules/sendBack');
-	require('./modules/sendedTxValidator');
+	require('./modules/checkTwitterFollow');
+	require('./modules/checkAll');
 	try {
 
 		if (doClearDB) {

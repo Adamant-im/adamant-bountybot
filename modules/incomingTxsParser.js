@@ -3,20 +3,21 @@ const log = require('../helpers/log');
 const $u = require('../helpers/utils');
 const api = require('./api');
 const config = require('./configReader');
-const exchangeTxs = require('./exchangeTxs');
 const commandTxs = require('./commandTxs');
 const unknownTxs = require('./unknownTxs');
+const transferTxs = require('./transferTxs');
+const checkTxs = require('./checkTxs');
 const notify = require('../helpers/notify');
-const Store = require('./Store');
 
-const historyTxs = {}; // catch saved txs. Defender duplicated TODO: clear uptime
+const historyTxs = {};
 
 module.exports = async (tx) => {
-	if (!tx){
+
+	if (!tx) {
 		return;
 	}
 
-	if (historyTxs[tx.id]) {
+	if (historyTxs[tx.id]) { // do not process one tx twice
 		return;
 	}
 
@@ -25,22 +26,27 @@ module.exports = async (tx) => {
 	if (checkedTx !== null) {
 		return;
 	};
+
 	log.info(`New incoming transaction: ${tx.id}`);
+
 	let msg = '';
 	const chat = tx.asset.chat;
-	if (chat){
+	if (chat) {
 		msg = api.decodeMsg(chat.message, tx.senderPublicKey, config.passPhrase, chat.own_message).trim();
 	}
 
-	if (msg === '') {
+	if (msg === ''){
 		msg = 'NONE';
 	}
 
+	let links = $u.getLinks(msg);
 
 	let type = 'unknown';
 	if (msg.includes('_transaction') || tx.amount > 0) {
-		type = 'exchange';
-	} else if (msg.startsWith('/')){
+		type = 'transfer'; // just for special message
+	} else if (links.notEmpty) {
+		type = 'check';
+	} else if (msg.startsWith('/')) {
 		type = 'command';
 	}
 
@@ -49,34 +55,43 @@ module.exports = async (tx) => {
 		isSpam: true,
 		date: {$gt: ($u.unix() - 24 * 3600 * 1000)} // last 24h
 	});
+
 	const itx = new incomingTxsDb({
 		_id: tx.id,
 		txid: tx.id,
 		date: $u.unix(),
 		block_id: tx.blockId,
 		encrypted_content: msg,
+		links: links,
 		spam: false,
 		sender: tx.senderId,
-		type, // command, exchange or unknown
-		isProcessed: false
+		type, // check, command, transfer or unknown
+		isProcessed: false,
+		isNonAdmin: false
 	});
-
-	if (msg.toLowerCase().trim() === 'deposit') {
-		itx.update({isProcessed: true}, true);
-		historyTxs[tx.id] = $u.unix();
-		return;
-	}
 
 	const countRequestsUser = (await incomingTxsDb.find({
 		sender: tx.senderId,
 		date: {$gt: ($u.unix() - 24 * 3600 * 1000)} // last 24h
 	})).length;
 
-	if (countRequestsUser > 65 || spamerIsNotyfy) { // 65 per 24h is a limit for accepting commands, otherwise user will be considered as spammer
+	if (countRequestsUser > 50 || spamerIsNotyfy) { // 50 per 24h is a limit for accepting commands, otherwise user will be considered as spammer
 		itx.update({
 			isProcessed: true,
 			isSpam: true
 		});
+	}
+
+	// do not process messages from non-admin accounts
+	if (!config.admin_accounts.includes(tx.senderId) && (type === 'command')) { 
+		log.warn(`${config.notifyName} received a message from non-admin user _${tx.senderId}_. Ignoring. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`);
+		itx.update({
+			isProcessed: true,
+			isNonAdmin: true
+		});
+		if (config.notify_non_admins) {			
+			$u.sendAdmMsg(tx.senderId, `I won't execute your commands as you are not an admin. Connect with my master.`);
+		}
 	}
 
 	await itx.save();
@@ -85,17 +100,19 @@ module.exports = async (tx) => {
 	}
 	historyTxs[tx.id] = $u.unix();
 
-	if (itx.isSpam && !spamerIsNotyfy) {
+	if (itx.isSpam && !spamerIsNotyfy){
 		notify(`${config.notifyName} notifies _${tx.senderId}_ is a spammer or talks too much. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`, 'warn');
-		$u.sendAdmMsg(tx.senderId, `I’ve _banned_ you. No, really. **Don’t send any transfers as they will not be processed**.
-		 Come back tomorrow but less talk, more deal.`);
+		$u.sendAdmMsg(tx.senderId, `I’ve _banned_ you. You’ve sent too much transactions to me.`);
 		return;
 	}
 
-	switch (type) {
-	case ('exchange'):
-		exchangeTxs(itx, tx);
+	switch (type){
+	case ('transfer'):
+		transferTxs(itx, tx);
 		break;
+	case ('check'):
+		checkTxs(itx, tx);
+		break;	
 	case ('command'):
 		commandTxs(msg, tx, itx);
 		break;
