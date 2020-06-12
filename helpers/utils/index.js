@@ -117,14 +117,26 @@ module.exports = {
 	getAccounts(message) {
 		let userAccounts = {};
 		userAccounts.notEmpty = false;
+		
 		userAccounts.twitterLink = this.findLink(message, 'twitter.com');
-		userAccounts.twitterAccount = this.parseTwitterAccountFromLink(userAccounts.twitterLink);
+		if (userAccounts.twitterLink)
+			userAccounts.twitterAccount = this.parseTwitterAccountFromLink(userAccounts.twitterLink);
+		else
+			userAccounts.twitterAccount = this.findTwitterAccount(message);
+		
 		userAccounts.facebookLink = this.findLink(message, 'facebook.com');
+
 		if (userAccounts.twitterAccount && config.isTwitterCampaign)
 			userAccounts.notEmpty = true;
 		if (userAccounts.facebookAccount && config.isFacebookCampaign)
 			userAccounts.notEmpty = true;
 		return userAccounts;
+	},
+	findTwitterAccount(message) {
+		let pattern = /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)/gi;
+		let accounts = message.match(pattern);
+		if (accounts)
+			return accounts[0];
 	},
 	findLink(message, link) {
 		let kLINK_DETECTION_REGEX = /(([a-z]+:\/\/)?(([a-z0-9\-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-\.~]+)*(\/([a-z0-9_\-\.]*)(\?[a-z0-9+_\-\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi;
