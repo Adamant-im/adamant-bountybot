@@ -40,12 +40,12 @@ module.exports = async (tx) => {
 	}
 
 	// Parse social accounts from user message
-	let links = $u.getLinks(msg);
+	let accounts = $u.getAccounts(msg);
 
 	let type = 'unknown';
 	if (msg.includes('_transaction') || tx.amount > 0) {
 		type = 'transfer'; // just for special message
-	} else if (links.notEmpty) {
+	} else if (accounts.notEmpty) {
 		type = 'check';
 	} else if (msg.startsWith('/')) {
 		type = 'command';
@@ -64,7 +64,7 @@ module.exports = async (tx) => {
 		date: $u.unix(),
 		block_id: tx.blockId,
 		encrypted_content: msg,
-		links: links,
+		accounts: accounts,
 		spam: false,
 		sender: tx.senderId,
 		type, // check, command, transfer or unknown

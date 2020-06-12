@@ -114,16 +114,17 @@ module.exports = {
 	isArraysEqual(array1, array2) {
 		return array1.length === array2.length && array1.sort().every(function(value, index) { return value === array2.sort()[index]});
 	},
-	getLinks(message) {
-		let links = {};
-		links.notEmpty = false;
-		links.twitter = this.findLink(message, 'twitter.com');
-		links.facebook = this.findLink(message, 'facebook.com');
-		if (links.twitter && config.isTwitterCampaign)
-			links.notEmpty = true;
-		if (links.facebook && config.isFacebookCampaign)
-			links.notEmpty = true;
-		return links;
+	getAccounts(message) {
+		let userAccounts = {};
+		userAccounts.notEmpty = false;
+		userAccounts.twitterLink = this.findLink(message, 'twitter.com');
+		userAccounts.twitterAccount = this.parseTwitterAccountFromLink(userAccounts.twitterLink);
+		userAccounts.facebookLink = this.findLink(message, 'facebook.com');
+		if (userAccounts.twitterAccount && config.isTwitterCampaign)
+			userAccounts.notEmpty = true;
+		if (userAccounts.facebookAccount && config.isFacebookCampaign)
+			userAccounts.notEmpty = true;
+		return userAccounts;
 	},
 	findLink(message, link) {
 		let kLINK_DETECTION_REGEX = /(([a-z]+:\/\/)?(([a-z0-9\-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-\.~]+)*(\/([a-z0-9_\-\.]*)(\?[a-z0-9+_\-\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi;
@@ -134,7 +135,24 @@ module.exports = {
 				if (links[i].includes(link))
 					found = links[i];
 			}
-		return found;
+		return found.trim();
+	},
+	parseTwitterAccountFromLink(link) {
+		function trim(s, mask) {
+			while (~mask.indexOf(s[0])) {
+				s = s.slice(1);
+			}
+			while (~mask.indexOf(s[s.length - 1])) {
+				s = s.slice(0, -1);
+			}
+			return s;
+		}
+		link = trim(link, "/");
+		let n = link.lastIndexOf("/");
+		if (n === -1)
+			return ''
+		else
+			return '@' + link.substring(n + 1);
 	},
 	getModuleName(id) {
 		let n = id.lastIndexOf("\\");

@@ -16,7 +16,7 @@ module.exports = async () => {
 	})).forEach(async user => {
 		try {
             const {
-                twitterAccountLink,
+                twitterAccount,
                 userId
             } = user;
 
@@ -30,14 +30,14 @@ module.exports = async () => {
             let isFollowing;
             for (let index = 0; index < config.twitter_follow.length; index++) {
                 followAccount = config.twitter_follow[index];
-                isFollowing = await twitterapi.checkIfAccountFollowing(twitterAccountLink, followAccount);
+                isFollowing = await twitterapi.checkIfAccountFollowing(twitterAccount, followAccount);
                 console.log('isFollowing:', isFollowing);
 
                 if (isFollowing) {
-                    console.log(`User ${userId}.. ${twitterAccountLink} do follows ${followAccount}.`);
+                    console.log(`User ${userId}.. ${twitterAccount} do follows ${followAccount}.`);
 
                 } else {
-                    console.log(`User ${userId}.. ${twitterAccountLink} do NOT follows ${followAccount}.`);
+                    console.log(`User ${userId}.. ${twitterAccount} do NOT follows ${followAccount}.`);
                     await user.update({
                         isTwitterFollowCheckPassed: false,
                         isInCheck: false,
