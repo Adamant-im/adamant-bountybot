@@ -100,6 +100,11 @@ try {
 		// exit(`Bot's ${address} config is wrong. To run Twitter campaign, set Twitter API credentials (twitter_api). Cannot start Bot.`);
 	}
 
+	// Process help_message as a template literal
+	config.twitter_follow_list = config.twitter_follow.join(', ');
+	config.twitter_retweet_w_comment_list = config.twitter_retweet_w_comment.join(', ');
+	config.help_message = eval('`' + config.help_message +'`');
+
 	Object.keys(fields).forEach(f => {
 		if (!config[f] && fields[f].isRequired) {
 			exit(`Bot's ${address} config is wrong. Field _${f}_ is not valid. Cannot start Bot.`);

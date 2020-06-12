@@ -45,8 +45,8 @@
     /** How to reply user in-chat, if first unknown command received. **/
     "welcome_string": "Hi! 😊 I'm a bounty bot. And this is a stub. Are you ready for the awesome bounty campaign with automatic payout? Type **/help** to see bounty rules.",
 
-    /** Bounty rules. Shown by /help command. **/
-    "help_message": "Get the reward right now!\n\nThe campaign rules:\n- Do first\n- Do second\n- Send me the link to your Twitter profile to verify\n\n&nbsp;\nGo!",
+    /** Bounty rules. Shown by /help command. You can use template literals like ${config.twitter_follow[0]} and ${config.twitter_follow_list} **/
+    "help_message": "Get the reward right now!\n\nThe campaign rules:\n- Follow account ${config.twitter_follow[0]} on Twitter\n- Do something else\n- Send me the link to your Twitter profile to verify\n\n&nbsp;\nGo!",
 
 	/** Bot's name for notifications **/
     "bot_name": "Lovely Bounty Bot",

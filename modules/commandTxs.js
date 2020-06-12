@@ -17,7 +17,6 @@ module.exports = async (cmd, tx, itx) => {
 			.replace(/  /g, ' ')
 			.split(' ');
 		const methodName = group.shift().trim().toLowerCase().replace('\/', '');
-		console.log(methodName);
 
 		// do not process commands from non-admin accounts
 		if (!config.admin_accounts.includes(tx.senderId) && admin_commands.includes(methodName)) { 
