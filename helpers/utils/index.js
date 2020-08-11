@@ -149,17 +149,20 @@ module.exports = {
 			}
 		return found.trim();
 	},
-	parseTwitterAccountFromLink(link) {
-		function trim(s, mask) {
-			while (~mask.indexOf(s[0])) {
-				s = s.slice(1);
-			}
-			while (~mask.indexOf(s[s.length - 1])) {
-				s = s.slice(0, -1);
-			}
-			return s;
+	trimChar(s, mask) {
+		while (~mask.indexOf(s[0])) {
+			s = s.slice(1);
 		}
-		link = trim(link, "/");
+		while (~mask.indexOf(s[s.length - 1])) {
+			s = s.slice(0, -1);
+		}
+		return s;
+	},
+	getTwitterScreenName(account) {
+		return this.trimChar(account, "@");
+	},
+	parseTwitterAccountFromLink(link) {
+		link = this.trimChar(link, "/");
 		let n = link.lastIndexOf("/");
 		if (n === -1)
 			return ''
