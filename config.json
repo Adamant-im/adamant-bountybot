@@ -46,7 +46,7 @@
     "welcome_string": "Hi! 😊 I'm a bounty bot. And this is a stub. Are you ready for the awesome bounty campaign with automatic payout? Type **/help** to see bounty rules.",
 
     /** Bounty rules. Shown by /help command. You can use template literals like ${config.twitter_follow[0]} and ${config.twitter_follow_list} **/
-    "help_message": "Get the **${config.rewards_list}** reward right now!\n\nThe campaign rules:\n- Follow account ${config.twitter_follow[0]} on Twitter\n- Do something else\n- Send me the name (like @adamant_im) or the link to your Twitter profile to verify\n\n&nbsp;\nGo!",
+    "help_message": "Get the **${config.rewards_list}** reward right now!\n\nThe campaign rules:\n- Follow accounts ${config.twitter_follow_list} on Twitter\n- Make a retweet of ${config.twitter_retweet_w_comment[0]} with comment (quote) why you like cryptos. Mention at least ${config.twitter_retweet_w_comment[0].min_mentions} friends and use ${config.twitter_retweet_w_comment[0].tag_list} tags.\n- Send me the name (like @adamant_im) or the link to your Twitter profile to verify\n\n&nbsp;\nGo!",
 
 	/** Bot's name for notifications **/
     "bot_name": "Lovely Bounty Bot",
@@ -61,9 +61,17 @@
 		"@adamant_im"
 	],
 
-	/** Tweets user should retweet with comment **/
+	/** Tweets user should quote (retweet with comment). 
+		Min_mentions is how much people he should mention. Hashtags is a list of tags he must use.
+	**/
 	"twitter_retweet_w_comment": [
-		"https://twitter.com/adamant_im/status/1268836265870397443"
+		{
+			"tweet": "https://twitter.com/adamant_im/status/1272945640574722048",
+			"min_mentions": 3,
+			"hashtags": [
+				"#privacy"
+			]
+		}
 	],
 
 	/** List rewards for a Bounty campaign here **/

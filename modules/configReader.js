@@ -109,7 +109,9 @@ try {
 
 	// Process help_message as a template literal
 	config.twitter_follow_list = config.twitter_follow.join(', ');
-	config.twitter_retweet_w_comment_list = config.twitter_retweet_w_comment.join(', ');
+	config.twitter_retweet_w_comment.forEach(tweet => {
+		tweet.tag_list = tweet.hashtags.join(', ');
+	});
 	config.help_message = eval('`' + config.help_message +'`');
 
 	Object.keys(fields).forEach(f => {

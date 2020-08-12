@@ -40,9 +40,9 @@ let toFollowIds = {};
       process.exit(1);
     }
   }
-  console.log(toFollowIds);
+  // console.log(toFollowIds);
 
-  console.log(await module.exports.checkIfAccountFollowing('@kui', '@Bitz_gRoup'));
+  // console.log(await module.exports.checkIfAccountFollowing('@kui', '@Bitz_gRoup'));
 
   // let data = await getAccountFollowerIds('adamant_im');
   // console.log(`Followers:`);
@@ -161,24 +161,56 @@ module.exports = {
     const followAccountSN = $u.getTwitterScreenName(followAccount);
     console.log(`Checking if @${twitterAccountSN} follows @${followAccountSN}..`);
 
-    followers = await getAccountFriendIds(twitterAccountSN);
+    let followers = await getAccountFriendIds(twitterAccountSN);
     // console.log(followers);    
     return followers.includes(toFollowIds[followAccountSN]);
   },
-  async checkIfAccountRetweetedwComment(twitterAccount, tweet) {
+  async checkIfAccountRetweetedwComment(twitterAccount, tweet, minMentions, hashtags) {
 
     const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
+    const tweetId = $u.getTweetIdFromLink(tweet);
+    hashtags = $u.getTwitterHashtags(hashtags);
+    console.log(tweetId);
     console.log(`Checking if @${twitterAccountSN} retweeted ${tweet}..`)
 
-
-    var params = {screen_name: followAccount, count: 30, include_rts: true, exclude_replies: true};
-    Twitter.get('statuses/user_timeline', params, function(error, tweets, response) {
-      if (!error) {
-        console.log(tweets);
+    let tweets = await getAccountTimeline(twitterAccountSN);
+    let retweet = {};
+    for (let i = 0; i < tweets.length; i++) {
+      if (tweets[i].quoted_status && tweets[i].quoted_status.id_str === tweetId) {
+        retweet = tweets[i];
+        break;
       }
-    });
+    }
+    if (Object.keys(retweet).length < 1) { // Empty object
+      return {
+        success: false,
+        error: 'no_retweet'
+      }
+    }
+    if (retweet.entities.user_mentions.length < minMentions) {
+      return {
+        success: false,
+        error: 'not_enough_mentions'
+      }
+    }
+    let retweet_hashtags = [];
+    for (let i = 0; i < retweet.entities.hashtags.length; i++) {
+      retweet_hashtags[i] = retweet.entities.hashtags[i].text.toLowerCase();
+    }
+    for (let i = 0; i < hashtags.length; i++) {
+      if (!retweet_hashtags.includes(hashtags[i].toLowerCase())) {
+        return {
+          success: false,
+          error: 'no_hashtags'
+        }
+      }
+    }
 
-    return true;
+    return {
+      success: true,
+      error: ''
+    }
+
   }
 
 }

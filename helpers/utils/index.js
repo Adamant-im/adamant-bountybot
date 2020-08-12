@@ -169,6 +169,20 @@ module.exports = {
 		else
 			return '@' + link.substring(n + 1);
 	},
+	getTweetIdFromLink(link) {
+		link = this.trimChar(link, "/");
+		let n = link.lastIndexOf("/");
+		if (n === -1)
+			return ''
+		else
+			return link.substring(n + 1);
+	},
+	getTwitterHashtags(tags) {
+		for (let i = 0; i < tags.length; i++) {
+			tags[i] = this.trimChar(tags[i], "#");
+		}
+		return tags;
+	},
 	getModuleName(id) {
 		let n = id.lastIndexOf("\\");
 		if (n === -1)

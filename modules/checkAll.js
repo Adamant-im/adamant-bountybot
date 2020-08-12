@@ -15,11 +15,9 @@ module.exports = async () => {
 		try {
             const {
                 userId,
-                isTwitterFollowCheckPassed
-                // isTwitterRetweetCommentCheckPassed
+                isTwitterFollowCheckPassed,
+                isTwitterRetweetCommentCheckPassed
             } = user;
-
-            let isTwitterRetweetCommentCheckPassed = true;
 
             console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}..`);
 
