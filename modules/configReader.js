@@ -97,7 +97,7 @@ try {
 	config.isTwitterCampaign = (config.twitter_follow.length > 0) || (config.twitter_retweet_w_comment.length > 0);
 
 	if (config.isTwitterCampaign && (!config.twitter_api.consumer_key || !config.twitter_api.consumer_key || !config.twitter_api.access_token_secret || !config.twitter_api.access_token_key)) {
-		// exit(`Bot's ${address} config is wrong. To run Twitter campaign, set Twitter API credentials (twitter_api). Cannot start Bot.`);
+		exit(`Bot's ${address} config is wrong. To run Twitter campaign, set Twitter API credentials (twitter_api). Cannot start Bot.`);
 	}
 
 	// Create reward list

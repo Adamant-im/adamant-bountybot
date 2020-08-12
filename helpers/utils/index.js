@@ -159,7 +159,7 @@ module.exports = {
 		return s;
 	},
 	getTwitterScreenName(account) {
-		return this.trimChar(account, "@");
+		return this.trimChar(account, "@").toLowerCase();
 	},
 	parseTwitterAccountFromLink(link) {
 		link = this.trimChar(link, "/");
