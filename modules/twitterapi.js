@@ -10,21 +10,6 @@ const Twitter = require('twitter')({
 
 let toFollowIds = {};
 
-// async function getFollowIds() {
-//   console.log(`refreshFollowerIds() for ${config.twitter_follow}..`);
-//   try {
-//     // let fIds = {};
-//     for (let i = 0; i < config.twitter_follow.length-1; i++) {
-//       followerIds[config.twitter_follow[i]] = await getAccountFollowerIds(config.twitter_follow[i]);
-//       // console.log('followerIds[config.twitter_follow[i]]');
-//       // console.log(followerIds[config.twitter_follow[i]]);
-//     }
-//     // return fIds;
-//   } catch(error) {
-//     console.log(error);
-//   }
-// }
-
 (async function() {
 
   // Get Twitter accounts-to-follow ids by their names
@@ -40,16 +25,6 @@ let toFollowIds = {};
       process.exit(1);
     }
   }
-  // console.log(toFollowIds);
-
-  // console.log(await module.exports.checkIfAccountFollowing('@kui', '@Bitz_gRoup'));
-
-  // let data = await getAccountFollowerIds('adamant_im');
-  // console.log(`Followers:`);
-  // console.log(data);
-  // data = await getAccountFriendIds('adamant_im');
-  // console.log(`Friends:`);
-  // console.log(data);
 
 })();
 

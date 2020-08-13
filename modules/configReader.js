@@ -51,6 +51,10 @@ const fields = {
 		type: Array,
 		isRequired: true
 	},
+	adamant_campaign: {
+		type: Object,
+		default: { "min_contacts": 0 }
+	},
 	twitter_api: {
 		type: Object,
 		default: {}

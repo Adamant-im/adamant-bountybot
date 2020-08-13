@@ -10,9 +10,15 @@ module.exports = async () => {
     const {usersDb} = db;
 
 	(await usersDb.find({
-        isInCheck: true,
-        isTwitterFollowCheckPassed: false,
-        isTasksCompleted: false
+        $and: [
+			{isInCheck: true},
+			{isTwitterFollowCheckPassed: false},
+			{isTasksCompleted: false},
+			{$or: [
+                {isAdamantCheckPassed: true},
+                {$expr: {$eq: [0, config.adamant_campaign.min_contacts]}}
+			]}
+		]
 	})).forEach(async user => {
 		try {
             const {

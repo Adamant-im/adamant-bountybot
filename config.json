@@ -74,6 +74,14 @@
 		}
 	],
 
+	/** Minimum contacts user must invite to ADAMANT Messenger. 
+		Contacts must be new users.
+		0 is disabled. 
+	**/
+	"adamant_campaign": {
+		"min_contacts": 0
+	},	
+
 	/** List rewards for a Bounty campaign here **/
 	"rewards": [
 		{

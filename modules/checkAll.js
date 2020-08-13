@@ -16,7 +16,8 @@ module.exports = async () => {
             const {
                 userId,
                 isTwitterFollowCheckPassed,
-                isTwitterRetweetCommentCheckPassed
+                isTwitterRetweetCommentCheckPassed,
+                isAdamantCheckPassed
             } = user;
 
             console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}..`);
@@ -24,7 +25,8 @@ module.exports = async () => {
             let msgSendBack = '';
             
             if (((config.twitter_follow.length === 0) || isTwitterFollowCheckPassed)
-                && ((config.twitter_retweet_w_comment.length === 0) || isTwitterRetweetCommentCheckPassed)) {
+                && ((config.twitter_retweet_w_comment.length === 0) || isTwitterRetweetCommentCheckPassed)
+                && ((config.adamant_campaign.min_contacts === 0) || isAdamantCheckPassed)) {
                     await user.update({
                         isInCheck: false,
                         isTasksCompleted: true
