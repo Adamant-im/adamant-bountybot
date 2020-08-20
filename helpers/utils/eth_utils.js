@@ -86,7 +86,7 @@ module.exports = {
 		});
 	},
 	get FEE() {
-		return this.gasPrice * 22000 / ethSat;
+		return this.gasPrice * 28000 / ethSat;
 	},
 	getNonce() {
 		return new Promise(resolve => {
@@ -106,7 +106,7 @@ module.exports = {
 			const txParams = {
 				nonce: this.currentNonce++,
 				gasPrice: this.gasPrice,
-				gas: web3.utils.toHex(22000), // Use default gasLimit value
+				gas: web3.utils.toHex(28000), // Use default gasLimit value
 				to: params.address,
 				value: params.value * ethSat
 			};
