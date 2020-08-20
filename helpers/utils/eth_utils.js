@@ -86,7 +86,7 @@ module.exports = {
 		});
 	},
 	get FEE() {
-		return this.gasPrice * 22000 / ethSat * 2;
+		return this.gasPrice * 22000 / ethSat;
 	},
 	getNonce() {
 		return new Promise(resolve => {
@@ -106,7 +106,7 @@ module.exports = {
 			const txParams = {
 				nonce: this.currentNonce++,
 				gasPrice: this.gasPrice,
-				gas: web3.utils.toHex(22000 * 2),
+				gas: web3.utils.toHex(22000), // Use default gasLimit value
 				to: params.address,
 				value: params.value * ethSat
 			};
@@ -114,7 +114,7 @@ module.exports = {
 				txParams.value = '0x0';
 				txParams.data = contract.data;
 				txParams.to = contract.address;
-				txParams.gas *= 2;
+				txParams.gas *= 2; // ERC20 transactions consumes more gas
 			}
 
 			const tx = new EthereumTx(txParams);
