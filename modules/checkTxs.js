@@ -13,10 +13,17 @@ module.exports = async (itx, tx) => {
 
 	// Exclude duplicate Twitter accounts
 	user = await usersDb.findOne({twitterAccount: itx.accounts.twitterAccount});
-	if (user && (user.userId !== tx.senderId) && (user.isInCheck || user.isTasksCompleted)) {
+	if (user && (user.isInCheck || user.isTasksCompleted)) {
 		// This Twitter account is already in use by other user, unable to switch
-		msgSendBack = `This Twitter account is already in use by other participant. If it's a mistake, try again in a few minutes.`;
-		$u.sendAdmMsg(tx.senderId, msgSendBack);
+		if (user.userId !== tx.senderId) {
+			msgSendBack = `This Twitter account is already in use by other participant. If it's a mistake, try again in a few minutes.`;
+		} else {
+			if (user.isTasksCompleted) {
+				msgSendBack = `You've already completed the Bounty tasks.`;
+			}
+		}
+		if (msgSendBack) // Do not send anything, if isInCheck
+			$u.sendAdmMsg(tx.senderId, msgSendBack);
 		return;
 	}
 
@@ -63,14 +70,15 @@ module.exports = async (itx, tx) => {
 			twitterAccount: itx.accounts.twitterAccount,
 			isTasksCompleted: false,
 			isTwitterFollowCheckPassed: false,
-			isTwitterRetweetCommentCheckPassed: false
+			isTwitterRetweetCommentCheckPassed: false,
+			isAdamantCheckPassed: false,
 		});
 	}
 
 	await user.save();
 	await itx.update({isProcessed: true}, true);
 
-	console.log('User info:', user);
+	// console.log('User info:', user);
 
 	msgSendBack = `I've got your account details. Twitter: ${user.twitterAccount}. I'll check if you've finished the Bounty tasks now..`;
 	$u.sendAdmMsg(tx.senderId, msgSendBack);

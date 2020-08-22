@@ -5,10 +5,30 @@ const adm_utils = require('./adm_utils');
 const log = require('../log');
 const db = require('../../modules/DB');
 const Store = require('../../modules/Store');
+const constants = require('../const');
 
 module.exports = {
 	unix() {
 		return new Date().getTime();
+	},
+	/**
+	 * Converts provided `time` to ADAMANTS's epoch timestamp: in seconds starting from Sep 02 2017 17:00:00 GMT+0000
+	 * @param {number=} time timestamp to convert
+	 * @returns {number}
+	 */
+	epochTime(time) {
+		if (!time) {
+			time = Date.now()
+		}		
+		return Math.floor((time - constants.EPOCH) / 1000)
+	},
+	/**
+	 * Converts ADM epoch timestamp to a Unix timestamp
+	 * @param {number} epochTime timestamp to convert
+	 * @returns {number}
+	 */
+	toTimestamp(epochTime) {
+		return epochTime * 1000 + constants.EPOCH
 	},
 	sendAdmMsg(address, msg, type = 'message') {
 		if (msg && !config.isDev || true) {
@@ -136,7 +156,7 @@ module.exports = {
 		let pattern = /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)/gi;
 		let accounts = message.match(pattern);
 		if (accounts)
-			return accounts[0];
+			return accounts[0].toLowerCase();
 	},
 	findLink(message, link) {
 		let kLINK_DETECTION_REGEX = /(([a-z]+:\/\/)?(([a-z0-9\-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-\.~]+)*(\/([a-z0-9_\-\.]*)(\?[a-z0-9+_\-\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi;
@@ -147,24 +167,41 @@ module.exports = {
 				if (links[i].includes(link))
 					found = links[i];
 			}
-		return found.trim();
+		return found.trim().toLowerCase();
+	},
+	trimChar(s, mask) {
+		while (~mask.indexOf(s[0])) {
+			s = s.slice(1);
+		}
+		while (~mask.indexOf(s[s.length - 1])) {
+			s = s.slice(0, -1);
+		}
+		return s;
+	},
+	getTwitterScreenName(account) {
+		return this.trimChar(account, "@").toLowerCase();
 	},
 	parseTwitterAccountFromLink(link) {
-		function trim(s, mask) {
-			while (~mask.indexOf(s[0])) {
-				s = s.slice(1);
-			}
-			while (~mask.indexOf(s[s.length - 1])) {
-				s = s.slice(0, -1);
-			}
-			return s;
-		}
-		link = trim(link, "/");
+		link = this.trimChar(link, "/");
 		let n = link.lastIndexOf("/");
 		if (n === -1)
 			return ''
 		else
-			return '@' + link.substring(n + 1);
+			return '@' + link.substring(n + 1).toLowerCase();
+	},
+	getTweetIdFromLink(link) {
+		link = this.trimChar(link, "/");
+		let n = link.lastIndexOf("/");
+		if (n === -1)
+			return ''
+		else
+			return link.substring(n + 1);
+	},
+	getTwitterHashtags(tags) {
+		for (let i = 0; i < tags.length; i++) {
+			tags[i] = this.trimChar(tags[i], "#");
+		}
+		return tags;
 	},
 	getModuleName(id) {
 		let n = id.lastIndexOf("\\");

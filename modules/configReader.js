@@ -51,6 +51,10 @@ const fields = {
 		type: Array,
 		isRequired: true
 	},
+	adamant_campaign: {
+		type: Object,
+		default: { "min_contacts": 0 }
+	},
 	twitter_api: {
 		type: Object,
 		default: {}
@@ -97,7 +101,7 @@ try {
 	config.isTwitterCampaign = (config.twitter_follow.length > 0) || (config.twitter_retweet_w_comment.length > 0);
 
 	if (config.isTwitterCampaign && (!config.twitter_api.consumer_key || !config.twitter_api.consumer_key || !config.twitter_api.access_token_secret || !config.twitter_api.access_token_key)) {
-		// exit(`Bot's ${address} config is wrong. To run Twitter campaign, set Twitter API credentials (twitter_api). Cannot start Bot.`);
+		exit(`Bot's ${address} config is wrong. To run Twitter campaign, set Twitter API credentials (twitter_api). Cannot start Bot.`);
 	}
 
 	// Create reward list
@@ -109,7 +113,9 @@ try {
 
 	// Process help_message as a template literal
 	config.twitter_follow_list = config.twitter_follow.join(', ');
-	config.twitter_retweet_w_comment_list = config.twitter_retweet_w_comment.join(', ');
+	config.twitter_retweet_w_comment.forEach(tweet => {
+		tweet.tag_list = tweet.hashtags.join(', ');
+	});
 	config.help_message = eval('`' + config.help_message +'`');
 
 	Object.keys(fields).forEach(f => {

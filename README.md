@@ -1,6 +1,17 @@
-ADAMANT Bounty Bot is a software that allows you to carry out bounty campaigns & crypto airdrops, with automatic task verifications and payouts. Bounty bots work in ADAMANT Messenger chats directly.
+ADAMANT Bounty Bot is a software that allows you to carry out bounty campaigns & crypto airdrops, with automatic task verifications and payouts.
 
-The bot supports payouts in ADM, ETH and ERC-20 tokens.
+It is made for crypto projects and communities.
+
+The bounty bot:
+
+* Interactive and interesting for users. The bot talks to users in ADAMANT Messenger chat directly
+* Works with Twitter campaigns: follow & retweet with comment (quote). You can set up mentions and hashtags.
+* Supports ADAMANT campaigns: users will invite other users
+* Automatic task verifications and payouts
+* Supports payouts in ADM, ETH and ERC-20 tokens
+* Easy to install and configure
+* Free and open source
+* Stores statistics
 
 Read more: [Carry out a crypto Bounty campaign on ADAMANT platform]().
 

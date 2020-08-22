@@ -16,6 +16,8 @@ function init() {
 	require('./helpers/utils/erc20_utils');
 	require('./server');
 	require('./modules/checkTwitterFollow');
+	require('./modules/checkTwitterRetweet');
+	require('./modules/checkAdamantContacts');
 	require('./modules/checkAll');
 	require('./modules/outAddressFetcher');
 	require('./modules/rewardsPayer');
@@ -26,6 +28,7 @@ function init() {
 			console.log('Clearing database..');
 			db.systemDb.db.drop();
 			db.incomingTxsDb.db.drop();
+			db.usersDb.db.drop();
 			db.paymentsDb.db.drop();
 			notify(`*${config.notifyName}: database cleared*. Manually stop the Bot now.`, 'info');
 		} else {

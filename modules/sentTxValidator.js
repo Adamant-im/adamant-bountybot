@@ -30,6 +30,11 @@ module.exports = async () => {
 			let notifyType = '';
 			let msgSendBack = '';
 
+			let etherString = '';
+			if ($u.isERC20(outCurrency)) {
+				etherString = `Ether balance: ${Store.user['ETH'].balance}. `;
+			}
+
 			if (!lastBlockNumber[outCurrency]) {
 				log.warn('Unable to get lastBlockNumber for ' + outCurrency + '. Waiting for next try.');
 				return;
