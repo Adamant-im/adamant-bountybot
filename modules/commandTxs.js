@@ -3,6 +3,7 @@ const $u = require('../helpers/utils');
 const config = require('./configReader');
 const log = require('../helpers/log');
 const notify = require('../helpers/notify');
+const twitterapi = require('./twitterapi');
 
 module.exports = async (cmd, tx, itx) => {
 
@@ -26,7 +27,7 @@ module.exports = async (cmd, tx, itx) => {
 				isNonAdmin: true
 			}, true);
 			if (config.notify_non_admins) {			
-				$u.sendAdmMsg(tx.senderId, `I won't execute admin commands as you are not an admin. Connect with my master.`);
+				$u.sendAdmMsg(tx.senderId, `I won't execute admin commands as you are not an admin. Contact my master.`);
 			}
 			return;
 		}
@@ -153,6 +154,36 @@ async function calc(arr) {
 
 }
 
+async function test(param) {
+
+	param = param[0].trim();
+	if (!param || !["twitterapi"].includes(param)) {
+		return {
+			msgNotify: ``,
+			msgSendBack: 'Wrong arguments. Command works like this: */test twitterapi*.',
+			notifyType: 'log'
+		}
+	}
+
+	let output;
+
+	if (param === "twitterapi") {
+		let testResult = await twitterapi.testApi();
+		if (testResult.success) {
+			output = "Twitter API functions well.";
+		} else {
+			output = `Error while making Twitter API request: ${testResult.message}`;
+		}
+	}
+
+	return {
+		msgNotify: ``,
+		msgSendBack: `${output}`,
+		notifyType: 'log'
+	}
+
+}
+
 function version() {
 	return {
 		msgNotify: ``,
@@ -161,13 +192,33 @@ function version() {
 	}
 }
 
+function balances() {
+	let output = "";
+	config.known_crypto.forEach(crypto => {
+		if (Store.user[crypto].balance && Store.user[crypto].balance !== undefined) {
+			output += `${$u.thousandSeparator(+Store.user[crypto].balance.toFixed(8), true)} _${crypto}_`;
+			output += "\n";
+		}
+	});
+
+	return {
+		msgNotify: ``,
+		msgSendBack: `My crypto balances:
+${output}`,
+		notifyType: 'log'
+	}
+}
+
 const commands = {
 	help,
 	rates,
 	calc,
-	version
+	version,
+	balances,
+	test
 }
 
 const admin_commands = [
-	""
+	"test",
+	"balances"
 ]
