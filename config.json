@@ -102,6 +102,14 @@
 		"access_token_secret": ""
 	},
 
+	/** Interval in minutes to test Twitter API. Because of different reasons Twitter may temporary block API requests.
+	To continue, you need manually login into your Twitter account and solve captcha.
+	This parameter allows to automatically check if Twitter API works well every twitter_api_test_interval minutes.
+	In case of error the bot will notify you. Also you can run "/test twitterapi" command manually.
+	0 means disabled.
+	**/
+	"twitter_api_test_interval": 600,
+
 	/** ADAMANT accounts to accept control commands from. Control commands from other accounts will not be executed. **/
 	"admin_accounts": [
 		"U1123..."

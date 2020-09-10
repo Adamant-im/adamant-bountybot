@@ -110,7 +110,7 @@ async function getAccountTimeline(account) {
 
 async function getAccountInfo(account) {
   const accountSN = $u.getTwitterScreenName(account);
-  console.log(`Getting user info for @${accountSN}..`)
+  // console.log(`Getting user info for @${accountSN}..`)
 
   return await Twitter.get('users/show', {screen_name: accountSN})
     .then(function (data) {
@@ -128,6 +128,33 @@ async function getAccountInfo(account) {
 
 module.exports = {
 
+  async testApi() {
+
+    let testResult = {
+      success: false,
+      message: ""
+    }
+
+    try {
+
+      const testAccount = "@TwitterDev";
+      let result = await getAccountInfo(testAccount);
+
+      if (result && result.id_str === '2244994945') {
+        testResult.success = true;
+      } else {
+        testResult.success = false;
+        testResult.message = "Request *users/show* for @TwitterDev didn't return expected value.";
+      }
+      return testResult;
+
+    } catch (e) {
+      testResult.success = false;
+      testResult.message = "Exception while making *users/show* request."; 
+      return testResult;
+    }
+
+  },
   // Search for predefined toFollowIds — save Twitter API requests
   // followAccount should be in "twitter_follow" param in config
   async checkIfAccountFollowing(twitterAccount, followAccount) {

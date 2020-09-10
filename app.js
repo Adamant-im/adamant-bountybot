@@ -16,6 +16,7 @@ function init() {
 	require('./helpers/utils/erc20_utils');
 	require('./server');
 	require('./modules/checkTwitterFollow');
+	require('./modules/apiTester');
 	require('./modules/checkTwitterRetweet');
 	require('./modules/checkAdamantContacts');
 	require('./modules/checkAll');

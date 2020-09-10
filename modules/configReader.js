@@ -59,6 +59,10 @@ const fields = {
 		type: Object,
 		default: {}
 	},
+	twitter_api_test_interval: {
+		type: Number,
+		default: 600
+	},
 	slack: {
 		type: String,
 		default: null
