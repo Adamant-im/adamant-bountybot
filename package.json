@@ -1,6 +1,6 @@
 {
   "name": "adamant-bountybot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "ADAMANT Bounty bot — a software that allows you to carry out bounty campaigns & crypto airdrops, with automatic task verifications and payouts.",
   "main": "index.js",
   "scripts": {

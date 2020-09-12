@@ -17,7 +17,10 @@ module.exports = async () => {
                 userId,
                 isTwitterFollowCheckPassed,
                 isTwitterRetweetCommentCheckPassed,
-                isAdamantCheckPassed
+                isAdamantCheckPassed,
+                twitterAccount,
+                twitterFollowers,
+                twitterLifetimeDays
             } = user;
 
             console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}..`);
@@ -44,8 +47,18 @@ module.exports = async () => {
                         });
                         payment.save();
                     })
-                    if (config.notifyTasksCompleted)
-                        notify(`${config.notifyName}: User ${userId} completed the Bounty tasks. Payouts are pending.`, 'log');
+                    if (config.notifyTasksCompleted) {
+                        let twitterString = '';
+                        if (twitterAccount)
+                            twitterString += ` (${twitterAccount}`;
+                        if (twitterFollowers)
+                            twitterString += `, followers: ${twitterFollowers}`;
+                        if (twitterLifetimeDays)
+                            twitterString += `, lifetime days: ${Math.round(twitterLifetimeDays)}`;
+                        if (twitterAccount)
+                            twitterString += `)`;
+                        notify(`${config.notifyName}: User ${userId}${twitterString} completed the Bounty tasks. Payouts are pending.`, 'log');
+                    }
                     msgSendBack = `Thank you! The Bounty tasks are completed! I am sending the reward to you.`;
                     $u.sendAdmMsg(userId, msgSendBack);
                 }

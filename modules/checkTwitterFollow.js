@@ -11,7 +11,8 @@ module.exports = async () => {
 
 	(await usersDb.find({
         $and: [
-			{isInCheck: true},
+            {isInCheck: true},
+            {isTwitterAccountEligible: true},
 			{isTwitterFollowCheckPassed: false},
 			{isTasksCompleted: false},
 			{$or: [

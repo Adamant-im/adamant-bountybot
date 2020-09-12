@@ -6,6 +6,7 @@ The bounty bot:
 
 * Interactive and interesting for users. The bot talks to users in ADAMANT Messenger chat directly
 * Works with Twitter campaigns: follow & retweet with comment (quote). You can set up mentions and hashtags.
+* Set which Twitter accounts are eligible to participate: minimum followers, friends, statuses and lifetime
 * Supports ADAMANT campaigns: users will invite other users
 * Automatic task verifications and payouts
 * Supports payouts in ADM, ETH and ERC-20 tokens
@@ -13,9 +14,9 @@ The bounty bot:
 * Free and open source
 * Stores statistics
 
-Read more: [Carry out a crypto Bounty campaign on ADAMANT platform]().
-
 # Installation
+
+User-friendly instructions: [Carry out a crypto Bounty campaign on ADAMANT platform](https://medium.com/adamant-im/adamants-interactive-bounty-bot-for-cryptocurrency-projects-51fec10f93b9).
 
 ## Requirements
 
@@ -47,14 +48,20 @@ Parameters:
 * `socket` <boolean> If to use WebSocket connection. Recommended for better user experience
 * `ws_type` <string> Choose socket connection, "ws" or "wss" depending on your server
 * `bot_name` <string> Bot's name for notifications
+* `admin_accounts` <string, array> ADAMANT accounts to accept control commands from
+* `notify_non_admins` <boolean> Notify non-admins that they are not admins
 * `slack` <string> Token for Slack alerts for the bot’s administrator. No alerts if not set
 * `adamant_notify` <string> ADM address for the bot’s administrator. Recommended
 * `known_crypto` <string, array> List of cryptocurrencies bot can work with. Obligatorily
 * `erc20` <string, array> List of cryptocurrencies of ERC-20 type. It is necessary to put all known ERC-20 tokens here.
 
 * `twitter_follow` <string, array> List of Twitter account user should follow
-* `twitter_retweet` <string, array> List of Twitter posts user should retweet
+* `twitter_retweet` <object, array> List of Twitter posts user should retweet
 * `twitter_api` <string, object> Your Twitter API credentials. Get on https://apps.twitter.com/app/new
+* `twitter_reqs` <number, object> Requirements for user's Twitter account
+* `twitter_api_test_interval` <number> Interval in minutes to test Twitter API
+
+* `adamant_campaign` <object> Settings for ADAMANT bounty campaign
 
 * `notifyTasksCompleted` <boolean> If you want to receive notifications when user completes Bounty tasks
 * `notifyRewardReceived` <boolean> If you want to receive notifications when user receives a Bounty reward

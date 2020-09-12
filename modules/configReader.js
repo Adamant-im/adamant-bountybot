@@ -47,6 +47,10 @@ const fields = {
 		type: Array,
 		default: []
 	},
+	twitter_reqs: {
+		type: Object,
+		default: { "min_followers": 0, "min_friends": 0, "min_statuses": 0, "min_days": 0 }
+	},
 	rewards: {
 		type: Array,
 		isRequired: true
@@ -103,6 +107,8 @@ try {
 	config.address = address;
 	config.min_confirmations = 1; // Allowing myself to hardcode here
 	config.isTwitterCampaign = (config.twitter_follow.length > 0) || (config.twitter_retweet_w_comment.length > 0);
+	config.doCheckTwitterReqs = config.isTwitterCampaign && ((config.twitter_reqs.min_followers > 0) || (config.twitter_reqs.min_friends > 0) || (config.twitter_reqs.min_statuses > 0) || (config.twitter_reqs.min_days > 0));
+	config.twitterEligibleString = `must be older, than ${config.twitter_reqs.min_days} days, must have at least ${config.twitter_reqs.min_followers} followers, ${config.twitter_reqs.min_friends} friends, and ${config.twitter_reqs.min_statuses} tweets`;
 
 	if (config.isTwitterCampaign && (!config.twitter_api.consumer_key || !config.twitter_api.consumer_key || !config.twitter_api.access_token_secret || !config.twitter_api.access_token_key)) {
 		exit(`Bot's ${address} config is wrong. To run Twitter campaign, set Twitter API credentials (twitter_api). Cannot start Bot.`);

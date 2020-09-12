@@ -125,6 +125,11 @@ async function getAccountInfo(account) {
 
 }
 
+function parseTwitterDate(aDate)
+{   
+  return new Date(Date.parse(aDate.replace(/( \+)/, ' UTC$1')));
+  //sample: Wed Mar 13 09:06:07 +0000 2013 
+}
 
 module.exports = {
 
@@ -210,6 +215,56 @@ module.exports = {
 
     return {
       success: true,
+      error: ''
+    }
+
+  },
+  async checkIfAccountEligible(twitterAccount) {
+
+    const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
+    console.log(`Checking if @${twitterAccountSN} eligible..`)
+
+    let accountInfo = await getAccountInfo(twitterAccountSN);
+    // console.log(accountInfo);
+
+    if (!accountInfo || !accountInfo.id) {
+      return {
+        success: false,
+        error: 'request_failed'
+      }
+    }
+
+    if (accountInfo.followers_count < config.twitter_reqs.min_followers) {
+      return {
+        success: false,
+        error: 'no_followers'
+      }
+    }
+    if (accountInfo.friends_count < config.twitter_reqs.min_friends) {
+      return {
+        success: false,
+        error: 'no_friends'
+      }
+    }
+    if (accountInfo.statuses_count < config.twitter_reqs.min_statuses) {
+      return {
+        success: false,
+        error: 'no_statuses'
+      }
+    }
+    let createDate = parseTwitterDate(accountInfo.created_at);
+    let lifeTime = (Date.now() - createDate) / 1000 / 60 / 60 / 24;
+    if (lifeTime < config.twitter_reqs.min_days) {
+      return {
+        success: false,
+        error: 'no_lifetime'
+      }
+    }
+
+    return {
+      success: true,
+      followers: accountInfo.followers_count,
+      lifetimeDays: lifeTime,
       error: ''
     }
 

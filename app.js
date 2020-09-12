@@ -17,6 +17,7 @@ function init() {
 	require('./server');
 	require('./modules/checkTwitterFollow');
 	require('./modules/apiTester');
+	require('./modules/checkTwitterReqs');
 	require('./modules/checkTwitterRetweet');
 	require('./modules/checkAdamantContacts');
 	require('./modules/checkAll');
