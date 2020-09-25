@@ -120,7 +120,10 @@ async function getAccountInfo(account) {
     })
     .catch(function (e) {
       log.warn(`Error while making getAccountInfo() request: ${JSON.stringify(e)}`);
-      return false;
+      if (e && e[0] && e[0].code === 50) // [{"code":50,"message":"User not found."}]
+        return e[0] // User can provide wrong Account, process this situation
+      else 
+        return false;
     });
 
 }
@@ -227,7 +230,21 @@ module.exports = {
     let accountInfo = await getAccountInfo(twitterAccountSN);
     // console.log(accountInfo);
 
-    if (!accountInfo || !accountInfo.id) {
+    if (!accountInfo) {
+      return {
+        success: false,
+        error: 'request_failed',
+      }
+    }
+
+    if (accountInfo.code === 50) { // {"code":50,"message":"User not found."}
+      return {
+        success: false,
+        error: 'user_not_found'
+      }
+    }
+
+    if (!accountInfo.id) {
       return {
         success: false,
         error: 'request_failed'
@@ -237,19 +254,22 @@ module.exports = {
     if (accountInfo.followers_count < config.twitter_reqs.min_followers) {
       return {
         success: false,
-        error: 'no_followers'
+        error: 'no_followers',
+        accountInfo
       }
     }
     if (accountInfo.friends_count < config.twitter_reqs.min_friends) {
       return {
         success: false,
-        error: 'no_friends'
+        error: 'no_friends',
+        accountInfo
       }
     }
     if (accountInfo.statuses_count < config.twitter_reqs.min_statuses) {
       return {
         success: false,
-        error: 'no_statuses'
+        error: 'no_statuses',
+        accountInfo
       }
     }
     let createDate = parseTwitterDate(accountInfo.created_at);
@@ -257,7 +277,8 @@ module.exports = {
     if (lifeTime < config.twitter_reqs.min_days) {
       return {
         success: false,
-        error: 'no_lifetime'
+        error: 'no_lifetime',
+        accountInfo
       }
     }
 
@@ -265,7 +286,8 @@ module.exports = {
       success: true,
       followers: accountInfo.followers_count,
       lifetimeDays: lifeTime,
-      error: ''
+      error: '',
+      accountInfo
     }
 
   }

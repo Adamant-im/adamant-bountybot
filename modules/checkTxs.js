@@ -15,6 +15,7 @@ module.exports = async (itx, tx) => {
 	user = await usersDb.findOne({twitterAccount: itx.accounts.twitterAccount});
 	if (user && (user.isInCheck || user.isTasksCompleted)) {
 		// This Twitter account is already in use by other user, unable to switch
+		log.info(`User ${user.userId} applied with already used Twitter account ${itx.accounts.twitterAccount}. Notify user and ignore.`);
 		if (user.userId !== tx.senderId) {
 			msgSendBack = `This Twitter account is already in use by other participant. If it's a mistake, try again in a few minutes.`;
 		} else {
@@ -31,7 +32,7 @@ module.exports = async (itx, tx) => {
 	user = await usersDb.findOne({userId: tx.senderId});
 	if (user) {
 		// User is already was in check earlier, update
-		console.log(`User ${user.userId} applied once again.`);
+		log.info(`User ${user.userId} applied once again.`);
 		// May be later
 		// if (user.isBountyPayed) {
 		// 	msgSendBack = `You've already received the Bounty reward. Thanks for your support!`;
@@ -39,6 +40,7 @@ module.exports = async (itx, tx) => {
 		// 	return;
 		// } else 
 		if (user.isTasksCompleted) {
+			log.info(`User ${user.userId} already completed the Bounty tasks. Notify user and ignore.`);
 			msgSendBack = `You've already completed the Bounty tasks.`;
 			$u.sendAdmMsg(tx.senderId, msgSendBack);
 			return;
@@ -51,6 +53,7 @@ module.exports = async (itx, tx) => {
 			isInCheck: itx.accounts.notEmpty,
 			twitterAccountLink: itx.accounts.twitterLink,
 			twitterAccount: itx.accounts.twitterAccount,
+			twitterAccountId: null,
 			isTasksCompleted: false,
 			isTwitterFollowCheckPassed: false,
 			isTwitterRetweetCommentCheckPassed: false,
@@ -69,6 +72,7 @@ module.exports = async (itx, tx) => {
 			isInCheck: itx.accounts.notEmpty,
 			twitterAccountLink: itx.accounts.twitterLink,
 			twitterAccount: itx.accounts.twitterAccount,
+			twitterAccountId: null,
 			isTasksCompleted: false,
 			isTwitterFollowCheckPassed: false,
 			isTwitterRetweetCommentCheckPassed: false,
@@ -80,7 +84,7 @@ module.exports = async (itx, tx) => {
 	await user.save();
 	await itx.update({isProcessed: true}, true);
 
-	// console.log('User info:', user);
+	console.log('User info:', user);
 
 	msgSendBack = `I've got your account details. Twitter: ${user.twitterAccount}. I'll check if you've finished the Bounty tasks now..`;
 	$u.sendAdmMsg(tx.senderId, msgSendBack);

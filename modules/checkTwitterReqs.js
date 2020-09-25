@@ -29,15 +29,33 @@ module.exports = async () => {
             console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}..`);
 
             let msgSendBack = '';
-            let result, isEligible;
+            let result, isEligible = true;
+            let twitterAccountIdStr = null;
+
+            result = await twitterapi.checkIfAccountEligible(twitterAccount);
+            // console.log(result);
+            if (result.error === 'request_failed') return;
+            if (result.error === 'user_not_found')
+                msgSendBack = `It seems Twitter account ${twitterAccount} does not exist. Please check and try again.`
+            else {
+                // Check if this user already participated in Bounty campaign.
+                // He may change Twitter's AccountName, but id will be the same
+                twitterAccountIdStr = result.accountInfo.id_str;
+                console.log('twitterAccountIdStr:', twitterAccountIdStr);
+                let userDuplicate = await usersDb.findOne({twitterAccountId: twitterAccountIdStr});
+                console.log('user duplicate:', userDuplicate);
+
+                if (userDuplicate && (userDuplicate.twitterAccount !== twitterAccount)) {
+                    // This user changed his AccountName
+                    isEligible = false;
+                    msgSendBack = `This Twitter account is already in use by other participant. Account name is changed. If it's a mistake, try again in a few minutes.`;
+                }
+            }
 
             if (config.doCheckTwitterReqs) {
-                result = await twitterapi.checkIfAccountEligible(twitterAccount);
-                if (result.error === 'request_failed') return;
-                console.log(result);
-                isEligible = result.success;
+                isEligible = isEligible && result.success;
             } else {
-                isEligible = true;
+                isEligible = isEligible && true;
             }
 
             if (isEligible) {
@@ -47,15 +65,19 @@ module.exports = async () => {
                 console.log(`User ${userId}.. ${twitterAccount} is NOT eligible.`);
                 await user.update({
                     isTwitterAccountEligible: false,
+                    twitterAccountId: twitterAccountIdStr,
                     isInCheck: false,
                     isTasksCompleted: false
                 }, true);
-                msgSendBack = `To meet the Bounty campaign rules, your Twitter account ${config.twitterEligibleString}.`;
+
+                if (msgSendBack === '')
+                    msgSendBack = `To meet the Bounty campaign rules, your Twitter account ${config.twitterEligibleString}.`;
                 await $u.sendAdmMsg(userId, msgSendBack);
             }
             
             await user.update({
                 isTwitterAccountEligible: isEligible,
+                twitterAccountId: twitterAccountIdStr,
                 twitterLifetimeDays: result.lifetimeDays,
                 twitterFollowers: result.followers
             }, true);
