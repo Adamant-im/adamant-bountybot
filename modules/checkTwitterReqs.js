@@ -34,21 +34,22 @@ module.exports = async () => {
 
             result = await twitterapi.checkIfAccountEligible(twitterAccount);
             // console.log(result);
-            if (result.error === 'request_failed') return;
-            if (result.error === 'user_not_found')
-                msgSendBack = `It seems Twitter account ${twitterAccount} does not exist. Please check and try again.`
-            else {
-                // Check if this user already participated in Bounty campaign.
-                // He may change Twitter's AccountName, but id will be the same
-                twitterAccountIdStr = result.accountInfo.id_str;
-                console.log('twitterAccountIdStr:', twitterAccountIdStr);
-                let userDuplicate = await usersDb.findOne({twitterAccountId: twitterAccountIdStr});
-                console.log('user duplicate:', userDuplicate);
 
-                if (userDuplicate && (userDuplicate.twitterAccount !== twitterAccount)) {
-                    // This user changed his AccountName
+            if (result.error === 'request_failed') {
+                return; // If request to Twitter API failed, ignore and check next time
+            }
+
+            if (result.error === 'user_not_found') {
+                msgSendBack = `It seems Twitter account ${twitterAccount} does not exist. Please re-check and try again.`
+            } else {
+                // Check if this user already participated in Bounty campaign.
+                // He may change Twitter's AccountName (screen name) to cheat, but Id will be the same
+                twitterAccountIdStr = result.accountInfo.id_str;
+                let userDuplicate = await usersDb.findOne({twitterAccountId: twitterAccountIdStr});
+                if (userDuplicate && (userDuplicate.twitterAccount !== twitterAccount) && (userDuplicate.isInCheck || userDuplicate.isTasksCompleted)) {
+                    // This user changed his AccountName (screen name)
                     isEligible = false;
-                    msgSendBack = `This Twitter account is already in use by other participant. Account name is changed. If it's a mistake, try again in a few minutes.`;
+                    msgSendBack = `This Twitter account is already in use by other participant with other account name: ${userDuplicate.twitterAccount}. Cheating detected. If it's a mistake, try again in a few minutes.`;
                 }
             }
 
@@ -62,17 +63,17 @@ module.exports = async () => {
                 console.log(`User ${userId}.. ${twitterAccount} is eligible.`);
 
             } else {
-                console.log(`User ${userId}.. ${twitterAccount} is NOT eligible.`);
+
                 await user.update({
-                    isTwitterAccountEligible: false,
-                    twitterAccountId: twitterAccountIdStr,
                     isInCheck: false,
                     isTasksCompleted: false
                 }, true);
 
                 if (msgSendBack === '')
                     msgSendBack = `To meet the Bounty campaign rules, your Twitter account ${config.twitterEligibleString}.`;
+
                 await $u.sendAdmMsg(userId, msgSendBack);
+                log.info(`User ${userId}.. ${twitterAccount} is NOT eligible. Message to user: ${msgSendBack}`);
             }
             
             await user.update({

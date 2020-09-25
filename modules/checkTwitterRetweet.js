@@ -50,7 +50,7 @@ module.exports = async () => {
                     console.log(`User ${userId}.. ${twitterAccount} did retweet ${toRetweet}.`);
 
                 } else {
-                    console.log(`User ${userId}.. ${twitterAccount} did NOT retweet ${toRetweet}: ${retweetResult.error}.`);
+
                     await user.update({
                         isTwitterRetweetCommentCheckPassed: false,
                         isInCheck: false,
@@ -86,6 +86,8 @@ module.exports = async () => {
                     }
 
                     await $u.sendAdmMsg(userId, msgSendBack);
+                    log.info(`User ${userId}.. ${twitterAccount} did NOT retweet ${toRetweet}: ${retweetResult.error}. Message to user: ${msgSendBack}`);
+
                     break;
                 }
             }

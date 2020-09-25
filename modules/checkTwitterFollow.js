@@ -44,7 +44,7 @@ module.exports = async () => {
                     console.log(`User ${userId}.. ${twitterAccount} do follows ${followAccount}.`);
 
                 } else {
-                    console.log(`User ${userId}.. ${twitterAccount} do NOT follows ${followAccount}.`);
+
                     await user.update({
                         isTwitterFollowCheckPassed: false,
                         isInCheck: false,
@@ -52,6 +52,7 @@ module.exports = async () => {
 					}, true);
                     msgSendBack = `To meet the Bounty campaign rules, you should follow Twitter account ${followAccount}. Follow the account and try again.`;
                     await $u.sendAdmMsg(userId, msgSendBack);
+                    log.info(`User ${userId}.. ${twitterAccount} do NOT follows ${followAccount}. Message to user: ${msgSendBack}`);
                     break;
                 }
             }

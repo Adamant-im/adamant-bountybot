@@ -38,7 +38,7 @@ module.exports = {
 	async send(params) {
 		try {
 			const {address, value, comment} = params;
-			console.log(`Send ${value} ADM: `, comment);
+			log.info(`Send ${value} ADM: `, comment);
 			let res;
 			if (comment){
 				res = api.send(User.passPhrase, address, comment, 'message', null, value);

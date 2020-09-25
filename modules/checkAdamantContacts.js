@@ -75,7 +75,7 @@ module.exports = async () => {
                 console.log(`User ${userId}.. did make ${config.adamant_campaign.min_contacts} contacts.`);
 
             } else {
-                console.log(`User ${userId}.. did NOT make ${config.adamant_campaign.min_contacts} contacts.`);
+
                 await user.update({
                     isAdamantCheckPassed: false,
                     isInCheck: false,
@@ -89,6 +89,7 @@ module.exports = async () => {
                 }
                 
                 await $u.sendAdmMsg(userId, msgSendBack);
+                log.info(`User ${userId}.. did NOT make ${config.adamant_campaign.min_contacts} contacts. Message to user: ${msgSendBack}`);
             }
 
             await user.update({
