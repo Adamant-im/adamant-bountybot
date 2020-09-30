@@ -3,6 +3,7 @@ const config = require('./configReader');
 const $u = require('../helpers/utils');
 const log = require('../helpers/log');
 const notify = require('../helpers/notify');
+const mathjs = require('mathjs');
 
 module.exports = async () => {
 
@@ -35,13 +36,25 @@ module.exports = async () => {
                         isTasksCompleted: true
                     }, true);
                     config.rewards.forEach(reward => {
+                        let amount = reward.amount;
+                        // console.log(config.rewards_progression_from_twitter_followers[reward.currency]);
+                        if (config.rewards_progression_from_twitter_followers[reward.currency] && twitterFollowers) {
+                            let followersCount = twitterFollowers;
+                            if (followersCount > config.rewards_progression_from_twitter_followers[reward.currency].limit_followers)
+                                followersCount = config.rewards_progression_from_twitter_followers[reward.currency].limit_followers;
+                            let f = config.rewards_progression_from_twitter_followers[reward.currency].func;
+                            amount = mathjs.evaluate(f, {followers: followersCount});
+                            amount = +amount.toFixed(config.rewards_progression_from_twitter_followers[reward.currency].decimals_transfer);
+                            // console.log(amount);
+                            // process.exit(1);
+                        }
                         payment = new paymentsDb({
                             date: $u.unix(),
                             userId,
                             isPayed: false,
                             isFinished: false,
                             outCurrency: reward.currency,
-                            outAmount: reward.amount,
+                            outAmount: amount,
                             outTxid: null,
                             outAddress: null
                         });

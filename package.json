@@ -1,6 +1,6 @@
 {
   "name": "adamant-bountybot",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "ADAMANT Bounty bot — a software that allows you to carry out bounty campaigns & crypto airdrops, with automatic task verifications and payouts.",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,7 @@
   "author": "Aleksei Lebedev <devs@adamant.im> (https://adamant.im)",
   "license": "GPL-3.0",
   "dependencies": {
+    "mathjs": "^7.3.0",
     "adamant-api": "^0.5.3",
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^7.0.0",

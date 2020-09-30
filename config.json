@@ -47,6 +47,7 @@
 
     /** Bounty rules. Shown by /help command. You can use template literals like ${config.twitter_follow[0]} and ${config.twitter_follow_list} **/
     "help_message": "Get the **${config.rewards_list}** reward right now!\n\nThe campaign rules:\n- Follow accounts ${config.twitter_follow_list} on Twitter\n- Make a retweet of ${config.twitter_retweet_w_comment[0]} with comment (quote) why you like cryptos. Mention at least ${config.twitter_retweet_w_comment[0].min_mentions} friends and use ${config.twitter_retweet_w_comment[0].tag_list} tags.\n- Send me the name (like @adamant_im) or the link to your Twitter profile to verify. Your account ${config.twitterEligibleString}.\n\n&nbsp;\nGo!",
+    "help_message": "Get the reward in **${config.rewards_tickers}** right now! Amount you'll receive depends on your twitter followers count:\n${config.rewards_range}\n\n&nbsp;\nThe campaign rules:\n- Follow accounts ${config.twitter_follow_list} on Twitter\n- Make a retweet of ${config.twitter_retweet_w_comment[0]} with comment (quote) why you like cryptos. Mention at least ${config.twitter_retweet_w_comment[0].min_mentions} friends and use ${config.twitter_retweet_w_comment[0].tag_list} tags.\n- Send me the name (like @adamant_im) or the link to your Twitter profile to verify. Your account ${config.twitterEligibleString}.\n\n&nbsp;\nGo!",
 
 	/** Bot's name for notifications **/
     "bot_name": "Lovely Bounty Bot",
@@ -101,7 +102,20 @@
 			"amount": 0.01
 		}
 	],
-	
+
+	/** Set progressive scale of reward amounts for each cryptocurrency. 
+		`func` is a mathjs.org function. Limit followers with `limit_followers` parameter.
+		If not set for a currency, plain amount is used, which is set in `rewards.amount`.
+	**/
+	"rewards_progression_from_twitter_followers": {
+		"ADM": {
+			"func": "sqrt(followers) * 3",
+			"limit_followers": 5000,
+			"decimals_transfer": 8,
+			"decimals_show": 0
+		}
+	},
+
 	/** Your Twitter API credentials. Get on https://apps.twitter.com/app/new **/
 	"twitter_api": {
 		"consumer_key": "",

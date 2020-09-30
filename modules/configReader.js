@@ -3,6 +3,8 @@ const fs = require('fs');
 const log = require('../helpers/log');
 const keys = require('adamant-api/helpers/keys');
 const isDev = process.argv.includes('dev');
+const mathjs = require('mathjs');
+
 let config = {};
 
 // Validate config fields
@@ -54,6 +56,10 @@ const fields = {
 	rewards: {
 		type: Array,
 		isRequired: true
+	},
+	rewards_progression_from_twitter_followers: {
+		type: Object,
+		default: {}
 	},
 	adamant_campaign: {
 		type: Object,
@@ -121,6 +127,38 @@ try {
 	})
 	.join(' + ');
 
+	// Create reward tickers
+	config.rewards_tickers = config.rewards
+	.map(t => {
+		return `${t.currency}`;
+	})
+	.join(' + ');
+
+	// Create reward ranges
+	config.rewards_range = config.rewards
+	.map(t => {
+		if (config.rewards_progression_from_twitter_followers[t.currency]) {
+
+			let min_followers = 0;
+			if (config.twitter_reqs.min_followers)
+				min_followers = config.twitter_reqs.min_followers;
+			let max_followers = 1000000000;
+			if (config.rewards_progression_from_twitter_followers[t.currency].limit_followers)
+				max_followers = config.rewards_progression_from_twitter_followers[t.currency].limit_followers;
+
+			let f = config.rewards_progression_from_twitter_followers[t.currency].func;	
+			let min_amount = mathjs.evaluate(f, {followers: min_followers});
+			min_amount = +min_amount.toFixed(config.rewards_progression_from_twitter_followers[t.currency].decimals_show);
+			let max_amount = mathjs.evaluate(f, {followers: max_followers});
+			max_amount = +max_amount.toFixed(config.rewards_progression_from_twitter_followers[t.currency].decimals_show);
+
+			return `- from ${min_amount} ${t.currency} to ${max_amount} ${t.currency}`;
+		} else {
+			return `- ${t.amount} ${t.currency}`;	
+		}
+	})
+	.join("\n");
+	
 	// Process help_message as a template literal
 	config.twitter_follow_list = config.twitter_follow.join(', ');
 	config.twitter_retweet_w_comment.forEach(tweet => {
