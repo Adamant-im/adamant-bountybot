@@ -120,7 +120,7 @@ async function getAccountInfo(account) {
     })
     .catch(function (e) {
       log.warn(`Error while making getAccountInfo() request: ${JSON.stringify(e)}`);
-      if (e && e[0] && e[0].code === 50) // [{"code":50,"message":"User not found."}]
+      if (e && e[0] && (e[0].code === 50 || e[0].code === 63)) // [{"code":50,"message":"User not found."}, {"code":63,"message":"User has been suspended."}]
         return e[0] // User can provide wrong Account, process this situation
       else 
         return false;
