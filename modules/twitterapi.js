@@ -244,6 +244,13 @@ module.exports = {
       }
     }
 
+    if (accountInfo.code === 63) { // {"code":63,"message":"User has been suspended."}
+      return {
+        success: false,
+        error: 'user_not_found'
+      }
+    }
+
     if (!accountInfo.id) {
       return {
         success: false,
