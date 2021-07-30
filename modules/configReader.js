@@ -1,6 +1,5 @@
 const jsonminify = require('jsonminify');
 const fs = require('fs');
-const log = require('../helpers/log');
 const keys = require('adamant-api/helpers/keys');
 const isDev = process.argv.includes('dev');
 const mathjs = require('mathjs');
@@ -178,11 +177,11 @@ try {
 	});
 
 } catch (e) {
-	log.error('Error reading config: ' + e);
+	console.error('Error reading config: ' + e);
 }
 
 function exit(msg) {
-	log.error(msg);
+	console.error(msg);
 	process.exit(-1);
 }
 
