@@ -1,6 +1,6 @@
 const Store = require('../../modules/Store');
 const api = require('../../modules/api');
-const log = require('../../helpers/log');
+const log = require('../log');
 const {SAT} = require('../const');
 const User = Store.user.ADM;
 
