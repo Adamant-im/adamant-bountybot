@@ -112,4 +112,4 @@ module.exports = async () => {
 
 setInterval(() => {
 	module.exports();
-}, 15 * 1000);
+}, 8 * 1000);
