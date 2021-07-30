@@ -81,22 +81,24 @@ module.exports = async () => {
                                     msgSendBack += ` Use ${config.twitter_retweet_w_comment[index].tag_list} tags.`;
                                 }
                             }
-                            msgSendBack += ` Example: Meet the ADAMANT blockchain messenger! @elonmusk @cz_binance @FabriLemus7 #privacy #crypto #anonymity #decentralization`;
+                            msgSendBack += ` Example: _Meet the ADAMANT blockchain messenger! @elonmusk @cz_binance @FabriLemus7 #privacy #crypto #anonymity #decentralization_`;
                             msgSendBack += `. Then you apply again.`;
                             break;
                         case ('not_enough_mentions'):
                             msgSendBack = `I see your quote.`;
                             if (minMentions > 0) {
                                 msgSendBack += ` To meet the Bounty campaign rules, it should mention at least ${minMentions} friends.`;
+                                msgSendBack += ` Example: _Meet the ADAMANT blockchain messenger! @elonmusk @cz_binance @FabriLemus7 #privacy #crypto #anonymity #decentralization_`;
                             }
-                            msgSendBack += ` Quote once again.`;
+                            msgSendBack += `. Quote once again.`;
                             break;	
                         case ('no_hashtags'):
                             msgSendBack = `I see your quote.`;
                             if (hashtags.length > 0) {
                                 msgSendBack += ` To meet the Bounty campaign rules, it should include ${config.twitter_retweet_w_comment[index].tag_list} tags.`;
+                                msgSendBack += ` Example: _Meet the ADAMANT blockchain messenger! @elonmusk @cz_binance @FabriLemus7 #privacy #crypto #anonymity #decentralization_`;
                             }
-                            msgSendBack += ` Quote once again.`;
+                            msgSendBack += `. Quote once again.`;
                             break;
                         default:
                             break;

@@ -88,7 +88,7 @@ module.exports = async () => {
 				notifyType = 'info';
 				if (config.notifyRewardReceived)
 					msgNotify = `${config.notifyName} successfully payed the reward of _${outAmount} ${outCurrency}_ to ${userId} with Tx hash _${outTxid}_.`;
-				msgSendBack = 'Thank you for support! Was it great? Share the experience with your friends!';
+				msgSendBack = 'Was it great? Share the experience with your friends!';
 
 				if (outCurrency !== 'ADM') {
 					msgSendBack = `{"type":"${outCurrency}_transaction","amount":"${outAmount}","hash":"${outTxid}","comments":"${msgSendBack}"}`;

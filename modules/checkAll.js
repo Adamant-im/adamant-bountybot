@@ -72,7 +72,7 @@ module.exports = async () => {
                             twitterString += `)`;
                         notify(`${config.notifyName}: User ${userId}${twitterString} completed the Bounty tasks. Payouts are pending.`, 'log');
                     }
-                    msgSendBack = `Thank you! The Bounty tasks are completed! I am sending the reward to you.`;
+                    msgSendBack = `Great, you've completed all the tasks! Reward is coming right now!`;
                     $u.sendAdmMsg(userId, msgSendBack);
                 }
                 

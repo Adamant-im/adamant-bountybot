@@ -49,7 +49,7 @@ module.exports = async () => {
 			const result = await $u[outCurrency].send({
 				address: outAddress,
 				value: outAmount,
-				comment: 'Thank you for support! Was it great? Share the experience with your friends!' // if ADM
+				comment: 'Was it great? Share the experience with your friends!' // if ADM
 			});
 			log.info(`Payout result: ${JSON.stringify(result, 0, 2)}`);
 
