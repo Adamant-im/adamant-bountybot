@@ -9,11 +9,16 @@ module.exports = async () => {
 
     const {usersDb} = db;
 
+    // Called strictly after isTwitterFollowCheckPassed = true to eliminate userDb collisions
 	(await usersDb.find({
         $and: [
 			{isInCheck: true},
             {isTwitterAccountEligible: true},
             {isTwitterRetweetCommentCheckPassed: false},
+			{$or: [
+                {isTwitterFollowCheckPassed: true},
+                {$expr: {$eq: [0, config.twitter_follow.length]}}
+			]},
 			{isTasksCompleted: false},
 			{$or: [
                 {isAdamantCheckPassed: true},
@@ -51,6 +56,13 @@ module.exports = async () => {
 
                 } else {
 
+                    // const friendsExample = ['@elonmusk', '@cz_binance', '@FabriLemus7', '@crypto', '@CryptoWhale'];
+                    // let friendsExampleString = '';
+                    // for (let index = 0; index < friendsExample.length && index < minMentions; index++) {
+                    //     friendsExampleString += friendsExample[index] + ' '
+                    // }
+                    // friendsExampleString = friendsExampleString.trim();
+
                     await user.update({
                         isTwitterRetweetCommentCheckPassed: false,
                         isInCheck: false,
@@ -58,28 +70,33 @@ module.exports = async () => {
                     }, true);
                     switch (retweetResult.error) {
                         case ('no_retweet'):
-                            msgSendBack = `To meet the Bounty campaign rules, you should retweet ${toRetweet} with comment (quote).`;
-                            if (minMentions > 0) {
-                                msgSendBack += ` Mention at least ${minMentions} friends.`;
+                            msgSendBack = `To meet the Bounty campaign rules, you should quote (retweet with comment) ${toRetweet}.`;
+                            if (minMentions > 0 && hashtags.length > 0) {
+                                msgSendBack += ` Mention ${minMentions} friends, and use ${config.twitter_retweet_w_comment[index].tag_list} tags.`;
+                            } else {
+                                if (minMentions > 0) {
+                                    msgSendBack += ` Mention ${minMentions} friends.`;
+                                }
+                                if (hashtags.length > 0) {
+                                    msgSendBack += ` Use ${config.twitter_retweet_w_comment[index].tag_list} tags.`;
+                                }
                             }
-                            if (hashtags.length > 0) {
-                                msgSendBack += ` Use ${config.twitter_retweet_w_comment[index].tag_list} tags.`;
-                            }
-                            msgSendBack += ` Do it and try again.`;
+                            msgSendBack += ` Example: Meet the ADAMANT blockchain messenger! @elonmusk @cz_binance @FabriLemus7 #privacy #crypto #anonymity #decentralization`;
+                            msgSendBack += `. Then you apply again.`;
                             break;
                         case ('not_enough_mentions'):
-                            msgSendBack = `I see your retweet of ${toRetweet}.`;
+                            msgSendBack = `I see your quote.`;
                             if (minMentions > 0) {
-                                msgSendBack += ` To meet the Bounty campaign rules, mention at least ${minMentions} friends.`;
+                                msgSendBack += ` To meet the Bounty campaign rules, it should mention at least ${minMentions} friends.`;
                             }
-                            msgSendBack += ` Do it and try again.`;
+                            msgSendBack += ` Quote once again.`;
                             break;	
                         case ('no_hashtags'):
-                            msgSendBack = `I see your retweet of ${toRetweet}.`;
+                            msgSendBack = `I see your quote.`;
                             if (hashtags.length > 0) {
-                                msgSendBack += ` To meet the Bounty campaign rules, use ${config.twitter_retweet_w_comment[index].tag_list} tags.`;
+                                msgSendBack += ` To meet the Bounty campaign rules, it should include ${config.twitter_retweet_w_comment[index].tag_list} tags.`;
                             }
-                            msgSendBack += ` Do it and try again.`;
+                            msgSendBack += ` Quote once again.`;
                             break;
                         default:
                             break;
@@ -106,4 +123,4 @@ module.exports = async () => {
 if (config.twitter_retweet_w_comment.length > 0)
     setInterval(() => {
         module.exports();
-    }, 15 * 1000);
+    }, 11 * 1000);

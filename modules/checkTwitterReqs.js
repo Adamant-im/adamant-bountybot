@@ -94,4 +94,4 @@ module.exports = async () => {
 if (config.isTwitterCampaign)
     setInterval(() => {
         module.exports();
-    }, 15 * 1000);
+    }, 9 * 1000);

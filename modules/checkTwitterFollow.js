@@ -50,9 +50,9 @@ module.exports = async () => {
                         isInCheck: false,
                         isTasksCompleted: false
 					}, true);
-                    msgSendBack = `To meet the Bounty campaign rules, you should follow Twitter account ${followAccount}. Follow the account and try again.`;
+                    msgSendBack = `To meet the Bounty campaign rules, you should follow Twitter account ${followAccount}. Then you apply again.`;
                     await $u.sendAdmMsg(userId, msgSendBack);
-                    log.info(`User ${userId}.. ${twitterAccount} do NOT follows ${followAccount}. Message to user: ${msgSendBack}`);
+                    log.log(`User ${userId}.. ${twitterAccount} do NOT follows ${followAccount}. Message to user: ${msgSendBack}`);
                     break;
                 }
             }
@@ -71,4 +71,4 @@ module.exports = async () => {
 if (config.twitter_follow.length > 0)
     setInterval(() => {
         module.exports();
-    }, 15 * 1000);
+    }, 10 * 1000);

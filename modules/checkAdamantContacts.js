@@ -18,6 +18,8 @@ const excluded_adm_contacts = [
     "U15423595369615486571", // Adoption and bounty
     "U17636520927910270607", // ADAMANT Contact
     "U6386412615727665758", // ADAMANT Contact
+    "U1835325601873095435", // ADAMANT Foundation Adoption
+    "U380651761819723095", // ADAMANT Foundation Donation
     Store.user.ADM.address // This bot address
 ]
 
@@ -107,4 +109,4 @@ module.exports = async () => {
 if (config.adamant_campaign.min_contacts > 0)
     setInterval(() => {
         module.exports();
-    }, 15 * 1000);
+    }, 8 * 1000);

@@ -84,9 +84,7 @@ module.exports = async (itx, tx) => {
 	await user.save();
 	await itx.update({isProcessed: true}, true);
 
-	// console.log('User info:', user);
-
-	msgSendBack = `I've got your account details. Twitter: ${user.twitterAccount}. I'll check if you've finished the Bounty tasks now..`;
+	msgSendBack = `I've got your account details. Twitter: ${user.twitterAccount}. I'll check if you've finished the Bounty tasks now…`;
 	$u.sendAdmMsg(tx.senderId, msgSendBack);
 
 };

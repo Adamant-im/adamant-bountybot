@@ -152,7 +152,7 @@ try {
 			let max_amount = mathjs.evaluate(f, {followers: max_followers});
 			max_amount = +max_amount.toFixed(config.rewards_progression_from_twitter_followers[t.currency].decimals_show);
 
-			return `- from ${min_amount} ${t.currency} to ${max_amount} ${t.currency}`;
+			return `- from ${min_amount} ${t.currency} (${min_followers} followers) to ${max_amount} ${t.currency} (${max_followers}+ followers)`;
 		} else {
 			return `- ${t.amount} ${t.currency}`;	
 		}
