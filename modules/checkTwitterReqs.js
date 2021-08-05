@@ -35,14 +35,13 @@ module.exports = async () => {
                     userId
                 } = user;
 
-                console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
+                log.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
 
                 let msgSendBack = '';
                 let result, isEligible = true;
                 let twitterAccountIdStr = null;
 
                 result = await twitterapi.checkIfAccountEligible(twitterAccount);
-                // console.log(result);
 
                 if (result.error === 'request_failed') {
                     return; // If request to Twitter API failed, ignore and check next time
@@ -69,7 +68,7 @@ module.exports = async () => {
                 }
 
                 if (isEligible) {
-                    console.log(`User ${userId}… ${twitterAccount} is eligible.`);
+                    log.log(`User ${userId}… ${twitterAccount} is eligible.`);
 
                 } else {
 
@@ -82,7 +81,7 @@ module.exports = async () => {
                         msgSendBack = `To meet the Bounty campaign rules, your Twitter account ${config.twitterEligibleString}.`;
 
                     await $u.sendAdmMsg(userId, msgSendBack);
-                    log.info(`User ${userId}… ${twitterAccount} is NOT eligible. Message to user: ${msgSendBack}`);
+                    log.log(`User ${userId}… ${twitterAccount} is NOT eligible. Message to user: ${msgSendBack}`);
                 }
                 
                 await user.update({

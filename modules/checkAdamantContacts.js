@@ -48,7 +48,7 @@ module.exports = async () => {
                     userId
                 } = user;
 
-                console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
+                log.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
 
                 let msgNotify = '';
                 let msgNotifyType = '';
@@ -83,7 +83,7 @@ module.exports = async () => {
 
                 if (isContactsDone) {
 
-                    console.log(`User ${userId}… did make ${config.adamant_campaign.min_contacts} contacts.`);
+                    log.log(`User ${userId}… did make ${config.adamant_campaign.min_contacts} contacts.`);
                     await user.update({
                         isAdamantCheckPassed: true
                     }, true);
@@ -103,7 +103,7 @@ module.exports = async () => {
                     }
                     
                     await $u.sendAdmMsg(userId, msgSendBack);
-                    log.info(`User ${userId}… did NOT make ${config.adamant_campaign.min_contacts} contacts. Message to user: ${msgSendBack}`);
+                    log.log(`User ${userId}… did NOT make ${config.adamant_campaign.min_contacts} contacts. Message to user: ${msgSendBack}`);
                 }
         
             } catch (e) {

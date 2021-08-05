@@ -41,7 +41,7 @@ module.exports = async () => {
                     userId
                 } = user;
 
-                console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
+                log.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
 
                 let msgNotify = '';
                 let msgNotifyType = '';
@@ -61,7 +61,7 @@ module.exports = async () => {
                     console.log('isRetweeted:', isRetweeted);
 
                     if (isRetweeted) {
-                        console.log(`User ${userId}… ${twitterAccount} did retweet ${toRetweet}.`);
+                        log.log(`User ${userId}… ${twitterAccount} did retweet ${toRetweet}.`);
 
                     } else {
 
@@ -114,7 +114,7 @@ module.exports = async () => {
                         }
 
                         await $u.sendAdmMsg(userId, msgSendBack);
-                        log.info(`User ${userId}… ${twitterAccount} did NOT retweet ${toRetweet}: ${retweetResult.error}. Message to user: ${msgSendBack}`);
+                        log.log(`User ${userId}… ${twitterAccount} did NOT retweet ${toRetweet}: ${retweetResult.error}. Message to user: ${msgSendBack}`);
 
                         break;
                     }

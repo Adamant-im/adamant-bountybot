@@ -15,7 +15,7 @@ module.exports = async (itx, tx) => {
 	user = await usersDb.findOne({twitterAccount: itx.accounts.twitterAccount});
 	if (user && (user.isInCheck || user.isTasksCompleted)) {
 		// This Twitter account is already in use by other user, unable to switch
-		log.info(`User ${user.userId} applied with already used Twitter account ${itx.accounts.twitterAccount}. Notify user and ignore.`);
+		log.warn(`User ${user.userId} applied with already used Twitter account ${itx.accounts.twitterAccount}. Notify user and ignore.`);
 		if (user.userId !== tx.senderId) {
 			msgSendBack = `This Twitter account is already in use by other participant. If it's a mistake, try again in a few minutes.`;
 		} else {
@@ -32,7 +32,7 @@ module.exports = async (itx, tx) => {
 	user = await usersDb.findOne({userId: tx.senderId});
 	if (user) {
 		// User is already was in check earlier, update
-		log.info(`User ${user.userId} applied once again with Twitter account ${itx.accounts.twitterAccount}.`);
+		log.log(`User ${user.userId} applied once again with Twitter account ${itx.accounts.twitterAccount}.`);
 		// May be later
 		// if (user.isBountyPayed) {
 		// 	msgSendBack = `You've already received the Bounty reward. Thanks for your support!`;
@@ -40,7 +40,7 @@ module.exports = async (itx, tx) => {
 		// 	return;
 		// } else 
 		if (user.isTasksCompleted) {
-			log.info(`User ${user.userId} already completed the Bounty tasks. Notify user and ignore.`);
+			log.log(`User ${user.userId} already completed the Bounty tasks. Notify user and ignore.`);
 			msgSendBack = `You've already completed the Bounty tasks.`;
 			$u.sendAdmMsg(tx.senderId, msgSendBack);
 			return;

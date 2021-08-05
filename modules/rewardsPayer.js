@@ -47,13 +47,13 @@ module.exports = async () => {
 					return;
 				}
 
-				log.info(`Attempt number ${pay.trySendCounter} to send the reward payout. Coin: ${outCurrency}, address: ${outAddress}, value: ${outAmount}, balance: ${Store.user[outCurrency].balance}`);
+				log.log(`Attempt number ${pay.trySendCounter} to send the reward payout. Coin: ${outCurrency}, address: ${outAddress}, value: ${outAmount}, balance: ${Store.user[outCurrency].balance}`);
 				const result = await $u[outCurrency].send({
 					address: outAddress,
 					value: outAmount,
 					comment: 'Was it great? Share the experience with your friends!' // if ADM
 				});
-				log.info(`Payout result: ${JSON.stringify(result, 0, 2)}`);
+				log.log(`Payout result: ${JSON.stringify(result, 0, 2)}`);
 
 				if (result.success) {
 

@@ -15,7 +15,7 @@ class erc20 {
 		this.web3 = web3;
 		this.contract = new web3.eth.Contract(abiArray, this.model.sc, {from: this.User.address});
 		$u[token] = this;
-		log.info(`Created ERC-20 token: ${token}`);
+		log.log(`Created ERC-20 token: ${token}`);
 		this.updateBalance();
 	}
 	async updateBalance() {
@@ -68,15 +68,12 @@ class erc20 {
 
 	get FEE() {
 		let inEth = eth.FEE * 2;
-		// console.log(`Fee in eth: ${inEth}`)
 		return inEth
 	}
 
 	get FEEinToken() {
 		let inEth = eth.FEE * 2;
 		let inToken = inEth * Store.mathEqual('ETH', this.token, 1, true).exchangePrice;
-		// console.log(`Fee in eth: ${inEth}`)
-		// console.log(`Fee in token: ${inToken}`)
 		return inToken			
 	}
 

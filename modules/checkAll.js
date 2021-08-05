@@ -33,7 +33,7 @@ module.exports = async () => {
                     twitterLifetimeDays
                 } = user;
 
-                console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
+                log.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
 
                 let msgSendBack = '';
                 
@@ -46,7 +46,6 @@ module.exports = async () => {
                         }, true);
                         config.rewards.forEach(reward => {
                             let amount = reward.amount;
-                            // console.log(config.rewards_progression_from_twitter_followers[reward.currency]);
                             if (config.rewards_progression_from_twitter_followers[reward.currency] && twitterFollowers) {
                                 let followersCount = twitterFollowers;
                                 if (followersCount > config.rewards_progression_from_twitter_followers[reward.currency].limit_followers)
@@ -54,8 +53,6 @@ module.exports = async () => {
                                 let f = config.rewards_progression_from_twitter_followers[reward.currency].func;
                                 amount = mathjs.evaluate(f, {followers: followersCount});
                                 amount = +amount.toFixed(config.rewards_progression_from_twitter_followers[reward.currency].decimals_transfer);
-                                // console.log(amount);
-                                // process.exit(1);
                             }
                             payment = new paymentsDb({
                                 date: $u.unix(),

@@ -36,7 +36,7 @@ module.exports = async () => {
                     userId
                 } = user;
 
-                console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
+                log.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
 
                 let msgNotify = '';
                 let msgNotifyType = '';
@@ -50,7 +50,7 @@ module.exports = async () => {
                     console.log('isFollowing:', isFollowing);
 
                     if (isFollowing) {
-                        console.log(`User ${userId}… ${twitterAccount} do follows ${followAccount}.`);
+                        log.log(`User ${userId}… ${twitterAccount} do follows ${followAccount}.`);
 
                     } else {
 
