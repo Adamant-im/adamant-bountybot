@@ -32,7 +32,7 @@ module.exports = async (itx, tx) => {
 	user = await usersDb.findOne({userId: tx.senderId});
 	if (user) {
 		// User is already was in check earlier, update
-		log.info(`User ${user.userId} applied once again.`);
+		log.info(`User ${user.userId} applied once again with Twitter account ${itx.accounts.twitterAccount}.`);
 		// May be later
 		// if (user.isBountyPayed) {
 		// 	msgSendBack = `You've already received the Bounty reward. Thanks for your support!`;
@@ -62,6 +62,7 @@ module.exports = async (itx, tx) => {
 
 	} else {
 		// First time user, create new
+		log.info(`User ${tx.senderId} applied for a first time with Twitter account ${itx.accounts.twitterAccount}.`);
 		user = new usersDb({
 			_id: tx.senderId,
 			userId: tx.senderId,

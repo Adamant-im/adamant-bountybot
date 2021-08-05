@@ -8,7 +8,7 @@ const twitterapi = require('./twitterapi');
 module.exports = async (cmd, tx, itx) => {
 
 	if (itx.isProcessed) return;
-	log.info('Got new command Tx to process: ' + cmd);
+	log.info(`Got new command Tx to process: ${cmd} from ${tx.senderId}`);
 	try {
 		let res = [];
 		const group = cmd

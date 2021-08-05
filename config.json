@@ -51,7 +51,7 @@
 		${config.twitter_retweet_w_comment[0].min_mentions}, ${config.twitter_retweet_w_comment[0].tag_list},
 		${config.twitterEligibleString}
 		**/
-	"help_message": "Earn **${config.rewards_tickers}** with your social activity! A reward depends on how much Twitter followers you have. Your account ${config.twitterEligibleString}.\n${config.rewards_range}\n\n&nbsp;\nThe campaign rules:\n- Follow account ${config.twitter_follow_list} on Twitter\n- Like & quote ${config.twitter_retweet_w_comment[0].tweet}, mentioning ${config.twitter_retweet_w_comment[0].min_mentions} friends and ${config.twitter_retweet_w_comment[0].tag_list} tags.\n- Invite ${config.adamant_campaign.min_contacts} friend in ADAMANT Messenger. They must write you.\n- Send me the name (like @adamant_im) or the link to your Twitter profile to verify.\n\n&nbsp;\nGo!",
+	"help_message": "Earn **${config.rewards_tickers}** with your social activity! A reward depends on how much Twitter followers you have. Your account ${config.twitterEligibleString}.\n${config.rewards_range}\n\n&nbsp;\nThe campaign rules:\n- Follow account ${config.twitter_follow_list} on Twitter\n- Like & quote ${config.twitter_retweet_w_comment[0].tweet}, mentioning ${config.twitter_retweet_w_comment[0].min_mentions} friends and ${config.twitter_retweet_w_comment[0].tag_list} tags.\n- Invite ${config.adamant_campaign.min_contacts} friend in ADAMANT Messenger. They must message you.\n- Send me the name (like @adamant_im) or the link to your Twitter profile to verify.\n\n&nbsp;\nGo!",
 
 	/** Bot's name for notifications **/
 	"bot_name": "Lovely Bounty Bot",
