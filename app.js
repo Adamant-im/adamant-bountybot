@@ -27,7 +27,7 @@ function init() {
 	try {
 
 		if (doClearDB) {
-			console.log('Clearing database..');
+			console.log('Clearing database…');
 			db.systemDb.db.drop();
 			db.incomingTxsDb.db.drop();
 			db.usersDb.db.drop();

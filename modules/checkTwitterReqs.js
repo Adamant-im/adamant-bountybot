@@ -5,89 +5,102 @@ const log = require('../helpers/log');
 const notify = require('../helpers/notify');
 const twitterapi = require('./twitterapi');
 
+let inProcess = false;
+
 module.exports = async () => {
 
-    const {usersDb} = db;
+    if (inProcess) return;
+    inProcess = true;
 
-	(await usersDb.find({
-        $and: [
-			{isInCheck: true},
-			{isTwitterAccountEligible: false},
-			{isTasksCompleted: false},
-			{$or: [
-                {isAdamantCheckPassed: true},
-                {$expr: {$eq: [0, config.adamant_campaign.min_contacts]}}
-			]}
-		]
-	})).forEach(async user => {
-		try {
-            const {
-                twitterAccount,
-                userId
-            } = user;
+    try {
 
-            console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}..`);
+        const {usersDb} = db;
 
-            let msgSendBack = '';
-            let result, isEligible = true;
-            let twitterAccountIdStr = null;
+        const users = await usersDb.find({
+            $and: [
+                {isInCheck: true},
+                {isTwitterAccountEligible: false},
+                {isTasksCompleted: false},
+                {$or: [
+                    {isAdamantCheckPassed: true},
+                    {$expr: {$eq: [0, config.adamant_campaign.min_contacts]}}
+                ]}
+            ]
+        });
+        
+        for (const user of users) {
+            try {
+                const {
+                    twitterAccount,
+                    userId
+                } = user;
 
-            result = await twitterapi.checkIfAccountEligible(twitterAccount);
-            // console.log(result);
+                console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
 
-            if (result.error === 'request_failed') {
-                return; // If request to Twitter API failed, ignore and check next time
-            }
+                let msgSendBack = '';
+                let result, isEligible = true;
+                let twitterAccountIdStr = null;
 
-            if (result.error === 'user_not_found') {
-                msgSendBack = `It seems Twitter account ${twitterAccount} does not exist. Please re-check and try again.`
-            } else {
-                // Check if this user already participated in Bounty campaign.
-                // He may change Twitter's AccountName (screen name) to cheat, but Id will be the same
-                twitterAccountIdStr = result.accountInfo.id_str;
-                let userDuplicate = await usersDb.findOne({twitterAccountId: twitterAccountIdStr});
-                if (userDuplicate && (userDuplicate.twitterAccount !== twitterAccount) && (userDuplicate.isInCheck || userDuplicate.isTasksCompleted)) {
-                    // This user changed his AccountName (screen name)
-                    isEligible = false;
-                    msgSendBack = `This Twitter account is already in use by other participant with other account name: ${userDuplicate.twitterAccount}. Cheating detected. If it's a mistake, try again in a few minutes.`;
+                result = await twitterapi.checkIfAccountEligible(twitterAccount);
+                // console.log(result);
+
+                if (result.error === 'request_failed') {
+                    return; // If request to Twitter API failed, ignore and check next time
                 }
-            }
 
-            if (config.doCheckTwitterReqs) {
-                isEligible = isEligible && result.success;
-            } else {
-                isEligible = isEligible && true;
-            }
+                if (result.error === 'user_not_found') {
+                    msgSendBack = `It seems Twitter account ${twitterAccount} does not exist. Please re-check and try again.`
+                } else {
+                    // Check if this user already participated in Bounty campaign.
+                    // He may change Twitter's AccountName (screen name) to cheat, but Id will be the same
+                    twitterAccountIdStr = result.accountInfo.id_str;
+                    let userDuplicate = await usersDb.findOne({twitterAccountId: twitterAccountIdStr});
+                    if (userDuplicate && (userDuplicate.twitterAccount !== twitterAccount) && (userDuplicate.isInCheck || userDuplicate.isTasksCompleted)) {
+                        // This user changed his AccountName (screen name)
+                        isEligible = false;
+                        msgSendBack = `This Twitter account is already in use by other participant with other account name: ${userDuplicate.twitterAccount}. Cheating detected. If it's a mistake, try again in a few minutes.`;
+                    }
+                }
 
-            if (isEligible) {
-                console.log(`User ${userId}.. ${twitterAccount} is eligible.`);
+                if (config.doCheckTwitterReqs) {
+                    isEligible = isEligible && result.success;
+                } else {
+                    isEligible = isEligible && true;
+                }
 
-            } else {
+                if (isEligible) {
+                    console.log(`User ${userId}… ${twitterAccount} is eligible.`);
 
+                } else {
+
+                    await user.update({
+                        isInCheck: false,
+                        isTasksCompleted: false
+                    }, true);
+
+                    if (msgSendBack === '')
+                        msgSendBack = `To meet the Bounty campaign rules, your Twitter account ${config.twitterEligibleString}.`;
+
+                    await $u.sendAdmMsg(userId, msgSendBack);
+                    log.info(`User ${userId}… ${twitterAccount} is NOT eligible. Message to user: ${msgSendBack}`);
+                }
+                
                 await user.update({
-                    isInCheck: false,
-                    isTasksCompleted: false
+                    isTwitterAccountEligible: isEligible,
+                    twitterAccountId: twitterAccountIdStr,
+                    twitterLifetimeDays: result.lifetimeDays,
+                    twitterFollowers: result.followers
                 }, true);
-
-                if (msgSendBack === '')
-                    msgSendBack = `To meet the Bounty campaign rules, your Twitter account ${config.twitterEligibleString}.`;
-
-                await $u.sendAdmMsg(userId, msgSendBack);
-                log.info(`User ${userId}.. ${twitterAccount} is NOT eligible. Message to user: ${msgSendBack}`);
+        
+            } catch (e) {
+                log.error(`Error in ${$u.getModuleName(module.id)} module: ${e}`);
             }
             
-            await user.update({
-                isTwitterAccountEligible: isEligible,
-                twitterAccountId: twitterAccountIdStr,
-                twitterLifetimeDays: result.lifetimeDays,
-                twitterFollowers: result.followers
-            }, true);
-    
-		} catch (e) {
-			log.error(`Error in ${$u.getModuleName(module.id)} module: ${e}`);
-        }
-        
-	});
+        };
+
+    } finally {
+        inProcess = false;        
+    }
 
 };
 

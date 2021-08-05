@@ -31,7 +31,7 @@ let toFollowIds = {};
 
 async function getAccountFollowerIds(account) {
   const accountSN = $u.getTwitterScreenName(account);
-  console.log(`Getting followers for @${accountSN}..`)
+  console.log(`Getting followers for @${accountSN}…`)
 
   var ids = [];
   return new Promise((resolve, reject) => {
@@ -61,7 +61,7 @@ async function getAccountFollowerIds(account) {
 
 async function getAccountFriendIds(account) {
   const accountSN = $u.getTwitterScreenName(account);
-  console.log(`Getting friends for @${accountSN}..`)
+  console.log(`Getting friends for @${accountSN}…`)
 
   var ids = [];
   return new Promise((resolve, reject) => {
@@ -91,7 +91,7 @@ async function getAccountFriendIds(account) {
 
 async function getAccountTimeline(account) {
   const accountSN = $u.getTwitterScreenName(account);
-  console.log(`Getting timeline for @${accountSN}..`)
+  console.log(`Getting timeline for @${accountSN}…`)
 
   return await Twitter.get('statuses/user_timeline', {screen_name: accountSN, count: 10, trim_user: true, tweet_mode: 'extended'})
     .then(function (data) {
@@ -110,7 +110,7 @@ async function getAccountTimeline(account) {
 
 async function getAccountInfo(account) {
   const accountSN = $u.getTwitterScreenName(account);
-  // console.log(`Getting user info for @${accountSN}..`)
+  // console.log(`Getting user info for @${accountSN}…`)
 
   return await Twitter.get('users/show', {screen_name: accountSN})
     .then(function (data) {
@@ -169,7 +169,7 @@ module.exports = {
 
     const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
     const followAccountSN = $u.getTwitterScreenName(followAccount);
-    console.log(`Checking if @${twitterAccountSN} follows @${followAccountSN}..`);
+    console.log(`Checking if @${twitterAccountSN} follows @${followAccountSN}…`);
 
     let followers = await getAccountFriendIds(twitterAccountSN);
     // console.log(followers);    
@@ -181,7 +181,7 @@ module.exports = {
     const tweetId = $u.getTweetIdFromLink(tweet);
     hashtags = $u.getTwitterHashtags(hashtags);
     // console.log(tweetId);
-    console.log(`Checking if @${twitterAccountSN} retweeted ${tweet}..`)
+    console.log(`Checking if @${twitterAccountSN} retweeted ${tweet}…`)
 
     let tweets = await getAccountTimeline(twitterAccountSN);
     let retweet = {};
@@ -225,7 +225,7 @@ module.exports = {
   async checkIfAccountEligible(twitterAccount) {
 
     const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
-    console.log(`Checking if @${twitterAccountSN} eligible..`)
+    console.log(`Checking if @${twitterAccountSN} eligible…`)
 
     let accountInfo = await getAccountInfo(twitterAccountSN);
     // console.log(accountInfo);

@@ -5,7 +5,7 @@ const log = require('../helpers/log');
 
 module.exports = async (itx, tx) => {
 
-	console.log(`Running module ${$u.getModuleName(module.id)}..`);
+	console.log(`Running module ${$u.getModuleName(module.id)}…`);
 	
 	const {usersDb} = db;
 	let user = {};
