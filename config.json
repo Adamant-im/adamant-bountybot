@@ -129,9 +129,6 @@
   **/
   "twitter_api_test_interval": 600,
   /** ADAMANT accounts to accept control commands from. Control commands from other accounts will not be executed. **/
-  "admin_accounts": [
-    "U1123..."
-  ],
   /** Notify non-admins that they are not admins. If false, bot will be silent. **/
   "notify_non_admins": true,
   /** ADAMANT address for notifications and monitoring (if needed, recommended) **/
@@ -144,7 +141,7 @@
   "notifyRewardReceived": true,
   /** Port for getting debug info.
       Do not set for live exchange bots, use only for debugging.
-      Allows to get DBs records like http://ip:port/db?tb=incomingTxsDb
+      Allows to get DBs records like http://ip:port/db?tb=IncomingTxs
   **/
   "api": false,
   /** The software will use verbosity according to log_level.
