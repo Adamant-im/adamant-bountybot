@@ -1,6 +1,8 @@
 const db = require('./DB');
 const config = require('./configReader');
 const $u = require('../helpers/utils');
+const helpers = require('../helpers');
+const api = require('./api');
 const Store = require('./Store');
 const log = require('../helpers/log');
 const notify = require('../helpers/notify');
@@ -42,7 +44,7 @@ module.exports = async () => {
           isPayed: false,
         }, true);
         notify(`${config.notifyName} notifies about insufficient balance to send a reward of _${outAmount}_ _${outCurrency}_. Balance of _${outCurrency}_ is _${Store.user[outCurrency].balance}_. ${etherString}User ADAMANT id: ${userId}.`, 'error');
-        $u.sendAdmMsg(userId, `I can’t transfer a reward of _${outAmount}_ _${outCurrency}_ to you because of insufficient funds (I count blockchain fees also). I have already notified my master.`);
+        await api.sendMessage(config.passPhrase, userId, `I can’t transfer a reward of _${outAmount}_ _${outCurrency}_ to you because of insufficient funds (I count blockchain fees also). I have already notified my master.`);
         return;
       }
 
@@ -80,10 +82,10 @@ module.exports = async () => {
           isPayed: false,
         }, true);
         notify(`${config.notifyName} cannot make transaction to payout a reward of _${outAmount}_ _${outCurrency}_. Balance of _${outCurrency}_ is _${Store.user[outCurrency].balance}_. ${etherString}User ADAMANT id: ${userId}.`, 'error');
-        $u.sendAdmMsg(userId, `I’ve tried to make a reward payout of _${outAmount}_ _${outCurrency}_ to you, but something went wrong. I have already notified my master.`);
+        await api.sendMessage(config.passPhrase, userId, `I’ve tried to make a reward payout of _${outAmount}_ _${outCurrency}_ to you, but something went wrong. I have already notified my master.`);
       }
     } catch (e) {
-      log.error(`Error in ${$u.getModuleName(module.id)} module: ${e.toString()}`);
+      log.error(`Error in ${helpers.getModuleName(module.id)} module: ${e.toString()}`);
     }
   });
 };

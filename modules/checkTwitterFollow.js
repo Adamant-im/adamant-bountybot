@@ -1,6 +1,7 @@
 const db = require('./DB');
 const config = require('./configReader');
-const $u = require('../helpers/utils');
+const api = require('./api');
+const helpers = require('../helpers');
 const log = require('../helpers/log');
 const twitterapi = require('./twitterapi');
 
@@ -33,7 +34,7 @@ module.exports = async () => {
           userId,
         } = user;
 
-        log.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
+        log.log(`Running module ${helpers.getModuleName(module.id)} for user ${userId}…`);
 
         let msgSendBack = '';
 
@@ -53,7 +54,7 @@ module.exports = async () => {
               isTasksCompleted: false,
             }, true);
             msgSendBack = `To meet the Bounty campaign rules, you should follow Twitter account ${followAccount}. Then you apply again.`;
-            await $u.sendAdmMsg(userId, msgSendBack);
+            await api.sendMessage(config.passPhrase, userId, msgSendBack);
             log.log(`User ${userId}… ${twitterAccount} do NOT follows ${followAccount}. Message to user: ${msgSendBack}`);
             break;
           }
@@ -62,7 +63,7 @@ module.exports = async () => {
           isTwitterFollowCheckPassed: isFollowing,
         }, true);
       } catch (e) {
-        log.error(`Error in ${$u.getModuleName(module.id)} module: ${e}`);
+        log.error(`Error in ${helpers.getModuleName(module.id)} module: ${e}`);
       }
     }
   } finally {

@@ -1,5 +1,5 @@
 const {SAT} = require('../helpers/const');
-const $u = require('../helpers/utils');
+const api = require('./api');
 const notify = require('../helpers/notify');
 const config = require('./configReader');
 
@@ -38,5 +38,5 @@ module.exports = async (itx, tx) => {
   await itx.update({isProcessed: true}, true);
 
   notify(msgNotify, notifyType);
-  $u.sendAdmMsg(tx.senderId, msgSendBack);
+  await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack);
 };

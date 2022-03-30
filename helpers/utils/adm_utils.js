@@ -1,6 +1,8 @@
 const Store = require('../../modules/Store');
 const api = require('../../modules/api');
 const log = require('../log');
+const config = require('../../modules/configReader');
+const helpers = require('../../helpers');
 const {SAT} = require('../const');
 const User = Store.user.ADM;
 
@@ -17,53 +19,48 @@ module.exports = {
       amount: +(tx.amount / SAT).toFixed(8),
     };
   },
-  async getLastBlockNumber() {
-    try {
-      return (await api.get('uri', 'blocks?limit=1')).blocks[0].height;
-    } catch (e) {
-      return null;
+  async getLastBlock() {
+    const blocks = await api.get('blocks', {limit: 1});
+    if (blocks.success) {
+      return blocks.data.blocks[0].height;
+    } else {
+      log.warn(`Failed to get last block in getLastBlock() of ${helpers.getModuleName()} module. ${blocks.errorMessage}.`);
     }
   },
-  async getTransactionStatus(txid) {
-    try {
-      const tx = (await api.get('uri', 'transactions/get?id=' + txid)).transaction;
+  async getTransactionStatus(txId) {
+    const tx = await api.get('transactions/get', {id: txId});
+    if (tx.success) {
       return {
         blockNumber: tx.height,
         status: true,
       };
-    } catch (e) {
-      return null;
+    } else {
+      log.warn(`Failed to get Tx ${txId} in getTransactionStatus() of ${helpers.getModuleName()} module. ${tx.errorMessage}.`);
     }
   },
   async send(params) {
-    try {
-      const {address, value, comment} = params;
-      log.log(`Sending ${value} ADM with comment: ${comment}`);
-      let res;
-      if (comment) {
-        res = api.send(User.passPhrase, address, comment, 'message', null, value);
-      } else {
-        res = api.send(User.passPhrase, address, value, null, comment);
-      }
-
-      if (!res) {
-        return {
-          success: false,
-        };
-      }
+    const {address, value, comment} = params;
+    const payment = await api.sendMessage(config.passPhrase, address, comment, 'basic', value);
+    if (payment.success) {
+      log.log(`Successfully sent ${value} ADM to ${address} with comment '${comment}', Tx hash: ${payment.data.transactionId}.`);
       return {
-        success: res.success,
-        hash: res.transactionId,
+        success: payment.data.success,
+        hash: payment.data.transactionId,
       };
-    } catch (e) {
-      log.error('Error while sending ADM in Utils module: ' + e);
+    } else {
+      log.warn(`Failed to send ${value} ADM to ${address} with comment ${comment} in send() of ${helpers.getModuleName()} module. ${payment.errorMessage}.`);
+      return {
+        success: false,
+        error: payment.errorMessage,
+      };
     }
   },
   async updateBalance() {
-    try {
-      User.balance = (await api.get('uri', 'accounts?address=' + User.address)).account.balance / SAT;
-    } catch (e) {
-      log.error('Error while getting ADM balance in Utils module: ' + e);
+    const account = await api.get('accounts', {address: config.address});
+    if (account.success) {
+      User.balance = account.data.account.balance / SAT;
+    } else {
+      log.warn(`Failed to get account info in updateBalance() of ${helpers.getModuleName()} module. ${account.errorMessage}.`);
     }
   },
 };

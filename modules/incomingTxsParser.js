@@ -2,6 +2,7 @@ const db = require('./DB');
 const log = require('../helpers/log');
 const $u = require('../helpers/utils');
 const api = require('./api');
+const helpers = require('./../helpers');
 const config = require('./configReader');
 const commandTxs = require('./commandTxs');
 const unknownTxs = require('./unknownTxs');
@@ -54,13 +55,13 @@ module.exports = async (tx) => {
   const spamerIsNotyfy = await IncomingTxsDb.findOne({
     sender: tx.senderId,
     isSpam: true,
-    date: {$gt: ($u.unix() - 24 * 3600 * 1000)}, // last 24h
+    date: {$gt: (helpers.unix() - 24 * 3600 * 1000)}, // last 24h
   });
 
   const itx = new IncomingTxsDb({
     _id: tx.id,
     txid: tx.id,
-    date: $u.unix(),
+    date: helpers.unix(),
     block_id: tx.blockId,
     encrypted_content: msg,
     accounts: accounts,
@@ -73,7 +74,7 @@ module.exports = async (tx) => {
 
   const countRequestsUser = (await IncomingTxsDb.find({
     sender: tx.senderId,
-    date: {$gt: ($u.unix() - 24 * 3600 * 1000)}, // last 24h
+    date: {$gt: (helpers.unix() - 24 * 3600 * 1000)}, // last 24h
   })).length;
 
   if (countRequestsUser > 50 || spamerIsNotyfy) { // 50 per 24h is a limit for accepting commands, otherwise user will be considered as spammer
@@ -87,11 +88,11 @@ module.exports = async (tx) => {
   if (historyTxs[tx.id]) {
     return;
   }
-  historyTxs[tx.id] = $u.unix();
+  historyTxs[tx.id] = helpers.unix();
 
   if (itx.isSpam && !spamerIsNotyfy) {
     notify(`${config.notifyName} notifies _${tx.senderId}_ is a spammer or talks too much. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`, 'warn');
-    $u.sendAdmMsg(tx.senderId, `I’ve _banned_ you. You’ve sent too much transactions to me.`);
+    await api.sendMessage(config.passPhrase, tx.senderId, `I’ve _banned_ you. You’ve sent too much transactions to me.`);
     return;
   }
 

@@ -16,6 +16,14 @@ const fields = {
     type: Array,
     isRequired: true,
   },
+  node_LSK: {
+    type: Array,
+    isRequired: true,
+  },
+  service_LSK: {
+    type: Array,
+    isRequired: true,
+  },
   infoservice: {
     type: Array,
     default: ['https://info.adamant.im'],
@@ -91,6 +99,10 @@ const fields = {
   help_message: {
     type: String,
     default: 'I have nothing to say. If you are my master, check my config.',
+  },
+  log_level: {
+    type: String,
+    default: 'log',
   },
 };
 

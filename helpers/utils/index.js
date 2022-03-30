@@ -3,94 +3,24 @@ const config = require('../../modules/configReader');
 const eth_utils = require('./eth_utils');
 const adm_utils = require('./adm_utils');
 const log = require('../log');
-const db = require('../../modules/DB');
 const Store = require('../../modules/Store');
-const constants = require('../const');
+const helpers = require('../../helpers');
 
 module.exports = {
-  unix() {
-    return new Date().getTime();
-  },
-  /**
-     * Converts provided `time` to ADAMANTS's epoch timestamp: in seconds starting from Sep 02 2017 17:00:00 GMT+0000
-     * @param {number=} time timestamp to convert
-     * @return {number}
-     */
-  epochTime(time) {
-    if (!time) {
-      time = Date.now();
-    }
-    return Math.floor((time - constants.EPOCH) / 1000);
-  },
-  /**
-     * Converts ADM epoch timestamp to a Unix timestamp
-     * @param {number} epochTime timestamp to convert
-     * @return {number}
-     */
-  toTimestamp(epochTime) {
-    return epochTime * 1000 + constants.EPOCH;
-  },
-  sendAdmMsg(address, msg, type = 'message') {
-    if (msg && !config.isDev) {
-      try {
-        return api.send(config.passPhrase, address, msg, type).success || false;
-      } catch (e) {
-        return false;
-      }
-    }
-  },
-  thousandSeparator(num, doBold) {
-    const parts = (num + '').split('.');
-    const main = parts[0];
-    const len = main.length;
-    let output = '';
-    let i = len - 1;
-
-    while (i >= 0) {
-      output = main.charAt(i) + output;
-      if ((len - i) % 3 === 0 && i > 0) {
-        output = ' ' + output;
-      }
-      --i;
-    }
-
-    if (parts.length > 1) {
-      if (doBold) {
-        output = `**${output}**.${parts[1]}`;
-      } else {
-        output = `${output}.${parts[1]}`;
-      }
-    }
-    return output;
-  },
   async getAddressCryptoFromAdmAddressADM(coin, admAddress) {
-    try {
-      if (this.isERC20(coin)) {
-        coin = 'ETH';
-      }
-      const resp = await api.syncGet(`/api/states/get?senderId=${admAddress}&key=${coin.toLowerCase()}:address`);
-      if (resp && resp.success) {
-        if (resp.transactions.length) {
-          return resp.transactions[0].asset.state.value;
-        } else {
-          return 'none';
-        }
-      }
-    } catch (e) {
-      log.error(' in getAddressCryptoFromAdmAddressADM(): ' + e);
-      return null;
+    if (this.isERC20(coin)) {
+      coin = 'ETH';
     }
-  },
-  async userDailyValue(senderId) {
-    return (await db.PaymentsDb.find({
-      transactionIsValid: true,
-      senderId: senderId,
-      needToSendBack: false,
-      inAmountMessageUsd: {$ne: null},
-      date: {$gt: (this.unix() - 24 * 3600 * 1000)}, // last 24h
-    })).reduce((r, c) => {
-      return +r + +c.inAmountMessageUsd;
-    }, 0);
+    const res = await api.get('states/get', {senderId: admAddress, key: coin.toLowerCase() + ':address'});
+    if (res.success) {
+      if (res.data.transactions.length) {
+        return res.data.transactions[0].asset.state.value;
+      } else {
+        return 'none';
+      }
+    } else {
+      log.warn(`Failed to get ${coin} address for ${admAddress} from KVS in getAddressCryptoFromAdmAddressADM() of ${helpers.getModuleName()} module. ${res.errorMessage}.`);
+    }
   },
   async updateAllBalances() {
     try {
@@ -103,8 +33,8 @@ module.exports = {
   },
   async getLastBlocksNumbers() {
     const data = {
-      ETH: await this.ETH.getLastBlockNumber(),
-      ADM: await this.ADM.getLastBlockNumber(),
+      ETH: await this.ETH.getLastBlock(),
+      ADM: await this.ADM.getLastBlock(),
     };
     for (const t of config.erc20) {
       // data[t] = await this[t].getLastBlockNumber(); // Don't do unnecessary requests
@@ -130,11 +60,6 @@ module.exports = {
   },
   isERC20(coin) {
     return config.erc20.includes(coin.toUpperCase());
-  },
-  isArraysEqual(array1, array2) {
-    return array1.length === array2.length && array1.sort().every(function(value, index) {
-      return value === array2.sort()[index];
-    });
   },
   getAccounts(message) {
     const userAccounts = {};
@@ -212,17 +137,6 @@ module.exports = {
       tags[i] = this.trimChar(tags[i], '#');
     }
     return tags;
-  },
-  getModuleName(id) {
-    let n = id.lastIndexOf('\\');
-    if (n === -1) {
-      n = id.lastIndexOf('/');
-    }
-    if (n === -1) {
-      return '';
-    } else {
-      return id.substring(n + 1);
-    }
   },
   ETH: eth_utils,
   ADM: adm_utils,

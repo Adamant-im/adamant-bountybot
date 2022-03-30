@@ -1,5 +1,7 @@
 const log = require('../helpers/log');
 const $u = require('../helpers/utils');
+const helpers = require('../helpers');
+const api = require('./api');
 const notify = require('../helpers/notify');
 const config = require('./configReader');
 const db = require('./DB');
@@ -34,7 +36,7 @@ module.exports = async () => {
           msgSendBack = `I can’t get your _${pay.outCurrency}_ address from ADAMANT KVS to pay a reward. Make sure you use ADAMANT wallet with _${pay.outCurrency}_ enabled. I have already notified my master.`;
           notify(msgNotify, 'error');
           let tx;
-          $u.sendAdmMsg(tx.userId, msgSendBack);
+          await api.sendMessage(config.passPhrase, tx.userId, msgSendBack);
         }
       } else {
         pay.update({
@@ -44,7 +46,7 @@ module.exports = async () => {
 
       await pay.save();
     } catch (e) {
-      log.error(`Error in ${$u.getModuleName(module.id)} module: ${e}`);
+      log.error(`Error in ${helpers.getModuleName(module.id)} module: ${e}`);
     }
   });
 };
