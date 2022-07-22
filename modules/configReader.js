@@ -1,6 +1,6 @@
 const jsonminify = require('jsonminify');
 const fs = require('fs');
-const keys = require('adamant-api/helpers/keys');
+const keys = require('adamant-api/src/helpers/keys');
 const isDev = process.argv.includes('dev');
 const mathjs = require('mathjs');
 
@@ -115,7 +115,7 @@ try {
 
   let keysPair;
   try {
-    keysPair = keys.createKeypairFromPassPhrase(config.passphrase);
+    keysPair = keys.createKeypairFromPassPhrase(config.passPhrase);
   } catch (e) {
     exit('Passphrase is not valid! Error: ' + e);
   }

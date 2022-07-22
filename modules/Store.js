@@ -1,6 +1,6 @@
 const db = require('./DB');
 const log = require('../helpers/log');
-const keys = require('adamant-api/helpers/keys');
+const keys = require('adamant-api/src/helpers/keys');
 const api = require('./api');
 const axios = require('axios');
 const helpers = require('../helpers');
@@ -45,7 +45,7 @@ module.exports = {
     if (blocks.success) {
       this.updateSystem('lastBlock', blocks.data.blocks[0]);
     } else {
-      log.warn(`Failed to get last block in updateLastBlock() of ${helpers.getModuleName()} module. ${blocks.errorMessage}.`);
+      log.warn(`Failed to get last block in updateLastBlock() of ${helpers.getModuleName(module.id)} module. ${blocks.errorMessage}.`);
     }
   },
   async updateCurrencies() {
@@ -57,11 +57,11 @@ module.exports = {
         if (data) {
           this.currencies = data;
         } else {
-          log.warn(`Error in updateCurrencies() of ${helpers.getModuleName()} module: Request to ${url} returned empty result.`);
+          log.warn(`Error in updateCurrencies() of ${helpers.getModuleName(module.id)} module: Request to ${url} returned empty result.`);
         }
       }
     } catch (error) {
-      log.warn(`Error in updateCurrencies() of ${helpers.getModuleName()} module: Request to ${url} failed with ${error.response ? error.response.status : undefined} status code, ${error.toString()}${error.response && error.response.data ? '. Message: ' + error.response.data.toString().trim() : ''}.`);
+      log.warn(`Error in updateCurrencies() of ${helpers.getModuleName(module.id)} module: Request to ${url} failed with ${error.response ? error.response.status : undefined} status code, ${error.toString()}${error.response && error.response.data ? '. Message: ' + error.response.data.toString().trim() : ''}.`);
     }
   },
   getPrice(from, to) {

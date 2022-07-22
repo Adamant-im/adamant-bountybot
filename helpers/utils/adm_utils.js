@@ -24,18 +24,18 @@ module.exports = {
     if (blocks.success) {
       return blocks.data.blocks[0].height;
     } else {
-      log.warn(`Failed to get last block in getLastBlock() of ${helpers.getModuleName()} module. ${blocks.errorMessage}.`);
+      log.warn(`Failed to get last block in getLastBlock() of ${helpers.getModuleName(module.id)} module. ${blocks.errorMessage}.`);
     }
   },
   async getTransactionStatus(txId) {
     const tx = await api.get('transactions/get', {id: txId});
     if (tx.success) {
       return {
-        blockNumber: tx.height,
+        blockNumber: tx.data.transaction.height,
         status: true,
       };
     } else {
-      log.warn(`Failed to get Tx ${txId} in getTransactionStatus() of ${helpers.getModuleName()} module. ${tx.errorMessage}.`);
+      log.warn(`Failed to get Tx ${txId} in getTransactionStatus() of ${helpers.getModuleName(module.id)} module. ${tx.errorMessage}.`);
     }
   },
   async send(params) {
@@ -48,7 +48,7 @@ module.exports = {
         hash: payment.data.transactionId,
       };
     } else {
-      log.warn(`Failed to send ${value} ADM to ${address} with comment ${comment} in send() of ${helpers.getModuleName()} module. ${payment.errorMessage}.`);
+      log.warn(`Failed to send ${value} ADM to ${address} with comment ${comment} in send() of ${helpers.getModuleName(module.id)} module. ${payment.errorMessage}.`);
       return {
         success: false,
         error: payment.errorMessage,
@@ -60,7 +60,7 @@ module.exports = {
     if (account.success) {
       User.balance = account.data.account.balance / SAT;
     } else {
-      log.warn(`Failed to get account info in updateBalance() of ${helpers.getModuleName()} module. ${account.errorMessage}.`);
+      log.warn(`Failed to get account info in updateBalance() of ${helpers.getModuleName(module.id)} module. ${account.errorMessage}.`);
     }
   },
 };

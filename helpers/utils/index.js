@@ -19,7 +19,7 @@ module.exports = {
         return 'none';
       }
     } else {
-      log.warn(`Failed to get ${coin} address for ${admAddress} from KVS in getAddressCryptoFromAdmAddressADM() of ${helpers.getModuleName()} module. ${res.errorMessage}.`);
+      log.warn(`Failed to get ${coin} address for ${admAddress} from KVS in getAddressCryptoFromAdmAddressADM() of ${helpers.getModuleName(module.id)} module. ${res.errorMessage}.`);
     }
   },
   async updateAllBalances() {
