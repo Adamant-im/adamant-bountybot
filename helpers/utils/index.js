@@ -2,6 +2,7 @@ const api = require('../../modules/api');
 const config = require('../../modules/configReader');
 const eth_utils = require('./eth_utils');
 const adm_utils = require('./adm_utils');
+const LskCoin = require('./lsk_utils');
 const log = require('../log');
 const Store = require('../../modules/Store');
 const helpers = require('../../helpers');
@@ -35,6 +36,7 @@ module.exports = {
     const data = {
       ETH: await this.ETH.getLastBlock(),
       ADM: await this.ADM.getLastBlock(),
+      LSK: await this.LSK.getLastBlockHeight(),
     };
     for (const t of config.erc20) {
       // data[t] = await this[t].getLastBlockNumber(); // Don't do unnecessary requests
@@ -140,4 +142,5 @@ module.exports = {
   },
   ETH: eth_utils,
   ADM: adm_utils,
+  LSK: new LskCoin('LSK'),
 };
