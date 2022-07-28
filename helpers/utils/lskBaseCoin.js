@@ -71,7 +71,7 @@ module.exports = class LskBaseCoin {
 
   /**
    * @abstract
-   * @return {Number}
+   * @return {Promise<Number>}
    */
   sendTransaction() {
     return undefined;

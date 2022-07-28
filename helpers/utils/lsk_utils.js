@@ -88,6 +88,7 @@ module.exports = class LskCoin extends LskBaseCoin {
    * Send signed transaction to blockchain network
    * @override
    * @param {Object} signedTx
+   * @return {Promise<Number>}
    */
   sendTransaction(signedTx) {
     return this._getClient().post('/api/transactions', signedTx).then((response) => {
