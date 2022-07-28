@@ -6,7 +6,6 @@ const cryptography = require('@liskhq/lisk-cryptography');
 
 const helpers = require('../../helpers');
 const api = require('../../modules/api');
-const constants = require('../const');
 
 const lskNode = config.node_LSK[0];
 const lskService = config.service_LSK[0];
@@ -36,13 +35,6 @@ module.exports = class LskBaseCoin {
 
     this.cache.balance = {lifetime: 30000};
     this.cache.lastBlock = {lifetime: 60000};
-
-    setTimeout(() => this.updateBalance().then((balance) =>
-      log.log(`Initial ${this.token} balance: ${helpers.isPositiveOrZeroNumber(balance) ? balance.toFixed(constants.PRINT_DECIMALS) : 'unable to receive'}`),
-    ), 1000);
-    setTimeout(() => this.getLastBlockHeight().then((lastBlockHeight) =>
-      log.log(`Last ${this.token} block height: ${helpers.isPositiveOrZeroNumber(lastBlockHeight) ? lastBlockHeight : 'unable to receive'}`),
-    ), 1000);
   }
 
   /**
