@@ -112,9 +112,18 @@ async function getAccountInfo(account) {
       })
       .catch(function(e) {
         log.warn(`Error while making getAccountInfo() request: ${JSON.stringify(e)}`);
-        if (e && e[0] && (e[0].code === 50 || e[0].code === 63)) { // [{"code":50,"message":"User not found."}, {"code":63,"message":"User has been suspended."}]
+        if (e && e[0] && (e[0].code === 50 || e[0].code === 63)) {
+          /**
+           * {"code":50,"message":"User not found."}
+           * {"code":63,"message":"User has been suspended."}
+          */
           return e[0];
-        } else { // User can provide wrong Account, process this situation
+        } else {
+          /**
+           * User can provide wrong Account, process this situation
+           * {"code":89,"message":"Invalid or expired token."} Check API keys
+           * {"errno":-54,"code":"ECONNRESET","syscall":"read"} Twitter.com blocked by Roskomnadzor, use VPN
+           */
           return false;
         }
       });
