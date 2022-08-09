@@ -27,6 +27,7 @@ module.exports = {
     try {
       await this.ETH.updateBalance();
       await this.ADM.updateBalance();
+      await this.LSK.updateBalance();
       for (const t of config.erc20) {
         await this[t].updateBalance();
       }
