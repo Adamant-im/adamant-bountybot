@@ -1,4 +1,4 @@
-const log = require('../helpers/log');
+const log = require('./helpers/log');
 
 /**
  * @description http watched DB tables
