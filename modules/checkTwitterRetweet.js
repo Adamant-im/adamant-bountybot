@@ -54,7 +54,6 @@ module.exports = async () => {
           hashtags = config.twitter_retweet_w_comment[index].hashtags;
           retweetResult = await twitterapi.checkIfAccountRetweetedwComment(twitterAccount, toRetweet, minMentions, hashtags);
           isRetweeted = retweetResult.success;
-          console.log('isRetweeted:', isRetweeted);
 
           if (isRetweeted) {
             log.log(`User ${userId}… ${twitterAccount} did retweet ${toRetweet}.`);

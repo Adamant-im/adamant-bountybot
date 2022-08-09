@@ -43,8 +43,6 @@ module.exports = async () => {
         for (let index = 0; index < config.twitter_follow.length; index++) {
           followAccount = config.twitter_follow[index];
           isFollowing = await twitterapi.checkIfAccountFollowing(twitterAccount, followAccount);
-          console.log('isFollowing:', isFollowing);
-
           if (isFollowing) {
             log.log(`User ${userId}… ${twitterAccount} do follows ${followAccount}.`);
           } else {

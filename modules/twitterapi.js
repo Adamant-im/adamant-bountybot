@@ -26,39 +26,41 @@ const toFollowIds = {};
   }
 })();
 
-//
-// async function getAccountFollowerIds(account) {
-//   const accountSN = $u.getTwitterScreenName(account);
-//   console.log(`Getting followers for @${accountSN}…`);
-//
-//   let ids = [];
-//   return new Promise((resolve, reject) => {
-//     Twitter.get('followers/ids', {screen_name: accountSN, count: 5000, stringify_ids: true}, function getData(error, data, response) {
-//       try {
-//         if (error) {
-//           log.warn(`Twitter returned an error in getAccountFollowerIds(): ${JSON.stringify(error)}`);
-//           resolve(false);
-//         } else {
-//           ids = ids.concat(data.ids);
-//           // console.log(`next_cursor_str: `, data['next_cursor_str']);
-//           if (data['next_cursor_str'] > 0) {
-//             Twitter.get('followers/ids', {screen_name: accountSN, count: 5000, cursor: data['next_cursor_str']}, getData);
-//           } else {
-//             console.log(`FollowerIds count for @${accountSN} is ${ids.length}.`);
-//             resolve(ids);
-//           }
-//         }
-//       } catch (e) {
-//         log.warn(`Error while making getAccountFollowerIds() request: ${JSON.stringify(e)}`);
-//         resolve(false);
-//       }
-//     });
-//   });
-// }
+// Not used this time
+/*
+async function getAccountFollowerIds(account) {
+  const accountSN = $u.getTwitterScreenName(account);
+  log.log(`Getting followers for @${accountSN}…`);
+
+  let ids = [];
+  return new Promise((resolve, reject) => {
+    Twitter.get('followers/ids', {screen_name: accountSN, count: 5000, stringify_ids: true}, function getData(error, data, response) {
+      try {
+        if (error) {
+          log.warn(`Twitter returned an error in getAccountFollowerIds(): ${JSON.stringify(error)}`);
+          resolve(false);
+        } else {
+          ids = ids.concat(data.ids);
+          // log.log(`next_cursor_str: `, data['next_cursor_str']);
+          if (data['next_cursor_str'] > 0) {
+            Twitter.get('followers/ids', {screen_name: accountSN, count: 5000, cursor: data['next_cursor_str']}, getData);
+          } else {
+            log.log(`FollowerIds count for @${accountSN} is ${ids.length}.`);
+            resolve(ids);
+          }
+        }
+      } catch (e) {
+        log.warn(`Error while making getAccountFollowerIds() request: ${JSON.stringify(e)}`);
+        resolve(false);
+      }
+    });
+  });
+}
+*/
 
 async function getAccountFriendIds(account) {
   const accountSN = $u.getTwitterScreenName(account);
-  console.log(`Getting friends for @${accountSN}…`);
+  log.log(`Getting friends for @${accountSN}…`);
 
   let ids = [];
   return new Promise((resolve, reject) => {
@@ -73,7 +75,7 @@ async function getAccountFriendIds(account) {
           if (data['next_cursor_str'] > 0) {
             Twitter.get('friends/ids', {screen_name: accountSN, count: 5000, cursor: data['next_cursor_str']}, getData);
           } else {
-            console.log(`FriendIds count for @${accountSN} is ${ids.length}.`);
+            log.log(`FriendIds count for @${accountSN} is ${ids.length}.`);
             resolve(ids);
           }
         }
@@ -87,14 +89,11 @@ async function getAccountFriendIds(account) {
 
 async function getAccountTimeline(account) {
   const accountSN = $u.getTwitterScreenName(account);
-  console.log(`Getting timeline for @${accountSN}…`);
+  log.log(`Getting timeline for @${accountSN}…`);
 
   return await Twitter.get('statuses/user_timeline', {screen_name: accountSN, count: 10, trim_user: true, tweet_mode: 'extended'})
       .then(function(data) {
-      // console.log(`Timeline for @${accountSN}:`);
-      // console.log(data);
-
-        console.log(`Timeline count for @${accountSN} is ${data.length}.`);
+        log.log(`Timeline count for @${accountSN} is ${data.length}.`);
         return data;
       })
       .catch(function(e) {
@@ -105,19 +104,26 @@ async function getAccountTimeline(account) {
 
 async function getAccountInfo(account) {
   const accountSN = $u.getTwitterScreenName(account);
-  // console.log(`Getting user info for @${accountSN}…`)
+  log.log(`Getting user info for @${accountSN}…`);
 
   return await Twitter.get('users/show', {screen_name: accountSN})
       .then(function(data) {
-      // console.log(`User info for @${accountSN}:`);
-      // console.log(data);
         return data;
       })
       .catch(function(e) {
         log.warn(`Error while making getAccountInfo() request: ${JSON.stringify(e)}`);
-        if (e && e[0] && (e[0].code === 50 || e[0].code === 63)) { // [{"code":50,"message":"User not found."}, {"code":63,"message":"User has been suspended."}]
+        if (e && e[0] && (e[0].code === 50 || e[0].code === 63)) {
+          /**
+           * {"code":50,"message":"User not found."}
+           * {"code":63,"message":"User has been suspended."}
+          */
           return e[0];
-        } else { // User can provide wrong Account, process this situation
+        } else {
+          /**
+           * User can provide wrong Account, process this situation
+           * {"code":89,"message":"Invalid or expired token."} Check API keys
+           * {"errno":-54,"code":"ECONNRESET","syscall":"read"} Twitter.com blocked by Roskomnadzor, use VPN
+           */
           return false;
         }
       });
@@ -129,7 +135,6 @@ function parseTwitterDate(aDate) {
 }
 
 module.exports = {
-
   async testApi() {
     const testResult = {
       success: false,
@@ -153,23 +158,23 @@ module.exports = {
       return testResult;
     }
   },
+
   // Search for predefined toFollowIds — save Twitter API requests
   // followAccount should be in "twitter_follow" param in config
   async checkIfAccountFollowing(twitterAccount, followAccount) {
     const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
     const followAccountSN = $u.getTwitterScreenName(followAccount);
-    console.log(`Checking if @${twitterAccountSN} follows @${followAccountSN}…`);
+    log.log(`Checking if @${twitterAccountSN} follows @${followAccountSN}…`);
 
     const followers = await getAccountFriendIds(twitterAccountSN);
-    // console.log(followers);
     return followers.includes(toFollowIds[followAccountSN]);
   },
+
   async checkIfAccountRetweetedwComment(twitterAccount, tweet, minMentions, hashtags) {
     const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
     const tweetId = $u.getTweetIdFromLink(tweet);
     hashtags = $u.getTwitterHashtags(hashtags);
-    // console.log(tweetId);
-    console.log(`Checking if @${twitterAccountSN} retweeted ${tweet}…`);
+    log.log(`Checking if @${twitterAccountSN} retweeted ${tweet}…`);
 
     const tweets = await getAccountTimeline(twitterAccountSN);
     let retweet = {};
@@ -209,13 +214,12 @@ module.exports = {
       error: '',
     };
   },
+
   async checkIfAccountEligible(twitterAccount) {
     const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
-    console.log(`Checking if @${twitterAccountSN} eligible…`);
+    log.log(`Checking if @${twitterAccountSN} eligible…`);
 
     const accountInfo = await getAccountInfo(twitterAccountSN);
-    // console.log(accountInfo);
-
     if (!accountInfo) {
       return {
         success: false,
@@ -283,5 +287,4 @@ module.exports = {
       accountInfo,
     };
   },
-
 };

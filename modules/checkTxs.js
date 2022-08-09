@@ -5,7 +5,7 @@ const log = require('../helpers/log');
 const config = require('./configReader');
 
 module.exports = async (itx, tx) => {
-  console.log(`Running module ${helpers.getModuleName(module.id)}…`);
+  log.log(`Running module ${helpers.getModuleName(module.id)}…`);
 
   const {UsersDb} = db;
   let msgSendBack = '';
