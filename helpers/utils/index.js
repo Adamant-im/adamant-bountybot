@@ -2,6 +2,7 @@ const api = require('../../modules/api');
 const config = require('../../modules/configReader');
 const eth_utils = require('./eth_utils');
 const adm_utils = require('./adm_utils');
+const LskCoin = require('./lsk_utils');
 const log = require('../log');
 const Store = require('../../modules/Store');
 const helpers = require('../../helpers');
@@ -11,21 +12,22 @@ module.exports = {
     if (this.isERC20(coin)) {
       coin = 'ETH';
     }
-    const res = await api.get('states/get', {senderId: admAddress, key: coin.toLowerCase() + ':address'});
-    if (res.success) {
-      if (res.data.transactions.length) {
-        return res.data.transactions[0].asset.state.value;
+    const kvsRecords = await api.get('states/get', {senderId: admAddress, key: coin.toLowerCase() + ':address', orderBy: 'timestamp:desc'});
+    if (kvsRecords.success) {
+      if (kvsRecords.data.transactions.length) {
+        return kvsRecords.data.transactions[0].asset.state.value;
       } else {
         return 'none';
       }
     } else {
-      log.warn(`Failed to get ${coin} address for ${admAddress} from KVS in getAddressCryptoFromAdmAddressADM() of ${helpers.getModuleName(module.id)} module. ${res.errorMessage}.`);
+      log.warn(`Failed to get ${coin} address for ${admAddress} from KVS in getAddressCryptoFromAdmAddressADM() of ${helpers.getModuleName(module.id)} module. ${kvsRecords.errorMessage}.`);
     }
   },
   async updateAllBalances() {
     try {
       await this.ETH.updateBalance();
       await this.ADM.updateBalance();
+      await this.LSK.updateBalance();
       for (const t of config.erc20) {
         await this[t].updateBalance();
       }
@@ -35,6 +37,7 @@ module.exports = {
     const data = {
       ETH: await this.ETH.getLastBlock(),
       ADM: await this.ADM.getLastBlock(),
+      LSK: await this.LSK.getLastBlockHeight(),
     };
     for (const t of config.erc20) {
       // data[t] = await this[t].getLastBlockNumber(); // Don't do unnecessary requests
@@ -140,4 +143,5 @@ module.exports = {
   },
   ETH: eth_utils,
   ADM: adm_utils,
+  LSK: new LskCoin('LSK'),
 };

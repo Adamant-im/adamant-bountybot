@@ -190,8 +190,8 @@ function version() {
 function balances() {
   let output = '';
   config.known_crypto.forEach((crypto) => {
-    if (Store.user[crypto].balance && Store.user[crypto].balance !== undefined) {
-      output += `${$u.thousandSeparator(+Store.user[crypto].balance.toFixed(8), true)} _${crypto}_`;
+    if (Store.user[crypto].balance) {
+      output += `${helpers.thousandSeparator(+Store.user[crypto].balance.toFixed(8), true)} _${crypto}_`;
       output += '\n';
     }
   });

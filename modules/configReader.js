@@ -110,7 +110,7 @@ try {
   if (isDev) {
     config = JSON.parse(jsonminify(fs.readFileSync('./config.test', 'utf-8')));
   } else {
-    config = JSON.parse(jsonminify(fs.readFileSync('./config.json', 'utf-8')));
+    config = JSON.parse(jsonminify(fs.readFileSync('./config.default.json', 'utf-8')));
   }
 
   let keysPair;

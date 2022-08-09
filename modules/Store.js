@@ -12,6 +12,8 @@ const AdmKeysPair = keys.createKeypairFromPassPhrase(config.passPhrase);
 const AdmAddress = keys.createAddressFromPublicKey(AdmKeysPair.publicKey);
 // ETH data
 const ethData = api.eth.keys(config.passPhrase);
+// LSK data
+const lskData = api.lsk.keys(config.passPhrase);
 
 module.exports = {
   version,
@@ -25,6 +27,10 @@ module.exports = {
     ETH: {
       address: ethData.address,
       privateKey: ethData.privateKey,
+    },
+    LSK: {
+      address: lskData.address,
+      privateKey: lskData.privateKey,
     },
   },
   comissions: {

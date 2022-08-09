@@ -48,7 +48,7 @@ module.exports = async () => {
         return;
       }
 
-      log.log(`Attempt number ${pay.trySendCounter} to send the reward payout. Coin: ${outCurrency}, address: ${outAddress}, value: ${outAmount}, balance: ${Store.user[outCurrency].balance}`);
+      log.log(`Attempt number ${pay.trySendCounter} to send the reward payout. Coin: ${outCurrency}, recipient address: ${outAddress}, amount: ${outAmount}, bot's balance: ${Store.user[outCurrency].balance} ${outCurrency}.`);
       const result = await $u[outCurrency].send({
         address: outAddress,
         value: outAmount,
