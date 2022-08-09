@@ -2,19 +2,18 @@ const $u = require('../helpers/utils');
 const log = require('../helpers/log');
 const config = require('./configReader');
 const Twitter = require('twitter')({
-    consumer_key: config.twitter_api.consumer_key,
-    consumer_secret: config.twitter_api.consumer_secret,
-    access_token_key: config.twitter_api.access_token_key,
-    access_token_secret: config.twitter_api.access_token_secret
-  });
+  consumer_key: config.twitter_api.consumer_key,
+  consumer_secret: config.twitter_api.consumer_secret,
+  access_token_key: config.twitter_api.access_token_key,
+  access_token_secret: config.twitter_api.access_token_secret,
+});
 
-let toFollowIds = {};
+const toFollowIds = {};
 
 (async function() {
-
   // Get Twitter accounts-to-follow ids by their names
 
-  let name, id;
+  let name; let id;
   for (let i = 0; i < config.twitter_follow.length; i++) {
     name = $u.getTwitterScreenName(config.twitter_follow[i]);
     id = (await getAccountInfo(config.twitter_follow[i])).id_str;
@@ -25,45 +24,43 @@ let toFollowIds = {};
       process.exit(1);
     }
   }
-
 })();
 
-
-async function getAccountFollowerIds(account) {
-  const accountSN = $u.getTwitterScreenName(account);
-  console.log(`Getting followers for @${accountSN}…`)
-
-  var ids = [];
-  return new Promise((resolve, reject) => {
-    Twitter.get('followers/ids', {screen_name: accountSN, count: 5000, stringify_ids: true}, function getData(error, data, response) {
-      try {
-        if (error) {
-          log.warn(`Twitter returned an error in getAccountFollowerIds(): ${JSON.stringify(error)}`);
-          resolve(false);
-        } else {
-          ids = ids.concat(data.ids);
-          // console.log(`next_cursor_str: `, data['next_cursor_str']);
-          if (data['next_cursor_str'] > 0) {
-            Twitter.get('followers/ids', { screen_name: accountSN, count: 5000, cursor: data['next_cursor_str'] }, getData);
-          } else {
-            console.log(`FollowerIds count for @${accountSN} is ${ids.length}.`);
-            resolve(ids);
-          }
-        }
-      } catch (e) { 					
-        log.warn(`Error while making getAccountFollowerIds() request: ${JSON.stringify(e)}`);
-        resolve(false);
-      };
-    });
-  });
-
-}
+//
+// async function getAccountFollowerIds(account) {
+//   const accountSN = $u.getTwitterScreenName(account);
+//   console.log(`Getting followers for @${accountSN}…`);
+//
+//   let ids = [];
+//   return new Promise((resolve, reject) => {
+//     Twitter.get('followers/ids', {screen_name: accountSN, count: 5000, stringify_ids: true}, function getData(error, data, response) {
+//       try {
+//         if (error) {
+//           log.warn(`Twitter returned an error in getAccountFollowerIds(): ${JSON.stringify(error)}`);
+//           resolve(false);
+//         } else {
+//           ids = ids.concat(data.ids);
+//           // console.log(`next_cursor_str: `, data['next_cursor_str']);
+//           if (data['next_cursor_str'] > 0) {
+//             Twitter.get('followers/ids', {screen_name: accountSN, count: 5000, cursor: data['next_cursor_str']}, getData);
+//           } else {
+//             console.log(`FollowerIds count for @${accountSN} is ${ids.length}.`);
+//             resolve(ids);
+//           }
+//         }
+//       } catch (e) {
+//         log.warn(`Error while making getAccountFollowerIds() request: ${JSON.stringify(e)}`);
+//         resolve(false);
+//       }
+//     });
+//   });
+// }
 
 async function getAccountFriendIds(account) {
   const accountSN = $u.getTwitterScreenName(account);
-  console.log(`Getting friends for @${accountSN}…`)
+  console.log(`Getting friends for @${accountSN}…`);
 
-  var ids = [];
+  let ids = [];
   return new Promise((resolve, reject) => {
     Twitter.get('friends/ids', {screen_name: accountSN, count: 5000, stringify_ids: true}, function getData(error, data, response) {
       try {
@@ -74,38 +71,36 @@ async function getAccountFriendIds(account) {
           ids = ids.concat(data.ids);
           // console.log(`next_cursor_str: `, data['next_cursor_str']);
           if (data['next_cursor_str'] > 0) {
-            Twitter.get('friends/ids', { screen_name: accountSN, count: 5000, cursor: data['next_cursor_str'] }, getData);
+            Twitter.get('friends/ids', {screen_name: accountSN, count: 5000, cursor: data['next_cursor_str']}, getData);
           } else {
             console.log(`FriendIds count for @${accountSN} is ${ids.length}.`);
             resolve(ids);
           }
         }
-      } catch (e) { 					
+      } catch (e) {
         log.warn(`Error while making getAccountFriendIds() request: ${JSON.stringify(e)}`);
         resolve(false);
-      };
+      }
     });
   });
-
 }
 
 async function getAccountTimeline(account) {
   const accountSN = $u.getTwitterScreenName(account);
-  console.log(`Getting timeline for @${accountSN}…`)
+  console.log(`Getting timeline for @${accountSN}…`);
 
   return await Twitter.get('statuses/user_timeline', {screen_name: accountSN, count: 10, trim_user: true, tweet_mode: 'extended'})
-    .then(function (data) {
+      .then(function(data) {
       // console.log(`Timeline for @${accountSN}:`);
       // console.log(data);
 
-      console.log(`Timeline count for @${accountSN} is ${data.length}.`);
-      return data;
-    })
-    .catch(function (e) {
-      log.warn(`Error while making getAccountTimeline() request: ${JSON.stringify(e)}`);
-      return false;
-    });
-
+        console.log(`Timeline count for @${accountSN} is ${data.length}.`);
+        return data;
+      })
+      .catch(function(e) {
+        log.warn(`Error while making getAccountTimeline() request: ${JSON.stringify(e)}`);
+        return false;
+      });
 }
 
 async function getAccountInfo(account) {
@@ -113,77 +108,70 @@ async function getAccountInfo(account) {
   // console.log(`Getting user info for @${accountSN}…`)
 
   return await Twitter.get('users/show', {screen_name: accountSN})
-    .then(function (data) {
+      .then(function(data) {
       // console.log(`User info for @${accountSN}:`);
       // console.log(data);
-      return data;
-    })
-    .catch(function (e) {
-      log.warn(`Error while making getAccountInfo() request: ${JSON.stringify(e)}`);
-      if (e && e[0] && (e[0].code === 50 || e[0].code === 63)) // [{"code":50,"message":"User not found."}, {"code":63,"message":"User has been suspended."}]
-        return e[0] // User can provide wrong Account, process this situation
-      else 
-        return false;
-    });
-
+        return data;
+      })
+      .catch(function(e) {
+        log.warn(`Error while making getAccountInfo() request: ${JSON.stringify(e)}`);
+        if (e && e[0] && (e[0].code === 50 || e[0].code === 63)) { // [{"code":50,"message":"User not found."}, {"code":63,"message":"User has been suspended."}]
+          return e[0];
+        } else { // User can provide wrong Account, process this situation
+          return false;
+        }
+      });
 }
 
-function parseTwitterDate(aDate)
-{   
+function parseTwitterDate(aDate) {
   return new Date(Date.parse(aDate.replace(/( \+)/, ' UTC$1')));
-  //sample: Wed Mar 13 09:06:07 +0000 2013 
+  // sample: Wed Mar 13 09:06:07 +0000 2013
 }
 
 module.exports = {
 
   async testApi() {
-
-    let testResult = {
+    const testResult = {
       success: false,
-      message: ""
-    }
+      message: '',
+    };
 
     try {
-
-      const testAccount = "@TwitterDev";
-      let result = await getAccountInfo(testAccount);
+      const testAccount = '@TwitterDev';
+      const result = await getAccountInfo(testAccount);
 
       if (result && result.id_str === '2244994945') {
         testResult.success = true;
       } else {
         testResult.success = false;
-        testResult.message = "Request *users/show* for @TwitterDev didn't return expected value.";
+        testResult.message = 'Request *users/show* for @TwitterDev didn\'t return expected value.';
       }
       return testResult;
-
     } catch (e) {
       testResult.success = false;
-      testResult.message = "Exception while making *users/show* request."; 
+      testResult.message = 'Exception while making *users/show* request.';
       return testResult;
     }
-
   },
   // Search for predefined toFollowIds — save Twitter API requests
   // followAccount should be in "twitter_follow" param in config
   async checkIfAccountFollowing(twitterAccount, followAccount) {
-
     const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
     const followAccountSN = $u.getTwitterScreenName(followAccount);
     console.log(`Checking if @${twitterAccountSN} follows @${followAccountSN}…`);
 
-    let followers = await getAccountFriendIds(twitterAccountSN);
-    // console.log(followers);    
+    const followers = await getAccountFriendIds(twitterAccountSN);
+    // console.log(followers);
     return followers.includes(toFollowIds[followAccountSN]);
   },
   async checkIfAccountRetweetedwComment(twitterAccount, tweet, minMentions, hashtags) {
-
     const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
     const tweetId = $u.getTweetIdFromLink(tweet);
     hashtags = $u.getTwitterHashtags(hashtags);
     // console.log(tweetId);
-    console.log(`Checking if @${twitterAccountSN} retweeted ${tweet}…`)
+    console.log(`Checking if @${twitterAccountSN} retweeted ${tweet}…`);
 
-    let tweets = await getAccountTimeline(twitterAccountSN);
+    const tweets = await getAccountTimeline(twitterAccountSN);
     let retweet = {};
     for (let i = 0; i < tweets.length; i++) {
       if (tweets[i].quoted_status && tweets[i].quoted_status.id_str === tweetId) {
@@ -194,16 +182,16 @@ module.exports = {
     if (Object.keys(retweet).length < 1) { // Empty object
       return {
         success: false,
-        error: 'no_retweet'
-      }
+        error: 'no_retweet',
+      };
     }
     if (retweet.entities.user_mentions.length < minMentions) {
       return {
         success: false,
-        error: 'not_enough_mentions'
-      }
+        error: 'not_enough_mentions',
+      };
     }
-    let retweet_hashtags = [];
+    const retweet_hashtags = [];
     for (let i = 0; i < retweet.entities.hashtags.length; i++) {
       retweet_hashtags[i] = retweet.entities.hashtags[i].text.toLowerCase();
     }
@@ -211,82 +199,80 @@ module.exports = {
       if (!retweet_hashtags.includes(hashtags[i].toLowerCase())) {
         return {
           success: false,
-          error: 'no_hashtags'
-        }
+          error: 'no_hashtags',
+        };
       }
     }
 
     return {
       success: true,
-      error: ''
-    }
-
+      error: '',
+    };
   },
   async checkIfAccountEligible(twitterAccount) {
-
     const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
-    console.log(`Checking if @${twitterAccountSN} eligible…`)
+    console.log(`Checking if @${twitterAccountSN} eligible…`);
 
-    let accountInfo = await getAccountInfo(twitterAccountSN);
+    const accountInfo = await getAccountInfo(twitterAccountSN);
     // console.log(accountInfo);
 
     if (!accountInfo) {
       return {
         success: false,
         error: 'request_failed',
-      }
+      };
     }
 
     if (accountInfo.code === 50) { // {"code":50,"message":"User not found."}
       return {
         success: false,
-        error: 'user_not_found'
-      }
+        error: 'user_not_found',
+      };
     }
 
     if (accountInfo.code === 63) { // {"code":63,"message":"User has been suspended."}
       return {
         success: false,
-        error: 'user_not_found'
-      }
+        error: 'user_not_found',
+      };
     }
 
     if (!accountInfo.id) {
       return {
         success: false,
-        error: 'request_failed'
-      }
+        error: 'request_failed',
+      };
     }
 
     if (accountInfo.followers_count < config.twitter_reqs.min_followers) {
       return {
         success: false,
         error: 'no_followers',
-        accountInfo
-      }
+        accountInfo,
+      };
     }
     if (accountInfo.friends_count < config.twitter_reqs.min_friends) {
       return {
         success: false,
         error: 'no_friends',
-        accountInfo
-      }
+        accountInfo,
+      };
     }
     if (accountInfo.statuses_count < config.twitter_reqs.min_statuses) {
       return {
         success: false,
         error: 'no_statuses',
-        accountInfo
-      }
+        accountInfo,
+      };
     }
-    let createDate = parseTwitterDate(accountInfo.created_at);
-    let lifeTime = (Date.now() - createDate) / 1000 / 60 / 60 / 24;
+    const createDate = parseTwitterDate(accountInfo.created_at);
+    const lifeTime = (Date.now() - createDate) / 1000 / 60 / 60 / 24;
     if (lifeTime < config.twitter_reqs.min_days) {
       return {
         success: false,
         error: 'no_lifetime',
-        accountInfo
-      }
+        accountInfo,
+      };
     }
 
     return {
@@ -294,9 +280,8 @@ module.exports = {
       followers: accountInfo.followers_count,
       lifetimeDays: lifeTime,
       error: '',
-      accountInfo
-    }
+      accountInfo,
+    };
+  },
 
-  }
-
-}
+};
