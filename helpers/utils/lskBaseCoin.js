@@ -33,8 +33,8 @@ module.exports = class LskBaseCoin {
       },
     };
 
-    this.cache.balance = {lifetime: 30000};
-    this.cache.lastBlock = {lifetime: 60000};
+    this.cache.balance = {lifetime: 7000};
+    this.cache.lastBlock = {lifetime: 7000};
   }
 
   /**
