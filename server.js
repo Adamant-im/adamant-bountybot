@@ -1,3 +1,5 @@
+const log = require('../helpers/log');
+
 /**
  * @description http watched DB tables
  */
@@ -38,5 +40,5 @@ if (port) {
     });
   });
 
-  app.listen(port, () => console.info('Server listening on port ' + port + ' http://localhost:' + port + '/db?tb=systemDb'));
+  app.listen(port, () => log.info('Server listening on port ' + port + ' http://localhost:' + port + '/db?tb=systemDb'));
 }

@@ -72,8 +72,6 @@ module.exports = async () => {
         }
 
         const isContactsDone = contacts_number >= config.adamant_campaign.min_contacts;
-        console.log('isContactsDone:', isContactsDone, contacts_number);
-
         if (isContactsDone) {
           log.log(`User ${userId}… did make ${config.adamant_campaign.min_contacts} contacts.`);
           await user.update({
