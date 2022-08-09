@@ -26,7 +26,7 @@ module.exports = async (tx) => {
     return;
   }
 
-  log.log(`New incoming transaction: ${tx.id} from ${tx.senderId}`);
+  log.log(`Received incoming transaction ${tx.id} from ${tx.senderId}.`);
 
   let msg = '';
   const chat = tx.asset.chat;
@@ -51,7 +51,7 @@ module.exports = async (tx) => {
   }
 
   // Check if we should notify about spammer, only once per 24 hours
-  const spamerIsNotyfy = await IncomingTxsDb.findOne({
+  const spamerIsNotify = await IncomingTxsDb.findOne({
     sender: tx.senderId,
     isSpam: true,
     date: {$gt: ($u.unix() - 24 * 3600 * 1000)}, // last 24h
@@ -76,7 +76,7 @@ module.exports = async (tx) => {
     date: {$gt: ($u.unix() - 24 * 3600 * 1000)}, // last 24h
   })).length;
 
-  if (countRequestsUser > 50 || spamerIsNotyfy) { // 50 per 24h is a limit for accepting commands, otherwise user will be considered as spammer
+  if (countRequestsUser > 50 || spamerIsNotify) { // 50 per 24h is a limit for accepting commands, otherwise user will be considered as spammer
     itx.update({
       isProcessed: true,
       isSpam: true,
@@ -89,7 +89,7 @@ module.exports = async (tx) => {
   }
   historyTxs[tx.id] = $u.unix();
 
-  if (itx.isSpam && !spamerIsNotyfy) {
+  if (itx.isSpam && !spamerIsNotify) {
     notify(`${config.notifyName} notifies _${tx.senderId}_ is a spammer or talks too much. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`, 'warn');
     $u.sendAdmMsg(tx.senderId, `I’ve _banned_ you. You’ve sent too much transactions to me.`);
     return;

@@ -1,8 +1,10 @@
 const $u = require('../helpers/utils');
+const log = require('../helpers/log');
 const db = require('./DB');
 const config = require('./configReader');
 
 module.exports = async (tx, itx) => {
+  log.log(`Processing unknownTx from ${tx.senderId} (transaction ${tx.id})…`);
   const {IncomingTxsDb} = db;
 
   IncomingTxsDb.db

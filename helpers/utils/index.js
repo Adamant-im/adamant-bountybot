@@ -31,7 +31,7 @@ module.exports = {
     return epochTime * 1000 + constants.EPOCH;
   },
   sendAdmMsg(address, msg, type = 'message') {
-    if (msg && !config.isDev) {
+    if (msg) {
       try {
         return api.send(config.passPhrase, address, msg, type).success || false;
       } catch (e) {
