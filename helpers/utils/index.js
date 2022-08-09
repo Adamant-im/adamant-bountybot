@@ -12,10 +12,10 @@ module.exports = {
     if (this.isERC20(coin)) {
       coin = 'ETH';
     }
-    const res = await api.get('states/get', {senderId: admAddress, key: coin.toLowerCase() + ':address'});
-    if (res.success) {
-      if (res.data.transactions.length) {
-        return res.data.transactions[0].asset.state.value;
+    const kvsRecords = await api.get('states/get', {senderId: admAddress, key: coin.toLowerCase() + ':address', orderBy: 'timestamp:desc'});
+    if (kvsRecords.success) {
+      if (kvsRecords.data.transactions.length) {
+        return kvsRecords.data.transactions[0].asset.state.value;
       } else {
         return 'none';
       }
