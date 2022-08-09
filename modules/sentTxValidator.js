@@ -87,8 +87,13 @@ module.exports = async () => {
         msgSendBack = 'Was it great? Share the experience with your friends!';
 
         if (outCurrency !== 'ADM') {
-          msgSendBack = `{"type":"${outCurrency}_transaction","amount":"${outAmount}","hash":"${outTxid}","comments":"${msgSendBack}"}`;
-          pay.isFinished = await api.sendMessage(config.passPhrase, userId, msgSendBack, 'rich');
+          msgSendBack = `{"type":"${outCurrency.toLowerCase()}_transaction","amount":"${outAmount}","hash":"${outTxid}","comments":"${msgSendBack}"}`;
+          const message = await api.sendMessage(config.passPhrase, userId, msgSendBack, 'rich');
+          if (message.success) {
+            pay.isFinished = true;
+          } else {
+            log.warn(`Failed to send ADM message on sent Tx ${outTxid} of ${outAmount} ${outCurrency} to ${userId}. I will try again. ${message?.errorMessage}.`);
+          }
         } else {
           pay.isFinished = true;
         }
