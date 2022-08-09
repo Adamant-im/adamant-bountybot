@@ -1,17 +1,17 @@
-
+const helpers = require('../helpers');
 const db = require('./DB');
-const $u = require('../helpers/utils');
+const api = require('./api');
 const log = require('../helpers/log');
+const config = require('./configReader');
 
 module.exports = async (itx, tx) => {
-  log.log(`Running module ${$u.getModuleName(module.id)}…`);
+  log.log(`Running module ${helpers.getModuleName(module.id)}…`);
 
   const {UsersDb} = db;
-  let user = {};
   let msgSendBack = '';
 
   // Exclude duplicate Twitter accounts
-  user = await UsersDb.findOne({twitterAccount: itx.accounts.twitterAccount});
+  let user = await UsersDb.findOne({twitterAccount: itx.accounts.twitterAccount});
   if (user && (user.isInCheck || user.isTasksCompleted)) {
     // This Twitter account is already in use by other user, unable to switch
     log.warn(`User ${user.userId} applied with already used Twitter account ${itx.accounts.twitterAccount}. Notify user and ignore.`);
@@ -23,7 +23,7 @@ module.exports = async (itx, tx) => {
       }
     }
     if (msgSendBack) { // Do not send anything, if isInCheck
-      $u.sendAdmMsg(tx.senderId, msgSendBack);
+      await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack);
     }
     return;
   }
@@ -42,12 +42,12 @@ module.exports = async (itx, tx) => {
     if (user.isTasksCompleted) {
       log.log(`User ${user.userId} already completed the Bounty tasks. Notify user and ignore.`);
       msgSendBack = `You've already completed the Bounty tasks.`;
-      $u.sendAdmMsg(tx.senderId, msgSendBack);
+      await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack);
       return;
     }
 
     user.update({
-      dateUpdated: $u.unix(),
+      dateUpdated: helpers.unix(),
       admTxId: tx.id,
       msg: itx.encrypted_content,
       isInCheck: itx.accounts.notEmpty,
@@ -65,8 +65,8 @@ module.exports = async (itx, tx) => {
     user = new UsersDb({
       _id: tx.senderId,
       userId: tx.senderId,
-      dateCreated: $u.unix(),
-      dateUpdated: $u.unix(),
+      dateCreated: helpers.unix(),
+      dateUpdated: helpers.unix(),
       admTxId: tx.id,
       msg: itx.encrypted_content,
       isInCheck: itx.accounts.notEmpty,
@@ -85,5 +85,5 @@ module.exports = async (itx, tx) => {
   await itx.update({isProcessed: true}, true);
 
   msgSendBack = `I've got your account details. Twitter: ${user.twitterAccount}. I'll check if you've finished the Bounty tasks now…`;
-  $u.sendAdmMsg(tx.senderId, msgSendBack);
+  await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack);
 };

@@ -27,8 +27,8 @@
   "author": "Aleksei Lebedev <devs@adamant.im> (https://adamant.im)",
   "license": "GPL-3.0",
   "dependencies": {
-    "adamant-api": "^0.5.3",
-    "axios": "0.21.1",
+    "adamant-api": "^1.5.0",
+    "axios": "^0.21.4",
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^7.0.0",
     "express": "^4.17.1",
@@ -43,11 +43,11 @@
     "web3": "^1.2.7"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^16.2.1",
     "@commitlint/cli": "^16.2.1",
+    "@commitlint/config-conventional": "^16.2.1",
+    "eslint": "^8.9.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-jest": "^26.1.0",
-    "eslint": "^8.9.0",
     "husky": "^7.0.4"
   },
   "repository": {

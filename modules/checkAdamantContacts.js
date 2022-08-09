@@ -1,6 +1,6 @@
 const db = require('./DB');
 const config = require('./configReader');
-const $u = require('../helpers/utils');
+const helpers = require('../helpers');
 const log = require('../helpers/log');
 const api = require('./api');
 const Store = require('./Store');
@@ -45,33 +45,36 @@ module.exports = async () => {
           userId,
         } = user;
 
-        log.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
+        log.log(`Running module ${helpers.getModuleName(module.id)} for user ${userId}…`);
 
         let msgSendBack = '';
-        let contacts_number = 0;
-
-        const txChat_all = (await api.get('uri', 'chats/get/?recipientId=' + userId + '&orderBy=timestamp:desc&limit=100')).transactions;
-        const txChat = txChat_all.filter((v, i, a)=>a.findIndex((t)=>(t.senderId === v.senderId))===i);
-
-        let contact_firstchat;
-        let hours_old;
+        let contactsNumber = 0;
         let need_new_contacts = false;
 
-        for (let index = 0; ((index < txChat.length) && (contacts_number < config.adamant_campaign.min_contacts)); index++) {
-          if (excluded_adm_contacts.includes(txChat[index].senderId)) {
-            continue;
+        const txChatAll = await api.get('chats/get', {recipientId: userId, orderBy: 'timestamp:desc', limit: 100});
+        if (txChatAll.success) {
+          const txChat = txChatAll.data.transactions.filter((v, i, a)=>a.findIndex((t)=>(t.senderId === v.senderId))===i);
+
+
+          for (let index = 0; ((index < txChat.length) && (contactsNumber < config.adamant_campaign.min_contacts)); index++) {
+            if (excluded_adm_contacts.includes(txChat[index].senderId)) {
+              continue;
+            }
+            const res = await api.get('chats/get', {senderId: txChat[index].senderId, orderBy: 'timestamp:asc', limit: 1});
+            if (res.success) {
+              const contactFirstChat = res.data.transactions[0].timestamp;
+              const hoursOld = (helpers.unix() - helpers.toTimestamp(contactFirstChat)) / 1000 / 60 / 60;
+              if (hoursOld > hours_for_new_contact) {
+                need_new_contacts = true;
+                continue;
+              }
+              contactsNumber += 1;
+            }
           }
-          contact_firstchat = (await api.get('uri', 'chats/get/?senderId=' + txChat[index].senderId + '&orderBy=timestamp:asc&limit=1'));
-          contact_firstchat = contact_firstchat.transactions[0].timestamp;
-          hours_old = ($u.unix() - $u.toTimestamp(contact_firstchat)) / 1000 / 60 / 60;
-          if (hours_old > hours_for_new_contact) {
-            need_new_contacts = true;
-            continue;
-          }
-          contacts_number += 1;
+          contactsNumber += 1;
         }
 
-        const isContactsDone = contacts_number >= config.adamant_campaign.min_contacts;
+        const isContactsDone = contactsNumber >= config.adamant_campaign.min_contacts;
         if (isContactsDone) {
           log.log(`User ${userId}… did make ${config.adamant_campaign.min_contacts} contacts.`);
           await user.update({
@@ -90,11 +93,11 @@ module.exports = async () => {
             msgSendBack = `To meet the Bounty campaign rules, you should invite ${config.adamant_campaign.min_contacts} friends in ADAMANT Messenger. They must message you. They can join this bounty campaign as well! Invite friends and apply again.`;
           }
 
-          await $u.sendAdmMsg(userId, msgSendBack);
+          await api.sendMessage(config.passPhrase, userId, msgSendBack);
           log.log(`User ${userId}… did NOT make ${config.adamant_campaign.min_contacts} contacts. Message to user: ${msgSendBack}`);
         }
       } catch (e) {
-        log.error(`Error in ${$u.getModuleName(module.id)} module: ${e}`);
+        log.error(`Error in ${helpers.getModuleName(module.id)} module: ${e}`);
       }
     }
   } finally {

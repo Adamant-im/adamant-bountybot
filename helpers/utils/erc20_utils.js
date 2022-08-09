@@ -35,7 +35,7 @@ class Erc20 {
   }
 
   async getLastBlockNumber() {
-    return await eth.getLastBlockNumber();
+    return await eth.getLastBlock();
   }
 
   async syncGetTransaction(hash) {

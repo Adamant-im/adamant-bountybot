@@ -1,5 +1,7 @@
 const Store = require('../modules/Store');
 const $u = require('../helpers/utils');
+const api = require('./api');
+const helpers = require('./../helpers');
 const config = require('./configReader');
 const log = require('../helpers/log');
 const notify = require('../helpers/notify');
@@ -26,7 +28,7 @@ module.exports = async (cmd, tx, itx) => {
         isNonAdmin: true,
       }, true);
       if (config.notify_non_admins) {
-        $u.sendAdmMsg(tx.senderId, `I won't execute admin commands as you are not an admin. Contact my master.`);
+        await api.sendMessage(config.passPhrase, tx.senderId, `I won't execute admin commands as you are not an admin. Contact my master.`);
       }
       return;
     }
@@ -46,7 +48,7 @@ module.exports = async (cmd, tx, itx) => {
         notify(res.msgNotify, res.notifyType);
       }
       if (res.msgSendBack) {
-        $u.sendAdmMsg(tx.senderId, res.msgSendBack);
+        await api.sendMessage(config.passPhrase, tx.senderId, res.msgSendBack);
       }
     }
   } catch (e) {
@@ -138,7 +140,7 @@ async function calc(arr) {
       if ($u.isFiat(outCurrency)) {
         result = +result.toFixed(2);
       }
-      output = `Global market value of ${$u.thousandSeparator(amount)} ${inCurrency} equals **${$u.thousandSeparator(result)} ${outCurrency}**.`;
+      output = `Global market value of ${helpers.thousandSeparator(amount)} ${inCurrency} equals **${helpers.thousandSeparator(result)} ${outCurrency}**.`;
     }
   }
 

@@ -1,6 +1,7 @@
 const db = require('./DB');
 const config = require('./configReader');
-const $u = require('../helpers/utils');
+const helpers = require('../helpers');
+const api = require('./api');
 const log = require('../helpers/log');
 const notify = require('../helpers/notify');
 const mathjs = require('mathjs');
@@ -31,7 +32,7 @@ module.exports = async () => {
           twitterLifetimeDays,
         } = user;
 
-        log.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}…`);
+        log.log(`Running module ${helpers.getModuleName(module.id)} for user ${userId}…`);
 
         let msgSendBack = '';
 
@@ -54,7 +55,7 @@ module.exports = async () => {
               amount = +amount.toFixed(config.rewards_progression_from_twitter_followers[reward.currency].decimals_transfer);
             }
             const payment = new PaymentsDb({
-              date: $u.unix(),
+              date: helpers.unix(),
               userId,
               isPayed: false,
               isFinished: false,
@@ -82,10 +83,10 @@ module.exports = async () => {
             notify(`${config.notifyName}: User ${userId}${twitterString} completed the Bounty tasks. Payouts are pending.`, 'log');
           }
           msgSendBack = `Great, you've completed all the tasks! Reward is coming right now!`;
-          $u.sendAdmMsg(userId, msgSendBack);
+          await api.sendMessage(config.passPhrase, userId, msgSendBack);
         }
       } catch (e) {
-        log.error(`Error in ${$u.getModuleName(module.id)} module: ${e}`);
+        log.error(`Error in ${helpers.getModuleName(module.id)} module: ${e}`);
       }
     }
   } finally {

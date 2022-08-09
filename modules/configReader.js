@@ -1,6 +1,6 @@
 const jsonminify = require('jsonminify');
 const fs = require('fs');
-const keys = require('adamant-api/helpers/keys');
+const keys = require('adamant-api/src/helpers/keys');
 const isDev = process.argv.includes('dev');
 const mathjs = require('mathjs');
 
@@ -13,6 +13,14 @@ const fields = {
     isRequired: true,
   },
   node_ADM: {
+    type: Array,
+    isRequired: true,
+  },
+  node_LSK: {
+    type: Array,
+    isRequired: true,
+  },
+  service_LSK: {
     type: Array,
     isRequired: true,
   },
@@ -92,6 +100,10 @@ const fields = {
     type: String,
     default: 'I have nothing to say. If you are my master, check my config.',
   },
+  log_level: {
+    type: String,
+    default: 'log',
+  },
 };
 
 try {
@@ -103,7 +115,7 @@ try {
 
   let keysPair;
   try {
-    keysPair = keys.createKeypairFromPassPhrase(config.passphrase);
+    keysPair = keys.createKeypairFromPassPhrase(config.passPhrase);
   } catch (e) {
     exit('Passphrase is not valid! Error: ' + e);
   }
