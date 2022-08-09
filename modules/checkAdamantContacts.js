@@ -49,11 +49,12 @@ module.exports = async () => {
 
         let msgSendBack = '';
         let contactsNumber = 0;
+        let need_new_contacts = false;
+
         const txChatAll = await api.get('chats/get', {recipientId: userId, orderBy: 'timestamp:desc', limit: 100});
         if (txChatAll.success) {
           const txChat = txChatAll.data.transactions.filter((v, i, a)=>a.findIndex((t)=>(t.senderId === v.senderId))===i);
 
-          let need_new_contacts = false;
 
           for (let index = 0; ((index < txChat.length) && (contactsNumber < config.adamant_campaign.min_contacts)); index++) {
             if (excluded_adm_contacts.includes(txChat[index].senderId)) {
@@ -70,31 +71,30 @@ module.exports = async () => {
               contactsNumber += 1;
             }
           }
+          contactsNumber += 1;
+        }
 
-          const isContactsDone = contactsNumber >= config.adamant_campaign.min_contacts;
-          console.log('isContactsDone:', isContactsDone, contactsNumber);
+        const isContactsDone = contactsNumber >= config.adamant_campaign.min_contacts;
+        if (isContactsDone) {
+          log.log(`User ${userId}… did make ${config.adamant_campaign.min_contacts} contacts.`);
+          await user.update({
+            isAdamantCheckPassed: true,
+          }, true);
+        } else {
+          await user.update({
+            isAdamantCheckPassed: false,
+            isInCheck: false,
+            isTasksCompleted: false,
+          }, true);
 
-          if (isContactsDone) {
-            log.log(`User ${userId}… did make ${config.adamant_campaign.min_contacts} contacts.`);
-            await user.update({
-              isAdamantCheckPassed: true,
-            }, true);
+          if (need_new_contacts) {
+            msgSendBack = `To meet the Bounty campaign rules, you should invite ${config.adamant_campaign.min_contacts} friends in ADAMANT Messenger. They _should be new ADAMANT users_ and message you. They can join this bounty campaign as well! Invite friends and apply again.`;
           } else {
-            await user.update({
-              isAdamantCheckPassed: false,
-              isInCheck: false,
-              isTasksCompleted: false,
-            }, true);
-
-            if (need_new_contacts) {
-              msgSendBack = `To meet the Bounty campaign rules, you should invite ${config.adamant_campaign.min_contacts} friends in ADAMANT Messenger. They _should be new ADAMANT users_ and message you. They can join this bounty campaign as well! Invite friends and apply again.`;
-            } else {
-              msgSendBack = `To meet the Bounty campaign rules, you should invite ${config.adamant_campaign.min_contacts} friends in ADAMANT Messenger. They must message you. They can join this bounty campaign as well! Invite friends and apply again.`;
-            }
-
-            await api.sendMessage(config.passPhrase, userId, msgSendBack);
-            log.log(`User ${userId}… did NOT make ${config.adamant_campaign.min_contacts} contacts. Message to user: ${msgSendBack}`);
+            msgSendBack = `To meet the Bounty campaign rules, you should invite ${config.adamant_campaign.min_contacts} friends in ADAMANT Messenger. They must message you. They can join this bounty campaign as well! Invite friends and apply again.`;
           }
+
+          await api.sendMessage(config.passPhrase, userId, msgSendBack);
+          log.log(`User ${userId}… did NOT make ${config.adamant_campaign.min_contacts} contacts. Message to user: ${msgSendBack}`);
         }
       } catch (e) {
         log.error(`Error in ${helpers.getModuleName(module.id)} module: ${e}`);
