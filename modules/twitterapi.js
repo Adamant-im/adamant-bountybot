@@ -104,7 +104,7 @@ async function getAccountTimeline(account) {
 
 async function getAccountInfo(account) {
   const accountSN = $u.getTwitterScreenName(account);
-  log.log(`Getting user info for @${accountSN}…`)
+  log.log(`Getting user info for @${accountSN}…`);
 
   return await Twitter.get('users/show', {screen_name: accountSN})
       .then(function(data) {
