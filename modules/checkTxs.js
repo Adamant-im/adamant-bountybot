@@ -1,4 +1,4 @@
-const helpers = require('../helpers');
+const helpers = require('../helpers/utils');
 const db = require('./DB');
 const api = require('./api');
 const log = require('../helpers/log');
@@ -23,7 +23,11 @@ module.exports = async (itx, tx) => {
       }
     }
     if (msgSendBack) { // Do not send anything, if isInCheck
-      await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack);
+      await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack).then((response) => {
+        if (!response.success) {
+          log.warn(`Failed to send ADM message '${msgSendBack}' to ${tx.senderId}. ${response.errorMessage}.`);
+        }
+      });
     }
     return;
   }
@@ -42,7 +46,11 @@ module.exports = async (itx, tx) => {
     if (user.isTasksCompleted) {
       log.log(`User ${user.userId} already completed the Bounty tasks. Notify user and ignore.`);
       msgSendBack = `You've already completed the Bounty tasks.`;
-      await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack);
+      await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack).then((response) => {
+        if (!response.success) {
+          log.warn(`Failed to send ADM message '${msgSendBack}' to ${tx.senderId}. ${response.errorMessage}.`);
+        }
+      });
       return;
     }
 
@@ -85,5 +93,9 @@ module.exports = async (itx, tx) => {
   await itx.update({isProcessed: true}, true);
 
   msgSendBack = `I've got your account details. Twitter: ${user.twitterAccount}. I'll check if you've finished the Bounty tasks now…`;
-  await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack);
+  await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack).then((response) => {
+    if (!response.success) {
+      log.warn(`Failed to send ADM message '${msgSendBack}' to ${tx.senderId}. ${response.errorMessage}.`);
+    }
+  });
 };

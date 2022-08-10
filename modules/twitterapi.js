@@ -1,4 +1,4 @@
-const $u = require('../helpers/utils');
+const $u = require('../helpers/cryptos');
 const log = require('../helpers/log');
 const config = require('./configReader');
 const Twitter = require('twitter')({

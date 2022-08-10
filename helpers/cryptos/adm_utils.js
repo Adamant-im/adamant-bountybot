@@ -2,7 +2,7 @@ const Store = require('../../modules/Store');
 const api = require('../../modules/api');
 const log = require('../log');
 const config = require('../../modules/configReader');
-const helpers = require('../../helpers');
+const helpers = require('../utils');
 const {SAT} = require('../const');
 const User = Store.user.ADM;
 
@@ -40,7 +40,12 @@ module.exports = {
   },
   async send(params) {
     const {address, value, comment} = params;
-    const payment = await api.sendMessage(config.passPhrase, address, comment, 'basic', value);
+    const payment = await api.sendMessage(config.passPhrase, address, comment, 'basic', value).then((response) => {
+      if (!response.success) {
+        log.warn(`Failed to send ADM message '${comment}' to ${address}. ${response.errorMessage}.`);
+      }
+      return response;
+    });
     if (payment.success) {
       log.log(`Successfully sent ${value} ADM to ${address} with comment '${comment}', Tx hash: ${payment.data.transactionId}.`);
       return {

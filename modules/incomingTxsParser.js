@@ -1,8 +1,8 @@
 const db = require('./DB');
 const log = require('../helpers/log');
-const $u = require('../helpers/utils');
+const $u = require('../helpers/cryptos');
 const api = require('./api');
-const helpers = require('./../helpers');
+const helpers = require('../helpers/utils');
 const config = require('./configReader');
 const commandTxs = require('./commandTxs');
 const unknownTxs = require('./unknownTxs');
@@ -92,7 +92,12 @@ module.exports = async (tx) => {
 
   if (itx.isSpam && !spamerIsNotify) {
     notify(`${config.notifyName} notifies _${tx.senderId}_ is a spammer or talks too much. Income ADAMANT Tx: https://explorer.adamant.im/tx/${tx.id}.`, 'warn');
-    await api.sendMessage(config.passPhrase, tx.senderId, `I’ve _banned_ you. You’ve sent too much transactions to me.`);
+    const msgSendBack = `I’ve _banned_ you. You’ve sent too much transactions to me.`;
+    await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack).then((response) => {
+      if (!response.success) {
+        log.warn(`Failed to send ADM message '${msgSendBack}' to ${tx.senderId}. ${response.errorMessage}.`);
+      }
+    });
     return;
   }
 

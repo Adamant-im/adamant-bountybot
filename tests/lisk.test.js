@@ -1,6 +1,6 @@
 const axios = require('axios');
 const MockAdapter = require('axios-mock-adapter');
-const LskCoin = require('./../helpers/utils/lsk_utils');
+const LskCoin = require('../helpers/cryptos/lsk_utils');
 const config = require('../modules/configReader');
 
 const {

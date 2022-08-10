@@ -5,7 +5,7 @@ const adm_utils = require('./adm_utils');
 const LskCoin = require('./lsk_utils');
 const log = require('../log');
 const Store = require('../../modules/Store');
-const helpers = require('../../helpers');
+const helpers = require('../utils');
 
 module.exports = {
   async getAddressCryptoFromAdmAddressADM(coin, admAddress) {

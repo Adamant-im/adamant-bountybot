@@ -4,7 +4,7 @@ const axios = require('axios');
 const transactions = require('@liskhq/lisk-transactions');
 const cryptography = require('@liskhq/lisk-cryptography');
 
-const helpers = require('../../helpers');
+const helpers = require('../utils');
 const api = require('../../modules/api');
 
 const lskNode = config.node_LSK[0];
