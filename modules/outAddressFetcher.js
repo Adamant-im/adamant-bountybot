@@ -1,6 +1,6 @@
 const log = require('../helpers/log');
-const $u = require('../helpers/utils');
-const helpers = require('../helpers');
+const $u = require('../helpers/cryptos');
+const helpers = require('../helpers/utils');
 const api = require('./api');
 const notify = require('../helpers/notify');
 const config = require('./configReader');
@@ -36,7 +36,11 @@ module.exports = async () => {
           msgSendBack = `I can’t get your _${pay.outCurrency}_ address from ADAMANT KVS to pay a reward. Make sure you use ADAMANT wallet with _${pay.outCurrency}_ enabled. I have already notified my master.`;
           notify(msgNotify, 'error');
           let tx;
-          await api.sendMessage(config.passPhrase, tx.userId, msgSendBack);
+          await api.sendMessage(config.passPhrase, tx.userId, msgSendBack).then((response) => {
+            if (!response.success) {
+              log.warn(`Failed to send ADM message '${msgSendBack}' to ${tx.userId}. ${response.errorMessage}.`);
+            }
+          });
         }
       } else {
         pay.update({

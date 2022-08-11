@@ -1,5 +1,5 @@
 const Store = require('./Store');
-const helpers = require('../helpers');
+const helpers = require('../helpers/utils');
 const config = require('./configReader');
 const api = require('./api');
 const txParser = require('./incomingTxsParser');

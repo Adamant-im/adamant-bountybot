@@ -1,7 +1,7 @@
 const db = require('./DB');
 const config = require('./configReader');
-const $u = require('../helpers/utils');
-const helpers = require('../helpers');
+const $u = require('../helpers/cryptos');
+const helpers = require('../helpers/utils');
 const api = require('./api');
 const Store = require('./Store');
 const log = require('../helpers/log');
@@ -53,7 +53,11 @@ module.exports = async () => {
           msgSendBack = `I’ve tried to make the reward payout of _${outAmount}_ _${outCurrency}_ to you, but unable to validate transaction. Tx hash: _${outTxid}_. I’ve already notified my master. If you wouldn’t receive transfer in two days, contact my master also.`;
 
           notify(msgNotify, notifyType);
-          await api.sendMessage(config.passPhrase, userId, msgSendBack);
+          await api.sendMessage(config.passPhrase, userId, msgSendBack).then((response) => {
+            if (!response.success) {
+              log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
+            }
+          });
         }
         await pay.save();
         return;
@@ -78,7 +82,11 @@ module.exports = async () => {
         msgNotify = `${config.notifyName} notifies that the reward payout of _${outAmount}_ _${outCurrency}_ failed. Tx hash: _${outTxid}_. Will try again. Balance of _${outCurrency}_ is _${Store.user[outCurrency].balance}_. ${etherString}User ADAMANT id: ${userId}.`;
         msgSendBack = `I’ve tried to make the payout transfer of _${outAmount}_ _${outCurrency}_ to you, but it seems transaction failed. Tx hash: _${outTxid}_. I will try again. If I’ve said the same several times already, please contact my master.`;
 
-        await api.sendMessage(config.passPhrase, userId, msgSendBack);
+        await api.sendMessage(config.passPhrase, userId, msgSendBack).then((response) => {
+          if (!response.success) {
+            log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
+          }
+        });
       } else if (status && pay.outConfirmations >= config.min_confirmations) {
         notifyType = 'info';
         if (config.notifyRewardReceived) {
@@ -88,7 +96,12 @@ module.exports = async () => {
 
         if (outCurrency !== 'ADM') {
           msgSendBack = `{"type":"${outCurrency.toLowerCase()}_transaction","amount":"${outAmount}","hash":"${outTxid}","comments":"${msgSendBack}"}`;
-          const message = await api.sendMessage(config.passPhrase, userId, msgSendBack, 'rich');
+          const message = await api.sendMessage(config.passPhrase, userId, msgSendBack, 'rich').then((response) => {
+            if (!response.success) {
+              log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
+            }
+            return response;
+          });
           if (message.success) {
             pay.isFinished = true;
           } else {

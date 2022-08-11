@@ -46,15 +46,12 @@
     "ADM",
     "ETH",
     "USDS",
-    "RES",
-    "BZ"
+    "LSK"
   ],
 
   /** List of ERC-20 tokens **/
   "erc20": [
-    "USDS",
-    "RES",
-    "BZ"
+    "USDS"
   ],
 
   /** How to reply user in-chat, if first unknown command received. **/

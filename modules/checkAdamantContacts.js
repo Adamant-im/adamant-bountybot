@@ -1,6 +1,6 @@
 const db = require('./DB');
 const config = require('./configReader');
-const helpers = require('../helpers');
+const helpers = require('../helpers/utils');
 const log = require('../helpers/log');
 const api = require('./api');
 const Store = require('./Store');
@@ -93,7 +93,11 @@ module.exports = async () => {
             msgSendBack = `To meet the Bounty campaign rules, you should invite ${config.adamant_campaign.min_contacts} friends in ADAMANT Messenger. They must message you. They can join this bounty campaign as well! Invite friends and apply again.`;
           }
 
-          await api.sendMessage(config.passPhrase, userId, msgSendBack);
+          await api.sendMessage(config.passPhrase, userId, msgSendBack).then((response) => {
+            if (!response.success) {
+              log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
+            }
+          });
           log.log(`User ${userId}… did NOT make ${config.adamant_campaign.min_contacts} contacts. Message to user: ${msgSendBack}`);
         }
       } catch (e) {

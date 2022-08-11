@@ -1,6 +1,6 @@
 const db = require('./DB');
 const config = require('./configReader');
-const helpers = require('../helpers');
+const helpers = require('../helpers/utils');
 const api = require('./api');
 const log = require('../helpers/log');
 const notify = require('../helpers/notify');
@@ -83,7 +83,11 @@ module.exports = async () => {
             notify(`${config.notifyName}: User ${userId}${twitterString} completed the Bounty tasks. Payouts are pending.`, 'log');
           }
           msgSendBack = `Great, you've completed all the tasks! Reward is coming right now!`;
-          await api.sendMessage(config.passPhrase, userId, msgSendBack);
+          await api.sendMessage(config.passPhrase, userId, msgSendBack).then((response) => {
+            if (!response.success) {
+              log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
+            }
+          });
         }
       } catch (e) {
         log.error(`Error in ${helpers.getModuleName(module.id)} module: ${e}`);

@@ -1,7 +1,7 @@
 const db = require('./DB');
 const config = require('./configReader');
 const api = require('./api');
-const helpers = require('../helpers');
+const helpers = require('../helpers/utils');
 const log = require('../helpers/log');
 const twitterapi = require('./twitterapi');
 
@@ -52,7 +52,11 @@ module.exports = async () => {
               isTasksCompleted: false,
             }, true);
             msgSendBack = `To meet the Bounty campaign rules, you should follow Twitter account ${followAccount}. Then you apply again.`;
-            await api.sendMessage(config.passPhrase, userId, msgSendBack);
+            await api.sendMessage(config.passPhrase, userId, msgSendBack).then((response) => {
+              if (!response.success) {
+                log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
+              }
+            });
             log.log(`User ${userId}… ${twitterAccount} do NOT follows ${followAccount}. Message to user: ${msgSendBack}`);
             break;
           }

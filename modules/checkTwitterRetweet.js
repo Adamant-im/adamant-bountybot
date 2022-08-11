@@ -1,6 +1,6 @@
 const db = require('./DB');
 const config = require('./configReader');
-const helpers = require('../helpers');
+const helpers = require('../helpers/utils');
 const api = require('./api');
 const log = require('../helpers/log');
 const twitterapi = require('./twitterapi');
@@ -106,7 +106,11 @@ module.exports = async () => {
                 break;
             }
 
-            await api.sendMessage(config.passPhrase, userId, msgSendBack);
+            await api.sendMessage(config.passPhrase, userId, msgSendBack).then((response) => {
+              if (!response.success) {
+                log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
+              }
+            });
             log.log(`User ${userId}… ${twitterAccount} did NOT retweet ${toRetweet}: ${retweetResult.error}. Message to user: ${msgSendBack}`);
 
             break;

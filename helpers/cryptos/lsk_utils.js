@@ -4,7 +4,7 @@ const transactions = require('@liskhq/lisk-transactions');
 const cryptography = require('@liskhq/lisk-cryptography');
 
 const LskBaseCoin = require('./lskBaseCoin');
-const helpers = require('../../helpers');
+const helpers = require('../utils');
 const Store = require('../../modules/Store');
 
 const lskNode = config.node_LSK[0];

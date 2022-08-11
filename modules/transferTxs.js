@@ -2,6 +2,7 @@ const {SAT} = require('../helpers/const');
 const api = require('./api');
 const notify = require('../helpers/notify');
 const config = require('./configReader');
+const log = require('./../helpers/log');
 
 module.exports = async (itx, tx) => {
   const msg = itx.encrypted_content;
@@ -38,5 +39,9 @@ module.exports = async (itx, tx) => {
   await itx.update({isProcessed: true}, true);
 
   notify(msgNotify, notifyType);
-  await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack);
+  await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack).then((response) => {
+    if (!response.success) {
+      log.warn(`Failed to send ADM message '${msgSendBack}' to ${tx.senderId}. ${response.errorMessage}.`);
+    }
+  });
 };

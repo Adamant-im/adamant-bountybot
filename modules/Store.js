@@ -3,7 +3,7 @@ const log = require('../helpers/log');
 const keys = require('adamant-api/src/helpers/keys');
 const api = require('./api');
 const axios = require('axios');
-const helpers = require('../helpers');
+const helpers = require('../helpers/utils');
 const {version} = require('../package.json');
 const config = require('./configReader');
 
