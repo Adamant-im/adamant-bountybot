@@ -106,11 +106,7 @@ module.exports = async () => {
                 break;
             }
 
-            await api.sendMessage(config.passPhrase, userId, msgSendBack).then((response) => {
-              if (!response.success) {
-                log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
-              }
-            });
+            await api.sendMessageWithLog(config.passPhrase, userId, msgSendBack);
             log.log(`User ${userId}… ${twitterAccount} did NOT retweet ${toRetweet}: ${retweetResult.error}. Message to user: ${msgSendBack}`);
 
             break;

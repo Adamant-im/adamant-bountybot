@@ -93,11 +93,7 @@ module.exports = async () => {
             msgSendBack = `To meet the Bounty campaign rules, you should invite ${config.adamant_campaign.min_contacts} friends in ADAMANT Messenger. They must message you. They can join this bounty campaign as well! Invite friends and apply again.`;
           }
 
-          await api.sendMessage(config.passPhrase, userId, msgSendBack).then((response) => {
-            if (!response.success) {
-              log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
-            }
-          });
+          await api.sendMessageWithLog(config.passPhrase, userId, msgSendBack);
           log.log(`User ${userId}… did NOT make ${config.adamant_campaign.min_contacts} contacts. Message to user: ${msgSendBack}`);
         }
       } catch (e) {

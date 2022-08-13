@@ -29,11 +29,7 @@ module.exports = async (cmd, tx, itx) => {
       }, true);
       if (config.notify_non_admins) {
         const msgSendBack = `I won't execute admin commands as you are not an admin. Contact my master.`;
-        await api.sendMessage(config.passPhrase, tx.senderId, msgSendBack).then((response) => {
-          if (!response.success) {
-            log.warn(`Failed to send ADM message '${msgSendBack}' to ${tx.senderId}. ${response.errorMessage}.`);
-          }
-        });
+        await api.sendMessageWithLog(config.passPhrase, tx.senderId, msgSendBack);
       }
       return;
     }
@@ -53,11 +49,7 @@ module.exports = async (cmd, tx, itx) => {
         notify(res.msgNotify, res.notifyType);
       }
       if (res.msgSendBack) {
-        await api.sendMessage(config.passPhrase, tx.senderId, res.msgSendBack).then((response) => {
-          if (!response.success) {
-            log.warn(`Failed to send ADM message '${res.msgSendBack}' to ${tx.senderId}. ${response.errorMessage}.`);
-          }
-        });
+        await api.sendMessageWithLog(config.passPhrase, tx.senderId, res.msgSendBack);
       }
     }
   } catch (e) {

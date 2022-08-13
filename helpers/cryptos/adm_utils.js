@@ -40,12 +40,7 @@ module.exports = {
   },
   async send(params) {
     const {address, value, comment} = params;
-    const payment = await api.sendMessage(config.passPhrase, address, comment, 'basic', value).then((response) => {
-      if (!response.success) {
-        log.warn(`Failed to send ADM message '${comment}' to ${address}. ${response.errorMessage}.`);
-      }
-      return response;
-    });
+    const payment = await api.sendMessageWithLog(config.passPhrase, address, comment, 'basic', value);
     if (payment.success) {
       log.log(`Successfully sent ${value} ADM to ${address} with comment '${comment}', Tx hash: ${payment.data.transactionId}.`);
       return {
