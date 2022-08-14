@@ -42,11 +42,7 @@ module.exports = async (tx, itx) => {
         } else {
           msg = getRnd(5);
         }
-        await api.sendMessage(config.passPhrase, tx.senderId, msg).then((response) => {
-          if (!response.success) {
-            log.warn(`Failed to send ADM message '${msg}' to ${tx.senderId}. ${response.errorMessage}.`);
-          }
-        });
+        await api.sendMessageWithLog(config.passPhrase, tx.senderId, msg);
         itx.update({isProcessed: true}, true);
       });
 };

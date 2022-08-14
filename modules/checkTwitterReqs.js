@@ -77,11 +77,7 @@ module.exports = async () => {
             msgSendBack = `To meet the Bounty campaign rules, your Twitter account ${config.twitterEligibleString}.`;
           }
 
-          await api.sendMessage(config.passPhrase, userId, msgSendBack).then((response) => {
-            if (!response.success) {
-              log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
-            }
-          });
+          await api.sendMessageWithLog(config.passPhrase, userId, msgSendBack);
           log.log(`User ${userId}… ${twitterAccount} is NOT eligible. Message to user: ${msgSendBack}`);
         }
 

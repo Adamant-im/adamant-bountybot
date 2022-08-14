@@ -36,11 +36,7 @@ module.exports = async () => {
           msgSendBack = `I can’t get your _${pay.outCurrency}_ address from ADAMANT KVS to pay a reward. Make sure you use ADAMANT wallet with _${pay.outCurrency}_ enabled. I have already notified my master.`;
           notify(msgNotify, 'error');
           let tx;
-          await api.sendMessage(config.passPhrase, tx.userId, msgSendBack).then((response) => {
-            if (!response.success) {
-              log.warn(`Failed to send ADM message '${msgSendBack}' to ${tx.userId}. ${response.errorMessage}.`);
-            }
-          });
+          await api.sendMessageWithLog(config.passPhrase, tx.userId, msgSendBack);
         }
       } else {
         pay.update({

@@ -93,6 +93,8 @@ module.exports = class LskCoin extends LskBaseCoin {
   sendTransaction(signedTx) {
     return this._getClient().post('/api/transactions', signedTx).then((response) => {
       return response.data.data.transactionId;
+    }).catch((e) => {
+      log.warn(`Error while sending transaction in sendTransaction() of ${helpers.getModuleName(module.id)} module: ` + e);
     });
   }
 
@@ -136,8 +138,6 @@ module.exports = class LskCoin extends LskBaseCoin {
           error: `Unable to create Tx`,
         };
       } catch (e) {
-        log.info('ERROR');
-        log.info(e.response.data.errors);
         return {
           success: false,
           error: e.toString(),
@@ -201,6 +201,8 @@ module.exports = class LskCoin extends LskBaseCoin {
           status: true,
         };
       }
+    }).catch((e) => {
+      log.warn(`Error while getting transaction status in getTransactionStatus() for ${txId} of ${helpers.getModuleName(module.id)} module: ` + e);
     });
   }
 };

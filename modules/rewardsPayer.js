@@ -45,11 +45,7 @@ module.exports = async () => {
         }, true);
         notify(`${config.notifyName} notifies about insufficient balance to send a reward of _${outAmount}_ _${outCurrency}_. Balance of _${outCurrency}_ is _${Store.user[outCurrency].balance}_. ${etherString}User ADAMANT id: ${userId}.`, 'error');
         const msgSendBack = `I can’t transfer a reward of _${outAmount}_ _${outCurrency}_ to you because of insufficient funds (I count blockchain fees also). I have already notified my master.`;
-        await api.sendMessage(config.passPhrase, userId, msgSendBack).then((response) => {
-          if (!response.success) {
-            log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
-          }
-        });
+        await api.sendMessageWithLog(config.passPhrase, userId, msgSendBack);
         return;
       }
 
@@ -88,11 +84,7 @@ module.exports = async () => {
         }, true);
         notify(`${config.notifyName} cannot make transaction to payout a reward of _${outAmount}_ _${outCurrency}_. Balance of _${outCurrency}_ is _${Store.user[outCurrency].balance}_. ${etherString}User ADAMANT id: ${userId}.`, 'error');
         const msgSendBack = `I’ve tried to make a reward payout of _${outAmount}_ _${outCurrency}_ to you, but something went wrong. I have already notified my master.`;
-        await api.sendMessage(config.passPhrase, userId, msgSendBack).then((response) => {
-          if (!response.success) {
-            log.warn(`Failed to send ADM message '${msgSendBack}' to ${userId}. ${response.errorMessage}.`);
-          }
-        });
+        await api.sendMessageWithLog(config.passPhrase, userId, msgSendBack);
       }
     } catch (e) {
       log.error(`Error in ${helpers.getModuleName(module.id)} module: ${e.toString()}`);
