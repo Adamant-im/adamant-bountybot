@@ -110,7 +110,8 @@ try {
   if (isDev) {
     config = JSON.parse(jsonminify(fs.readFileSync('./config.test', 'utf-8')));
   } else {
-    config = JSON.parse(jsonminify(fs.readFileSync('./config.default.json', 'utf-8')));
+    const configFile = fs.existsSync('./config.json') ? './config.json' : './config.default.json';
+    config = JSON.parse(jsonminify(fs.readFileSync(configFile, 'utf-8')));
   }
 
   let keysPair;
@@ -189,6 +190,8 @@ try {
       exit(`Bot's ${address} config is wrong. Field type _${f}_ is not valid, expected type is _${fields[f].type.name}_. Cannot start Bot.`);
     }
   });
+
+  console.info(`The bot ${address} successfully read a config-file${isDev ? ' (dev)' : ''}.`);
 } catch (e) {
   console.error('Error reading config: ' + e);
 }
