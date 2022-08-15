@@ -40,5 +40,5 @@ if (port) {
     });
   });
 
-  app.listen(port, () => log.info('Server listening on port ' + port + ' http://localhost:' + port + '/db?tb=systemDb'));
+  app.listen(port, () => log.info(`${config.notifyName} debug server is listening on http://localhost:${port}. F. e., http://localhost:${port}/db?tb=systemDb.`));
 }

@@ -1,11 +1,13 @@
 {
-  /** The bot's secret phrase for concluding transactions.
-      Bot's ADAMANT address will correspond this passPhrase.
+  /**
+    The bot's secret phrase for concluding transactions.
+    Bot's ADAMANT address will correspond this passPhrase.
   **/
   "passPhrase": "qwert yuiop asdfg hjkl zxcvb nmqwe",
 
-  /** List of nodes to fetch transactions.
-      If one become unavailable, pool will choose live one.
+  /** 
+    List of nodes to fetch transactions.
+    If one become unavailable, pool will choose live one.
   **/
   "node_ADM": [
     "http://localhost:36666",
@@ -28,20 +30,25 @@
   "node_ETH": [
     "https://ethnode1.adamant.im"
   ],
+
+  /** List of Lisk nodes **/
   "node_LSK": [
     "https://lisknode3.adamant.im",
     "https://lisknode4.adamant.im"
   ],
+
+  /** List of Lisk Service nodes **/
   "service_LSK": [
     "https://liskservice3.adamant.im",
     "https://liskservice4.adamant.im"
   ],
+
   /** List of ADAMANT InfoServices for catching exchange rates **/
   "infoservice": [
     "https://info.adamant.im"
   ],
 
-  /** List of cryptocurrencies bot can work with. **/
+  /** List of cryptocurrencies bot can work with **/
   "known_crypto": [
     "ADM",
     "ETH",
@@ -57,11 +64,12 @@
   /** How to reply user in-chat, if first unknown command received. **/
   "welcome_string": "Hi! 😊 I'm a bounty bot. And this is a stub. Are you ready for the awesome bounty campaign with automatic payout? Type **/help** to see bounty rules.",
 
-  /** Bounty rules. Shown by /help command. You can use template literals
-      like ${config.rewards_list}, ${config.rewards_tickers}, ${config.twitter_follow[0]},
-      ${config.twitter_retweet_w_comment[0].tweet}, ${config.twitter_follow_list},
-      ${config.twitter_retweet_w_comment[0].min_mentions}, ${config.twitter_retweet_w_comment[0].tag_list},
-      ${config.twitterEligibleString}
+  /** 
+    Bounty rules. Shown by /help command. You can use template literals
+    like ${config.rewards_list}, ${config.rewards_tickers}, ${config.twitter_follow[0]},
+    ${config.twitter_retweet_w_comment[0].tweet}, ${config.twitter_follow_list},
+    ${config.twitter_retweet_w_comment[0].min_mentions}, ${config.twitter_retweet_w_comment[0].tag_list},
+    ${config.twitterEligibleString}
   **/
   "help_message": "Earn **${config.rewards_tickers}** with your social activity! A reward depends on how much Twitter followers you have. Your account ${config.twitterEligibleString}.\n${config.rewards_range}\n\n&nbsp;\nThe campaign rules:\n- Follow account ${config.twitter_follow_list} on Twitter\n- Like & quote ${config.twitter_retweet_w_comment[0].tweet}, mentioning ${config.twitter_retweet_w_comment[0].min_mentions} friends and ${config.twitter_retweet_w_comment[0].tag_list} tags.\n- Invite ${config.adamant_campaign.min_contacts} friend in ADAMANT Messenger. They must message you.\n- Send me the name (like @adamant_im) or the link to your Twitter profile to verify.\n\n&nbsp;\nGo!",
 
@@ -86,8 +94,9 @@
     "min_days": 20
   },
 
-  /** Tweets user should quote (retweet with comment).
-      Min_mentions is how much people he should mention. Hashtags is a list of tags he must use.
+  /** 
+    Tweets user should quote (retweet with comment).
+    Min_mentions is how much people he should mention. Hashtags is a list of tags he must use.
   **/
   "twitter_retweet_w_comment": [
     {
@@ -102,9 +111,10 @@
     }
   ],
 
-  /** Minimum contacts user must invite to ADAMANT Messenger.
-      Contacts must be new users.
-      0 is disabled.
+  /** 
+    Minimum contacts user must invite to ADAMANT Messenger.
+    Contacts must be new users.
+    0 is disabled.
   **/
   "adamant_campaign": {
     "min_contacts": 1
@@ -122,9 +132,10 @@
     }
   ],
 
-  /** Set progressive scale of reward amounts for each cryptocurrency.
-      `func` is a mathjs.org function. Limit followers with `limit_followers` parameter.
-      If not set for a currency, plain amount is used, which is set in `rewards.amount`.
+  /** 
+    Set progressive scale of reward amounts for each cryptocurrency,
+    Where `func` is a mathjs.org function. Limit followers with `limit_followers` parameter.
+    If not set for a currency, plain amount is used, which is set in `rewards.amount`.
   **/
   "rewards_progression_from_twitter_followers": {
     "ADM": {
@@ -143,15 +154,15 @@
     "access_token_secret": ""
   },
 
-  /** Interval in minutes to test Twitter API. Because of different reasons Twitter may temporary block API requests.
-  To continue, you need manually login into your Twitter account and solve captcha.
-  This parameter allows to automatically check if Twitter API works well every twitter_api_test_interval minutes.
-  In case of error the bot will notify you. Also you can run "/test twitterapi" command manually.
-  0 means disabled.
+  /** 
+    Interval in minutes to test Twitter API. Because of different reasons Twitter may temporary block API requests.
+    To continue, you need manually login into your Twitter account and solve captcha.
+    This parameter allows to automatically check if Twitter API works well every twitter_api_test_interval minutes.
+    In case of error the bot will notify you. Also you can run "/test twitterapi" command manually.
+    0 means disabled.
   **/
   "twitter_api_test_interval": 600,
 
-  /** ADAMANT accounts to accept control commands from. Control commands from other accounts will not be executed. **/
   /** Notify non-admins that they are not admins. If false, bot will be silent. **/
   "notify_non_admins": false,
 
@@ -167,14 +178,16 @@
   /** If you want to receive notifications when user receives a Bounty reward **/
   "notifyRewardReceived": true,
 
-  /** Port for getting debug info.
-      Do not set for live exchange bots, use only for debugging.
-      Allows to get DBs records like http://ip:port/db?tb=IncomingTxs
+  /** 
+    Port for getting debug info.
+    Do not set for live exchange bots, use only for debugging.
+    Allows to get DBs records like http://ip:port/db?tb=IncomingTxs
   **/
   "api": false,
 
-  /** The software will use verbosity according to log_level.
-    	It can be none < error < warn < info < log.
-  	**/
+  /**
+    The software will use verbosity according to log_level.
+    It can be none < error < warn < info < log.
+  **/
   "log_level": "log"
 }

@@ -1,7 +1,7 @@
 {
   "name": "adamant-bountybot",
-  "version": "1.5.0",
-  "description": "ADAMANT Bounty bot — a software that allows you to carry out bounty campaigns & crypto airdrops, with automatic task verifications and payouts.",
+  "version": "1.6.0",
+  "description": "ADAMANT Bounty bot — a software that allows you to carry out bounty campaigns & crypto airdrops, with automatic task verification and payouts.",
   "main": "index.js",
   "scripts": {
     "test": "jest --rootDir tests --forceExit --testTimeout 30000 'dev'",
@@ -17,14 +17,16 @@
     "bot",
     "bitcoin",
     "ethereum",
+    "lisk",
     "bounty",
     "bounty bot",
     "crypto",
     "cryptocurrency",
     "twitter",
-    "airdrop"
+    "airdrop",
+    "payout"
   ],
-  "author": "Aleksei Lebedev <devs@adamant.im> (https://adamant.im)",
+  "author": "Aleksei Lebedev, ADAMANT Devs <devs@adamant.im> (https://adamant.im)",
   "license": "GPL-3.0",
   "dependencies": {
     "@liskhq/lisk-cryptography": "^3.2.1",
@@ -46,10 +48,10 @@
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
-    "axios-mock-adapter": "^1.21.1",
-    "eslint": "^8.21.0",
+    "axios-mock-adapter": "^1.21.2",
+    "eslint": "^8.22.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-plugin-jest": "^26.8.2",
+    "eslint-plugin-jest": "^26.8.3",
     "husky": "^8.0.1",
     "jest": "^28.1.3"
   },
