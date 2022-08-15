@@ -8,10 +8,10 @@ const notify = require('../helpers/notify');
 const twitterapi = require('./twitterapi');
 
 module.exports = async (cmd, tx, itx) => {
-  if (itx.isProcessed) return;
-  log.log(`Got new command Tx to process: ${cmd} from ${tx.senderId}`);
-
   try {
+    if (itx.isProcessed) return;
+    log.log(`Got new command Tx to process: '${cmd}' from ${tx.senderId}.`);
+
     let res = [];
     const group = cmd
         .trim()
@@ -165,7 +165,7 @@ async function test(param) {
   let output;
 
   try {
-    param = param[0].trim();
+    param = param[0]?.trim();
     if (!param || !['twitterapi'].includes(param)) {
       return {
         msgNotify: ``,
