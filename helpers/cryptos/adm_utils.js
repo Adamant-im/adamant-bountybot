@@ -8,7 +8,7 @@ const User = Store.user.ADM;
 
 module.exports = {
   get FEE() {
-    return Store.comissions.ADM;
+    return Store.fees.ADM;
   },
   syncGetTransaction(hash, tx) {
     return {

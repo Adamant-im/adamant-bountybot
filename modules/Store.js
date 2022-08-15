@@ -35,7 +35,7 @@ module.exports = {
     },
   },
 
-  comissions: {
+  fees: {
     ADM: 0.5, // This is a stub. Cryptos' fees returned with FEE() method in their modules
   },
 
