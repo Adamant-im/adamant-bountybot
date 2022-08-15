@@ -1,46 +1,61 @@
 const constants = require('./const');
+const log = require('./log');
+
 module.exports = {
   unix() {
     return new Date().getTime();
   },
+
   getModuleName(id) {
-    let n = id.lastIndexOf('\\');
-    if (n === -1) {
-      n = id.lastIndexOf('/');
-    }
-    if (n === -1) {
-      return '';
-    } else {
-      return id.substring(n + 1);
+    try {
+      let n = id.lastIndexOf('\\');
+      if (n === -1) {
+        n = id.lastIndexOf('/');
+      }
+      if (n === -1) {
+        return '';
+      } else {
+        return id.substring(n + 1);
+      }
+    } catch (e) {
+      log.error(`Error in getModuleName() of utils.js module: ${e}`);
     }
   },
+
   toTimestamp(epochTime) {
     return epochTime * 1000 + constants.EPOCH;
   },
+
   thousandSeparator(num, doBold) {
-    const parts = (num + '').split('.');
-    const main = parts[0];
-    const len = main.length;
-    let output = '';
-    let i = len - 1;
+    try {
+      const parts = (num + '').split('.');
+      const main = parts[0];
+      const len = main.length;
+      let output = '';
+      let i = len - 1;
 
-    while (i >= 0) {
-      output = main.charAt(i) + output;
-      if ((len - i) % 3 === 0 && i > 0) {
-        output = ' ' + output;
+      while (i >= 0) {
+        output = main.charAt(i) + output;
+        if ((len - i) % 3 === 0 && i > 0) {
+          output = ' ' + output;
+        }
+        --i;
       }
-      --i;
-    }
 
-    if (parts.length > 1) {
-      if (doBold) {
-        output = `**${output}**.${parts[1]}`;
-      } else {
-        output = `${output}.${parts[1]}`;
+      if (parts.length > 1) {
+        if (doBold) {
+          output = `**${output}**.${parts[1]}`;
+        } else {
+          output = `${output}.${parts[1]}`;
+        }
       }
+
+      return output;
+    } catch (e) {
+      log.error(`Error in thousandSeparator() of ${this.getModuleName(module.id)} module: ${e}`);
     }
-    return output;
   },
+
   /**
    * Formats unix timestamp to string
    * @param {number} timestamp Timestamp to format
@@ -63,6 +78,7 @@ module.exports = {
     formattedDate.hh_mm_ss = formattedDate.hours + ':' + formattedDate.minutes + ':' + formattedDate.seconds;
     return formattedDate;
   },
+
   /**
    * Compares two strings, case-insensitive
    * @param {string} string1
@@ -73,6 +89,7 @@ module.exports = {
     if (typeof string1 !== 'string' || typeof string2 !== 'string') return false;
     return string1.toUpperCase() === string2.toUpperCase();
   },
+
   /**
    * Checks if number is finite
    * @param {number} value Number to validate
@@ -84,6 +101,7 @@ module.exports = {
     }
     return true;
   },
+
   /**
    * Checks if number is finite and not less, than 0
    * @param {number} value Number to validate
@@ -95,6 +113,7 @@ module.exports = {
     }
     return true;
   },
+
   /**
    * Converts a bytes array to the respective string representation
    * @param {Array<number>|Uint8Array} bytes bytes array
