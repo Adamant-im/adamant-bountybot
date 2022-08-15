@@ -18,6 +18,7 @@ const lskData = api.lsk.keys(config.passPhrase);
 module.exports = {
   version,
   botName: AdmAddress,
+
   user: {
     ADM: {
       passPhrase: config.passPhrase,
@@ -33,27 +34,36 @@ module.exports = {
       privateKey: lskData.privateKey,
     },
   },
+
   comissions: {
-    ADM: 0.5, // This is a stub. Ether fee returned with FEE() method in separate module
+    ADM: 0.5, // This is a stub. Cryptos' fees returned with FEE() method in their modules
   },
+
   lastBlock: null,
   get lastHeight() {
     return this.lastBlock && this.lastBlock.height || false;
   },
+
   updateSystem(field, data) {
     const $set = {};
     $set[field] = data;
     db.systemDb.db.updateOne({}, {$set}, {upsert: true});
     this[field] = data;
   },
+
   async updateLastBlock() {
-    const blocks = await api.get('blocks', {limit: 1});
-    if (blocks.success) {
-      this.updateSystem('lastBlock', blocks.data.blocks[0]);
-    } else {
-      log.warn(`Failed to get last block in updateLastBlock() of ${helpers.getModuleName(module.id)} module. ${blocks.errorMessage}.`);
+    try {
+      const blocks = await api.get('blocks', {limit: 1});
+      if (blocks.success) {
+        this.updateSystem('lastBlock', blocks.data.blocks[0]);
+      } else {
+        log.warn(`Failed to get last block in updateLastBlock() of ${helpers.getModuleName(module.id)} module. ${blocks.errorMessage}.`);
+      }
+    } catch (e) {
+      log.error(`Error in updateLastBlock() of ${helpers.getModuleName(module.id)} module: ${e}`);
     }
   },
+
   async updateCurrencies() {
     const url = config.infoservice + '/get';
     try {
@@ -67,9 +77,10 @@ module.exports = {
         }
       }
     } catch (error) {
-      log.warn(`Error in updateCurrencies() of ${helpers.getModuleName(module.id)} module: Request to ${url} failed with ${error.response ? error.response.status : undefined} status code, ${error.toString()}${error.response && error.response.data ? '. Message: ' + error.response.data.toString().trim() : ''}.`);
+      log.warn(`Error in updateCurrencies() of ${helpers.getModuleName(module.id)} module: Request to ${url} failed with ${error?.response?.status} status code, ${error.toString()}${error?.response?.data ? '. Message: ' + error.response.data.toString().trim() : ''}.`);
     }
   },
+
   getPrice(from, to) {
     try {
       from = from.toUpperCase();
@@ -82,26 +93,31 @@ module.exports = {
       const priceTo = +(this.currencies[to + '/USD']);
       return +(priceFrom / priceTo || 1).toFixed(8);
     } catch (e) {
-      log.error('Error while calculating getPrice(): ', e);
+      log.error('Error while calculating getPrice(): ' + e);
       return 0;
     }
   },
+
   mathEqual(from, to, amount, doNotAccountFees) {
-    let price = this.getPrice(from, to);
-    if (!doNotAccountFees) {
-      price *= (100 - config['exchange_fee_' + from]) / 100;
-    }
-    if (!price) {
+    try {
+      let price = this.getPrice(from, to);
+      if (!doNotAccountFees) {
+        price *= (100 - config['exchange_fee_' + from]) / 100;
+      }
+      if (!price) {
+        return {
+          outAmount: 0,
+          exchangePrice: 0,
+        };
+      }
+      price = +price.toFixed(8);
       return {
-        outAmount: 0,
-        exchangePrice: 0,
+        outAmount: +(price * amount).toFixed(8),
+        exchangePrice: price,
       };
+    } catch (e) {
+      log.error(`Error in mathEqual() of ${helpers.getModuleName(module.id)} module: ${e}`);
     }
-    price = +price.toFixed(8);
-    return {
-      outAmount: +(price * amount).toFixed(8),
-      exchangePrice: price,
-    };
   },
 };
 
