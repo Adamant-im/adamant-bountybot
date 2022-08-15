@@ -36,9 +36,11 @@ module.exports = async () => {
 
         let msgSendBack = '';
 
-        if (((config.twitter_follow.length === 0) || isTwitterFollowCheckPassed) &&
-                    ((config.twitter_retweet_w_comment.length === 0) || isTwitterRetweetCommentCheckPassed) &&
-                    ((config.adamant_campaign.min_contacts === 0) || isAdamantCheckPassed)) {
+        if (
+          ((config.twitter_follow.length === 0) || isTwitterFollowCheckPassed) &&
+          ((config.twitter_retweet_w_comment.length === 0) || isTwitterRetweetCommentCheckPassed) &&
+          ((config.adamant_campaign.min_contacts === 0) || isAdamantCheckPassed)
+        ) {
           await user.update({
             isInCheck: false,
             isTasksCompleted: true,

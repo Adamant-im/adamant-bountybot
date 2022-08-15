@@ -10,6 +10,7 @@ const twitterapi = require('./twitterapi');
 module.exports = async (cmd, tx, itx) => {
   if (itx.isProcessed) return;
   log.log(`Got new command Tx to process: ${cmd} from ${tx.senderId}`);
+
   try {
     let res = [];
     const group = cmd
@@ -69,113 +70,125 @@ function help() {
 async function rates(params) {
   let output = '';
 
-  const coin1 = params[0].toUpperCase().trim();
+  try {
+    const coin1 = params[0].toUpperCase().trim();
 
-  if (!coin1 || !coin1.length) {
-    output = 'Please specify coin ticker or specific market you are interested in. F. e., */rates ADM*.';
-    return {
-      msgNotify: ``,
-      msgSendBack: `${output}`,
-      notifyType: 'log',
-    };
-  }
-  const currencies = Store.currencies;
-  const res = Object
-      .keys(Store.currencies)
-      .filter((t) => t.startsWith(coin1 + '/'))
-      .map((t) => {
-        const p = `${coin1}/**${t.replace(coin1 + '/', '')}**`;
-        return `${p}: ${currencies[t]}`;
-      })
-      .join(', ');
+    if (!coin1 || !coin1.length) {
+      output = 'Please specify coin ticker or specific market you are interested in. F. e., */rates ADM*.';
+      return {
+        msgNotify: ``,
+        msgSendBack: `${output}`,
+        notifyType: 'log',
+      };
+    }
+    const currencies = Store.currencies;
+    const res = Object
+        .keys(Store.currencies)
+        .filter((t) => t.startsWith(coin1 + '/'))
+        .map((t) => {
+          const p = `${coin1}/**${t.replace(coin1 + '/', '')}**`;
+          return `${p}: ${currencies[t]}`;
+        })
+        .join(', ');
 
-  if (!res.length) {
-    output = `I can’t get rates for *${coin1}*. Made a typo? Try */rates ADM*.`;
-    return {
-      msgNotify: ``,
-      msgSendBack: `${output}`,
-      notifyType: 'log',
-    };
-  } else {
-    output = `Global market rates for ${coin1}:
-${res}.`;
+    if (!res.length) {
+      output = `I can’t get rates for *${coin1}*. Made a typo? Try */rates ADM*.`;
+      return {
+        msgNotify: ``,
+        msgSendBack: `${output}`,
+        notifyType: 'log',
+      };
+    } else {
+      output = `Global market rates for ${coin1}:\n${res}.`;
+    }
+  } catch (e) {
+    log.error(`Error in rates() of ${helpers.getModuleName(module.id)} module: ${e}`);
   }
 
   return {
     msgNotify: ``,
-    msgSendBack: `${output}`,
+    msgSendBack: output,
     notifyType: 'log',
   };
 }
 
 async function calc(arr) {
-  if (arr.length !== 4) {
-    return {
-      msgNotify: ``,
-      msgSendBack: 'Wrong arguments. Command works like this: */calc 2.05 BTC in USDT*.',
-      notifyType: 'log',
-    };
-  }
-
   let output = '';
-  const amount = +arr[0];
-  const inCurrency = arr[1].toUpperCase().trim();
-  const outCurrency = arr[3].toUpperCase().trim();
 
-  if (!amount || amount === Infinity) {
-    output = `It seems amount "*${amount}*" for *${inCurrency}* is not a number. Command works like this: */calc 2.05 BTC in USDT*.`;
-  }
-  if (!$u.isHasTicker(inCurrency)) {
-    output = `I don’t have rates of crypto *${inCurrency}* from Infoservice. Made a typo? Try */calc 2.05 BTC in USDT*.`;
-  }
-  if (!$u.isHasTicker(outCurrency)) {
-    output = `I don’t have rates of crypto *${outCurrency}* from Infoservice. Made a typo? Try */calc 2.05 BTC in USDT*.`;
-  }
-
-  let result;
-  if (!output) {
-    result = Store.mathEqual(inCurrency, outCurrency, amount, true).outAmount;
-    if (amount <= 0 || result <= 0 || !result) {
-      output = `I didn’t understand amount for *${inCurrency}*. Command works like this: */calc 2.05 BTC in USDT*.`;
-    } else {
-      if ($u.isFiat(outCurrency)) {
-        result = +result.toFixed(2);
-      }
-      output = `Global market value of ${helpers.thousandSeparator(amount)} ${inCurrency} equals **${helpers.thousandSeparator(result)} ${outCurrency}**.`;
+  try {
+    if (arr.length !== 4) {
+      return {
+        msgNotify: ``,
+        msgSendBack: 'Wrong arguments. Command works like this: */calc 2.05 BTC in USDT*.',
+        notifyType: 'log',
+      };
     }
+
+    const amount = +arr[0];
+    const inCurrency = arr[1].toUpperCase().trim();
+    const outCurrency = arr[3].toUpperCase().trim();
+
+    if (!amount || amount === Infinity) {
+      output = `It seems amount "*${amount}*" for *${inCurrency}* is not a number. Command works like this: */calc 2.05 BTC in USDT*.`;
+    }
+    if (!$u.isHasTicker(inCurrency)) {
+      output = `I don’t have rates of crypto *${inCurrency}* from Infoservice. Made a typo? Try */calc 2.05 BTC in USDT*.`;
+    }
+    if (!$u.isHasTicker(outCurrency)) {
+      output = `I don’t have rates of crypto *${outCurrency}* from Infoservice. Made a typo? Try */calc 2.05 BTC in USDT*.`;
+    }
+
+    let result;
+    if (!output) {
+      result = Store.mathEqual(inCurrency, outCurrency, amount, true).outAmount;
+      if (amount <= 0 || result <= 0 || !result) {
+        output = `I didn’t understand amount for *${inCurrency}*. Command works like this: */calc 2.05 BTC in USDT*.`;
+      } else {
+        if ($u.isFiat(outCurrency)) {
+          result = +result.toFixed(2);
+        }
+        output = `Global market value of ${helpers.thousandSeparator(amount)} ${inCurrency} equals **${helpers.thousandSeparator(result)} ${outCurrency}**.`;
+      }
+    }
+  } catch (e) {
+    log.error(`Error in calc() of ${helpers.getModuleName(module.id)} module: ${e}`);
   }
 
   return {
     msgNotify: ``,
-    msgSendBack: `${output}`,
+    msgSendBack: output,
     notifyType: 'log',
   };
 }
 
 async function test(param) {
-  param = param[0].trim();
-  if (!param || !['twitterapi'].includes(param)) {
-    return {
-      msgNotify: ``,
-      msgSendBack: 'Wrong arguments. Command works like this: */test twitterapi*.',
-      notifyType: 'log',
-    };
-  }
-
   let output;
 
-  if (param === 'twitterapi') {
-    const testResult = await twitterapi.testApi();
-    if (testResult.success) {
-      output = 'Twitter API functions well.';
-    } else {
-      output = `Error while making Twitter API request: ${testResult.message}`;
+  try {
+    param = param[0].trim();
+    if (!param || !['twitterapi'].includes(param)) {
+      return {
+        msgNotify: ``,
+        msgSendBack: 'Wrong arguments. Command works like this: */test twitterapi*.',
+        notifyType: 'log',
+      };
     }
+
+    if (param === 'twitterapi') {
+      const testResult = await twitterapi.testApi();
+      if (testResult.success) {
+        output = 'Twitter API functions well.';
+      } else {
+        output = `Error while making Twitter API request: ${testResult.message}`;
+      }
+    }
+  } catch (e) {
+    log.error(`Error in test() of ${helpers.getModuleName(module.id)} module: ${e}`);
   }
 
   return {
     msgNotify: ``,
-    msgSendBack: `${output}`,
+    msgSendBack: output,
     notifyType: 'log',
   };
 }
@@ -190,17 +203,21 @@ function version() {
 
 function balances() {
   let output = '';
-  config.known_crypto.forEach((crypto) => {
-    if (Store.user[crypto].balance) {
-      output += `${helpers.thousandSeparator(+Store.user[crypto].balance.toFixed(8), true)} _${crypto}_`;
-      output += '\n';
-    }
-  });
+
+  try {
+    config.known_crypto.forEach((crypto) => {
+      if (Store.user[crypto].balance) {
+        output += `${helpers.thousandSeparator(+Store.user[crypto].balance.toFixed(8), true)} _${crypto}_`;
+        output += '\n';
+      }
+    });
+  } catch (e) {
+    log.error(`Error in balances() of ${helpers.getModuleName(module.id)} module: ${e}`);
+  }
 
   return {
     msgNotify: ``,
-    msgSendBack: `My crypto balances:
-${output}`,
+    msgSendBack: `My crypto balances:\n${output}`,
     notifyType: 'log',
   };
 }
