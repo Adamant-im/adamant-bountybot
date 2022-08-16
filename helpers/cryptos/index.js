@@ -9,10 +9,10 @@ const helpers = require('../utils');
 
 module.exports = {
   /**
-   * Get address from ADM address
-   * @param {String} coin
-   * @param {String} admAddress
-   * @return {Promise<*>}
+   * Get coin address from KVS for ADM account
+   * @param {String} coin Like ETH
+   * @param {String} admAddress Account to get coin address for
+   * @return {Promise<*>} Address like '0x5f625681dA71e83C6f8aCef0299a6ab16539f54E' or 'none'
    */
   async getAddressCryptoFromAdmAddressADM(coin, admAddress) {
     try {
@@ -35,7 +35,7 @@ module.exports = {
   },
 
   /**
-   * Update all balances
+   * Update all coin balances
    * @return {Promise<void>}
    */
   async updateAllBalances() {
@@ -52,7 +52,7 @@ module.exports = {
   },
 
   /**
-   * Get last blocks numbers
+   * Get last block numbers for all coins
    * @return {Promise<Object>}
    */
   async getLastBlocksNumbers() {
@@ -118,9 +118,9 @@ module.exports = {
   },
 
   /**
-   * Get Twitter accounts
-   * @param {String} message
-   * @return {void}
+   * Parse Twitter and Facebook accounts from a string
+   * @param {String} message Which may include accounts
+   * @return {Object} { notEmpty, twitterLink, twitterAccount, facebookLink }
    */
   getAccounts(message) {
     const userAccounts = {};
@@ -150,7 +150,7 @@ module.exports = {
   },
 
   /**
-   * Get Twitter account by matching regex and message
+   * Parse Twitter account by matching regex and message
    * @param {String} message
    * @return {Object}
    */
@@ -163,7 +163,7 @@ module.exports = {
   },
 
   /**
-   * Get Twitter account by matching regex and message
+   * Parse link by matching regex and message
    * @param {String} message
    * @param {String} link
    * @return {String}
@@ -183,7 +183,7 @@ module.exports = {
   },
 
   /**
-   * Trims char
+   * Trims char both sides
    * @param {String} s
    * @param {String} mask
    * @return {String}
@@ -199,7 +199,7 @@ module.exports = {
   },
 
   /**
-   * Trims @ symbol in twitter name
+   * Trims @ symbol in Twitter name
    * @param {String} account
    * @return {String}
    */
@@ -208,7 +208,7 @@ module.exports = {
   },
 
   /**
-   * Parses twitter name from link
+   * Parses Twitter account from link
    * @param {String} link
    * @return {String}
    */
@@ -223,7 +223,7 @@ module.exports = {
   },
 
   /**
-   * Get twitter ID from link
+   * Get Twitter ID from link
    * @param {String} link
    * @return {String}
    */
