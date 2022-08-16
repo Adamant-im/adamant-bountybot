@@ -1,72 +1,76 @@
 const db = require('./DB');
 const config = require('./configReader');
-const $u = require('../helpers/utils');
+const api = require('./api');
+const helpers = require('../helpers/utils');
 const log = require('../helpers/log');
-const notify = require('../helpers/notify');
 const twitterapi = require('./twitterapi');
 
+let inProcess = false;
+
 module.exports = async () => {
+  if (inProcess) return;
+  inProcess = true;
 
-    const {usersDb} = db;
+  try {
+    const {UsersDb} = db;
 
-	(await usersDb.find({
-        $and: [
-			{isInCheck: true},
-			{isTwitterFollowCheckPassed: false},
-			{isTasksCompleted: false},
-			{$or: [
-                {isAdamantCheckPassed: true},
-                {$expr: {$eq: [0, config.adamant_campaign.min_contacts]}}
-			]}
-		]
-	})).forEach(async user => {
-		try {
-            const {
-                twitterAccount,
-                userId
-            } = user;
+    const users = await UsersDb.find({
+      $and: [
+        {isInCheck: true},
+        {isTwitterAccountEligible: true},
+        {isTwitterFollowCheckPassed: false},
+        {isTasksCompleted: false},
+        {$or: [
+          {isAdamantCheckPassed: true},
+          {$expr: {$eq: [0, config.adamant_campaign.min_contacts]}},
+        ]},
+      ],
+    });
 
-            console.log(`Running module ${$u.getModuleName(module.id)} for user ${userId}..`);
+    for (const user of users) {
+      try {
+        const {
+          twitterAccount,
+          userId,
+        } = user;
 
-            let msgNotify = '';
-			let msgNotifyType = '';
-            let msgSendBack = '';
-            
-            let followAccount;
-            let isFollowing;
-            for (let index = 0; index < config.twitter_follow.length; index++) {
-                followAccount = config.twitter_follow[index];
-                isFollowing = await twitterapi.checkIfAccountFollowing(twitterAccount, followAccount);
-                console.log('isFollowing:', isFollowing);
+        log.log(`Running module ${helpers.getModuleName(module.id)} for user ${userId}…`);
 
-                if (isFollowing) {
-                    console.log(`User ${userId}.. ${twitterAccount} do follows ${followAccount}.`);
+        let msgSendBack = '';
 
-                } else {
-                    console.log(`User ${userId}.. ${twitterAccount} do NOT follows ${followAccount}.`);
-                    await user.update({
-                        isTwitterFollowCheckPassed: false,
-                        isInCheck: false,
-                        isTasksCompleted: false
-					}, true);
-                    msgSendBack = `To meet the Bounty campaign rules, you should follow Twitter account ${followAccount}. Follow the account and try again.`;
-                    await $u.sendAdmMsg(userId, msgSendBack);
-                    break;
-                }
-            }
+        let followAccount;
+        let isFollowing;
+        for (let index = 0; index < config.twitter_follow.length; index++) {
+          followAccount = config.twitter_follow[index];
+          isFollowing = await twitterapi.checkIfAccountFollowing(twitterAccount, followAccount);
+          if (isFollowing) {
+            log.log(`User ${userId}… ${twitterAccount} do follows ${followAccount}.`);
+          } else {
             await user.update({
-                isTwitterFollowCheckPassed: isFollowing
+              isTwitterFollowCheckPassed: false,
+              isInCheck: false,
+              isTasksCompleted: false,
             }, true);
-    
-		} catch (e) {
-			log.error(`Error in ${$u.getModuleName(module.id)} module: ${e}`);
+            msgSendBack = `To meet the Bounty campaign rules, you should follow Twitter account ${followAccount}. Then you apply again.`;
+            await api.sendMessageWithLog(config.passPhrase, userId, msgSendBack);
+            log.log(`User ${userId}… ${twitterAccount} do NOT follows ${followAccount}. Message to user: ${msgSendBack}`);
+            break;
+          }
         }
-        
-	});
-
+        await user.update({
+          isTwitterFollowCheckPassed: isFollowing,
+        }, true);
+      } catch (e) {
+        log.error(`Error in ${helpers.getModuleName(module.id)} module: ${e}`);
+      }
+    }
+  } finally {
+    inProcess = false;
+  }
 };
 
-if (config.twitter_follow.length > 0)
-    setInterval(() => {
-        module.exports();
-    }, 15 * 1000);
+if (config.twitter_follow.length > 0) {
+  setInterval(() => {
+    module.exports();
+  }, 10 * 1000);
+}
