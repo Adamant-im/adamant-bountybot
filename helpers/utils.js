@@ -2,10 +2,19 @@ const constants = require('./const');
 const log = require('./log');
 
 module.exports = {
+  /**
+   * Returns current time in milliseconds since Unix Epoch
+   * @return {number}
+   */
   unix() {
     return new Date().getTime();
   },
 
+  /**
+   * Returns module name from its ID
+   * @param {string} id Module name, module.id
+   * @return {string}
+   */
   getModuleName(id) {
     try {
       let n = id.lastIndexOf('\\');
@@ -22,6 +31,11 @@ module.exports = {
     }
   },
 
+  /**
+   * Converts ADAMANT's epoch timestamp to a Unix timestamp
+   * @param {number} epochTime Timestamp to convert
+   * @return {number}
+   */
   toTimestamp(epochTime) {
     return epochTime * 1000 + constants.EPOCH;
   },
