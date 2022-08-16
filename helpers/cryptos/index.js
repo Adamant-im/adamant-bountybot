@@ -9,20 +9,25 @@ const helpers = require('../utils');
 
 module.exports = {
   async getAddressCryptoFromAdmAddressADM(coin, admAddress) {
-    if (this.isERC20(coin)) {
-      coin = 'ETH';
-    }
-    const kvsRecords = await api.get('states/get', {senderId: admAddress, key: coin.toLowerCase() + ':address', orderBy: 'timestamp:desc'});
-    if (kvsRecords.success) {
-      if (kvsRecords.data.transactions.length) {
-        return kvsRecords.data.transactions[0].asset.state.value;
-      } else {
-        return 'none';
+    try {
+      if (this.isERC20(coin)) {
+        coin = 'ETH';
       }
-    } else {
-      log.warn(`Failed to get ${coin} address for ${admAddress} from KVS in getAddressCryptoFromAdmAddressADM() of ${helpers.getModuleName(module.id)} module. ${kvsRecords.errorMessage}.`);
+      const kvsRecords = await api.get('states/get', {senderId: admAddress, key: coin.toLowerCase() + ':address', orderBy: 'timestamp:desc'});
+      if (kvsRecords.success) {
+        if (kvsRecords.data.transactions.length) {
+          return kvsRecords.data.transactions[0].asset.state.value;
+        } else {
+          return 'none';
+        }
+      } else {
+        log.warn(`Failed to get ${coin} address for ${admAddress} from KVS in getAddressCryptoFromAdmAddressADM() of ${helpers.getModuleName(module.id)} module. ${kvsRecords.errorMessage}.`);
+      }
+    } catch (e) {
+      log.error(`Error in getAddressCryptoFromAdmAddressADM() of ${helpers.getModuleName(module.id)} module: ${e}`);
     }
   },
+
   async updateAllBalances() {
     try {
       await this.ETH.updateBalance();
@@ -31,20 +36,28 @@ module.exports = {
       for (const t of config.erc20) {
         await this[t].updateBalance();
       }
-    } catch (e) {}
-  },
-  async getLastBlocksNumbers() {
-    const data = {
-      ETH: await this.ETH.getLastBlock(),
-      ADM: await this.ADM.getLastBlock(),
-      LSK: await this.LSK.getLastBlockHeight(),
-    };
-    for (const t of config.erc20) {
-      // data[t] = await this[t].getLastBlockNumber(); // Don't do unnecessary requests
-      data[t] = data['ETH'];
+    } catch (e) {
+      log.error(`Error in updateAllBalances() of ${helpers.getModuleName(module.id)} module: ${e}`);
     }
-    return data;
   },
+
+  async getLastBlocksNumbers() {
+    try {
+      const data = {
+        ETH: await this.ETH.getLastBlock(),
+        ADM: await this.ADM.getLastBlock(),
+        LSK: await this.LSK.getLastBlockHeight(),
+      };
+      for (const t of config.erc20) {
+        // data[t] = await this[t].getLastBlockNumber(); // Don't do unnecessary requests
+        data[t] = data['ETH'];
+      }
+      return data;
+    } catch (e) {
+      log.error(`Error in getLastBlocksNumbers() of ${helpers.getModuleName(module.id)} module: ${e}`);
+    }
+  },
+
   isKnown(coin) {
     return config.known_crypto.includes(coin);
   },
@@ -64,27 +77,34 @@ module.exports = {
   isERC20(coin) {
     return config.erc20.includes(coin.toUpperCase());
   },
+
   getAccounts(message) {
     const userAccounts = {};
-    userAccounts.notEmpty = false;
+    try {
+      userAccounts.notEmpty = false;
 
-    userAccounts.twitterLink = this.findLink(message, 'twitter.com');
-    if (userAccounts.twitterLink) {
-      userAccounts.twitterAccount = this.parseTwitterAccountFromLink(userAccounts.twitterLink);
-    } else {
-      userAccounts.twitterAccount = this.findTwitterAccount(message);
+      userAccounts.twitterLink = this.findLink(message, 'twitter.com');
+      if (userAccounts.twitterLink) {
+        userAccounts.twitterAccount = this.parseTwitterAccountFromLink(userAccounts.twitterLink);
+      } else {
+        userAccounts.twitterAccount = this.findTwitterAccount(message);
+      }
+
+      userAccounts.facebookLink = this.findLink(message, 'facebook.com');
+
+      if (userAccounts.twitterAccount && config.isTwitterCampaign) {
+        userAccounts.notEmpty = true;
+      }
+      if (userAccounts.facebookAccount && config.isFacebookCampaign) {
+        userAccounts.notEmpty = true;
+      }
+    } catch (e) {
+      log.error(`Error in getAccounts(message: ${message}) of ${helpers.getModuleName(module.id)} module: ${e}`);
     }
 
-    userAccounts.facebookLink = this.findLink(message, 'facebook.com');
-
-    if (userAccounts.twitterAccount && config.isTwitterCampaign) {
-      userAccounts.notEmpty = true;
-    }
-    if (userAccounts.facebookAccount && config.isFacebookCampaign) {
-      userAccounts.notEmpty = true;
-    }
     return userAccounts;
   },
+
   findTwitterAccount(message) {
     const pattern = /(?<=^|(?<=[^a-zA-Z0-9-_.]))@([A-Za-z]+[A-Za-z0-9-_]+)/gi;
     const accounts = message.match(pattern);
@@ -92,6 +112,7 @@ module.exports = {
       return accounts[0].toLowerCase();
     }
   },
+
   findLink(message, link) {
     const kLINK_DETECTION_REGEX = /(([a-z]+:\/\/)?(([a-z0-9-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-.~]+)*(\/([a-z0-9_\-.]*)(\?[a-z0-9+_\-.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi;
     const links = message.match(kLINK_DETECTION_REGEX);
@@ -105,6 +126,7 @@ module.exports = {
     }
     return found.trim().toLowerCase();
   },
+
   trimChar(s, mask) {
     while (~mask.indexOf(s[0])) {
       s = s.slice(1);
@@ -114,9 +136,11 @@ module.exports = {
     }
     return s;
   },
+
   getTwitterScreenName(account) {
     return this.trimChar(account, '@').toLowerCase();
   },
+
   parseTwitterAccountFromLink(link) {
     link = this.trimChar(link, '/');
     const n = link.lastIndexOf('/');
@@ -126,6 +150,7 @@ module.exports = {
       return '@' + link.substring(n + 1).toLowerCase();
     }
   },
+
   getTweetIdFromLink(link) {
     link = this.trimChar(link, '/');
     const n = link.lastIndexOf('/');
@@ -135,12 +160,14 @@ module.exports = {
       return link.substring(n + 1);
     }
   },
+
   getTwitterHashtags(tags) {
     for (let i = 0; i < tags.length; i++) {
       tags[i] = this.trimChar(tags[i], '#');
     }
     return tags;
   },
+
   ETH: eth_utils,
   ADM: adm_utils,
   LSK: new LskCoin('LSK'),
