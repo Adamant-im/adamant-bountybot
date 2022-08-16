@@ -23,7 +23,11 @@ module.exports = class LskCoin extends LskBaseCoin {
   }
 
   getHeight() {
-    return this._get(`${lskNode}/api/node/info`, {}).then((data) => Number(data.data.height) || 0);
+    return this._get(`${lskNode}/api/node/info`, {})
+        .then((data) => Number(data.data.height) || 0)
+        .catch((e) => {
+          log.warn(`Error while getting Lisk height in getHeight() of ${helpers.getModuleName(module.id)} module: ` + e);
+        });
   }
 
   /**
