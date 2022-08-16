@@ -8,6 +8,12 @@ const Store = require('../../modules/Store');
 const helpers = require('../utils');
 
 module.exports = {
+  /**
+   * Get address from ADM address
+   * @param {String} coin
+   * @param {String} admAddress
+   * @return {Promise<*>}
+   */
   async getAddressCryptoFromAdmAddressADM(coin, admAddress) {
     try {
       if (this.isERC20(coin)) {
@@ -28,6 +34,10 @@ module.exports = {
     }
   },
 
+  /**
+   * Update all balances
+   * @return {Promise<void>}
+   */
   async updateAllBalances() {
     try {
       await this.ETH.updateBalance();
@@ -41,6 +51,10 @@ module.exports = {
     }
   },
 
+  /**
+   * Get last blocks numbers
+   * @return {Promise<Object>}
+   */
   async getLastBlocksNumbers() {
     try {
       const data = {
@@ -58,15 +72,35 @@ module.exports = {
     }
   },
 
+  /**
+   * Returns true if coin is in known_crypto list in config
+   * @param {String} coin
+   * @return {Boolean}
+   */
   isKnown(coin) {
     return config.known_crypto.includes(coin);
   },
+  /**
+   * Returns true if coin is in accepted_crypto list in config
+   * @param {String} coin
+   * @return {Boolean}
+   */
   isAccepted(coin) {
     return config.accepted_crypto.includes(coin);
   },
+  /**
+   * Returns true if coin is in exchange_crypto list in config
+   * @param {String} coin
+   * @return {Boolean}
+   */
   isExchanged(coin) {
     return config.exchange_crypto.includes(coin);
   },
+  /**
+   * Returns true if coin is fiat money
+   * @param {String} coin
+   * @return {Boolean}
+   */
   isFiat(coin) {
     return ['USD', 'RUB', 'EUR', 'CNY', 'JPY'].includes(coin);
   },
@@ -74,10 +108,20 @@ module.exports = {
     const pairs = Object.keys(Store.currencies).toString();
     return pairs.includes(',' + coin + '/') || pairs.includes('/' + coin);
   },
+  /**
+   * Returns true if coin is ERC-20 coin
+   * @param {String} coin
+   * @return {Boolean}
+   */
   isERC20(coin) {
     return config.erc20.includes(coin.toUpperCase());
   },
 
+  /**
+   * Get Twitter accounts
+   * @param {String} message
+   * @return {void}
+   */
   getAccounts(message) {
     const userAccounts = {};
     try {
@@ -105,6 +149,11 @@ module.exports = {
     return userAccounts;
   },
 
+  /**
+   * Get Twitter account by matching regex and message
+   * @param {String} message
+   * @return {Object}
+   */
   findTwitterAccount(message) {
     const pattern = /(?<=^|(?<=[^a-zA-Z0-9-_.]))@([A-Za-z]+[A-Za-z0-9-_]+)/gi;
     const accounts = message.match(pattern);
@@ -113,6 +162,12 @@ module.exports = {
     }
   },
 
+  /**
+   * Get Twitter account by matching regex and message
+   * @param {String} message
+   * @param {String} link
+   * @return {String}
+   */
   findLink(message, link) {
     const kLINK_DETECTION_REGEX = /(([a-z]+:\/\/)?(([a-z0-9-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-.~]+)*(\/([a-z0-9_\-.]*)(\?[a-z0-9+_\-.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi;
     const links = message.match(kLINK_DETECTION_REGEX);
@@ -127,6 +182,12 @@ module.exports = {
     return found.trim().toLowerCase();
   },
 
+  /**
+   * Trims char
+   * @param {String} s
+   * @param {String} mask
+   * @return {String}
+   */
   trimChar(s, mask) {
     while (~mask.indexOf(s[0])) {
       s = s.slice(1);
@@ -137,10 +198,20 @@ module.exports = {
     return s;
   },
 
+  /**
+   * Trims @ symbol in twitter name
+   * @param {String} account
+   * @return {String}
+   */
   getTwitterScreenName(account) {
     return this.trimChar(account, '@').toLowerCase();
   },
 
+  /**
+   * Parses twitter name from link
+   * @param {String} link
+   * @return {String}
+   */
   parseTwitterAccountFromLink(link) {
     link = this.trimChar(link, '/');
     const n = link.lastIndexOf('/');
@@ -151,6 +222,11 @@ module.exports = {
     }
   },
 
+  /**
+   * Get twitter ID from link
+   * @param {String} link
+   * @return {String}
+   */
   getTweetIdFromLink(link) {
     link = this.trimChar(link, '/');
     const n = link.lastIndexOf('/');
@@ -161,6 +237,11 @@ module.exports = {
     }
   },
 
+  /**
+   * Get twitter hashtags
+   * @param {String }tags
+   * @return {Array<String>}
+   */
   getTwitterHashtags(tags) {
     for (let i = 0; i < tags.length; i++) {
       tags[i] = this.trimChar(tags[i], '#');
