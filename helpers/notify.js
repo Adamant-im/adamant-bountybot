@@ -48,7 +48,7 @@ module.exports = (message, type, silent_mode = false) => {
       }
       if (adamant_notify && adamant_notify.length > 5 && adamant_notify.startsWith('U') && config.passPhrase && config.passPhrase.length > 30) {
         const mdMessage = makeBoldForMarkdown(message);
-        api.send(config.passPhrase, adamant_notify, `${type}| ${mdMessage}`, 'message');
+        api.sendMessageWithLog(config.passPhrase, adamant_notify, `${type}| ${mdMessage}`);
       }
     }
   } catch (e) {
