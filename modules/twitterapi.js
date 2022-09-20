@@ -179,7 +179,7 @@ module.exports = {
     const tweets = await getAccountTimeline(twitterAccountSN);
     let retweet = {};
     for (let i = 0; i < tweets.length; i++) {
-      if (tweets[i].quoted_status && tweets[i].quoted_status.id_str === tweetId) {
+      if (tweets[i]?.quoted_status?.id_str === tweetId) {
         retweet = tweets[i];
         break;
       }
@@ -207,6 +207,32 @@ module.exports = {
           error: 'no_hashtags',
         };
       }
+    }
+
+    return {
+      success: true,
+      error: '',
+    };
+  },
+
+  async checkIfAccountRetweeted(twitterAccount, tweet) {
+    const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
+    const tweetId = $u.getTweetIdFromLink(tweet);
+    log.log(`Checking if @${twitterAccountSN} retweeted ${tweet}…`);
+
+    const tweets = await getAccountTimeline(twitterAccountSN);
+    let retweet = {};
+    for (let i = 0; i < tweets.length; i++) {
+      if (tweets[i]?.retweeted_status?.id_str === tweetId) {
+        retweet = tweets[i];
+        break;
+      }
+    }
+    if (Object.keys(retweet).length < 1) { // Empty object
+      return {
+        success: false,
+        error: 'no_retweet',
+      };
     }
 
     return {

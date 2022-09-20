@@ -19,6 +19,7 @@ function init() {
   require('./modules/apiTester');
   require('./modules/checkTwitterReqs');
   require('./modules/checkTwitterRetweet');
+  require('./modules/checkTwitterRetweetwComment');
   require('./modules/checkAdamantContacts');
   require('./modules/checkAll');
   require('./modules/outAddressFetcher');
