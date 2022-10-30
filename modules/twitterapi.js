@@ -174,7 +174,7 @@ module.exports = {
     const twitterAccountSN = $u.getTwitterScreenName(twitterAccount);
     const tweetId = $u.getTweetIdFromLink(tweet);
     hashtags = $u.getTwitterHashtags(hashtags);
-    log.log(`Checking if @${twitterAccountSN} retweeted ${tweet}…`);
+    log.log(`Checking if @${twitterAccountSN} quoted ${tweet}…`);
 
     const tweets = await getAccountTimeline(twitterAccountSN);
     let retweet = {};
