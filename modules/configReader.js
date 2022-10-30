@@ -178,7 +178,7 @@ try {
       .join('\n');
 
   // Process help_message as a template literal
-  config.twitter_retweet_list = config.twitter_retweet.slice(1, config.twitter_retweet.length).map((tweet) => tweet.tweet).join(', ');
+  config.twitter_retweet_list = config.twitter_retweet.map((tweet) => tweet.tweet).join(', ');
   config.twitter_follow_list = config.twitter_follow.join(', ');
   config.twitter_retweet_w_comment.forEach((tweet) => {
     tweet.tag_list = tweet.hashtags.join(', ');
