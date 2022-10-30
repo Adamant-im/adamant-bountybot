@@ -187,7 +187,7 @@ module.exports = {
     if (Object.keys(retweet).length < 1) { // Empty object
       return {
         success: false,
-        error: 'no_retweet',
+        error: 'no_quote',
       };
     }
     if (retweet.entities.user_mentions.length < minMentions) {

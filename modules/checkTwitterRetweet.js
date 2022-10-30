@@ -65,7 +65,7 @@ module.exports = async () => {
             }, true);
             if (retweetResult.error === 'no_retweet') {
               msgSendBack = `To meet the Bounty campaign rules, you should retweet ${toRetweet}.`;
-              msgSendBack += `. Then you apply again.`;
+              msgSendBack += ` Then you apply again.`;
             }
 
             await api.sendMessageWithLog(config.passPhrase, userId, msgSendBack);

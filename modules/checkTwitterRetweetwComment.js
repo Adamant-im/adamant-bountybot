@@ -71,7 +71,7 @@ module.exports = async () => {
               isTasksCompleted: false,
             }, true);
             switch (retweetResult.error) {
-              case ('no_retweet'):
+              case ('no_quote'):
                 msgSendBack = `To meet the Bounty campaign rules, you should quote (retweet with comment) ${toRetweet}.`;
                 if (minMentions > 0 && hashtags.length > 0) {
                   msgSendBack += ` Mention ${minMentions} friends, and use ${config.twitter_retweet_w_comment[index].tag_list} tags.`;
