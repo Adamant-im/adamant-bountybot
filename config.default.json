@@ -10,8 +10,8 @@
     If one become unavailable, pool will choose live one.
   **/
   "node_ADM": [
-    "http://localhost:36666",
     "https://endless.adamant.im",
+    "http://localhost:36666",
     "https://clown.adamant.im",
     "https://bid.adamant.im",
     "https://unusual.adamant.im",
@@ -67,11 +67,12 @@
   /**
     Bounty rules. Shown by /help command. You can use template literals
     like ${config.rewards_list}, ${config.rewards_tickers}, ${config.twitter_follow[0]},
+    ${config.twitter_retweet[0].tweet}, ${config.twitter_retweet_list},
     ${config.twitter_retweet_w_comment[0].tweet}, ${config.twitter_follow_list},
     ${config.twitter_retweet_w_comment[0].min_mentions}, ${config.twitter_retweet_w_comment[0].tag_list},
     ${config.twitterEligibleString}
   **/
-  "help_message": "Earn **${config.rewards_tickers}** with your social activity! A reward depends on how much Twitter followers you have. Your account ${config.twitterEligibleString}.\n${config.rewards_range}\n\n&nbsp;\nThe campaign rules:\n- Follow account ${config.twitter_follow_list} on Twitter\n- Like & quote ${config.twitter_retweet_w_comment[0].tweet}, mentioning ${config.twitter_retweet_w_comment[0].min_mentions} friends and ${config.twitter_retweet_w_comment[0].tag_list} tags.\n- Retweet ${config.twitter_retweet[0].tweet}, ${config.twitter_retweet_list}\n- Invite ${config.adamant_campaign.min_contacts} friend in ADAMANT Messenger. They must message you.\n- Send me the name (like @adamant_im) or the link to your Twitter profile to verify.\n\n&nbsp;\nGo!",
+  "help_message": "Earn **${config.rewards_tickers}** with your social activity! A reward depends on how much Twitter followers you have. Your account ${config.twitterEligibleString}.\n${config.rewards_range}\n\n&nbsp;\nThe campaign rules:\n- Follow account ${config.twitter_follow_list} on Twitter\n- Like & quote ${config.twitter_retweet_w_comment[0].tweet}, mentioning ${config.twitter_retweet_w_comment[0].min_mentions} friends and ${config.twitter_retweet_w_comment[0].tag_list} tags.\n- Retweet ${config.twitter_retweet_list}\n- Invite ${config.adamant_campaign.min_contacts} friend in ADAMANT Messenger. They must message you.\n- Send me the name (like @adamant_im) or the link to your Twitter profile to verify.\n\n&nbsp;\nGo!",
 
   /** Bot's name for notifications **/
   "bot_name": "Lovely Bounty Bot",
@@ -110,12 +111,14 @@
       ]
     }
   ],
-  /** Tweets user should quote (retweet with comment). **/
+
+  /** Tweets user should retweet **/
   "twitter_retweet": [
     {
       "tweet": "https://twitter.com/adamant_im/status/1272945640574722048"
     }
   ],
+
   /**
     Minimum contacts user must invite to ADAMANT Messenger.
     Contacts must be new users.
