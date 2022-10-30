@@ -26,6 +26,7 @@ module.exports = async () => {
           userId,
           isTwitterFollowCheckPassed,
           isTwitterRetweetCommentCheckPassed,
+          isTwitterRetweetCheckPassed,
           isAdamantCheckPassed,
           twitterAccount,
           twitterFollowers,
@@ -39,6 +40,7 @@ module.exports = async () => {
         if (
           ((config.twitter_follow.length === 0) || isTwitterFollowCheckPassed) &&
           ((config.twitter_retweet_w_comment.length === 0) || isTwitterRetweetCommentCheckPassed) &&
+          ((config.twitter_retweet.length === 0) || isTwitterRetweetCheckPassed) &&
           ((config.adamant_campaign.min_contacts === 0) || isAdamantCheckPassed)
         ) {
           await user.update({

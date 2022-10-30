@@ -58,6 +58,7 @@ module.exports = async (itx, tx) => {
         isTasksCompleted: false,
         isTwitterFollowCheckPassed: false,
         isTwitterRetweetCommentCheckPassed: false,
+        isTwitterRetweetCheckPassed: false,
         isTwitterAccountEligible: false,
       });
     } else {
@@ -77,6 +78,7 @@ module.exports = async (itx, tx) => {
         isTasksCompleted: false,
         isTwitterFollowCheckPassed: false,
         isTwitterRetweetCommentCheckPassed: false,
+        isTwitterRetweetCheckPassed: false,
         isTwitterAccountEligible: false,
         isAdamantCheckPassed: false,
       });

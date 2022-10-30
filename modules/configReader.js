@@ -56,6 +56,10 @@ const fields = {
     type: Array,
     default: [],
   },
+  twitter_retweet: {
+    type: Array,
+    default: [],
+  },
   twitter_reqs: {
     type: Object,
     default: {'min_followers': 0, 'min_friends': 0, 'min_statuses': 0, 'min_days': 0},
@@ -124,7 +128,7 @@ try {
   config.publicKey = keysPair.publicKey;
   config.address = address;
   config.min_confirmations = 1; // Allowing myself to hardcode here
-  config.isTwitterCampaign = (config.twitter_follow.length > 0) || (config.twitter_retweet_w_comment.length > 0);
+  config.isTwitterCampaign = (config.twitter_follow?.length > 0) || (config.twitter_retweet_w_comment?.length > 0);
   config.doCheckTwitterReqs = config.isTwitterCampaign && ((config.twitter_reqs.min_followers > 0) || (config.twitter_reqs.min_friends > 0) || (config.twitter_reqs.min_statuses > 0) ||
     (config.twitter_reqs.min_days > 0));
   config.twitterEligibleString = `must be older, than ${config.twitter_reqs.min_days} days, must have at least ${config.twitter_reqs.min_followers} followers, ${config.twitter_reqs.min_friends} friends, and ${config.twitter_reqs.min_statuses} tweets`;
@@ -174,8 +178,9 @@ try {
       .join('\n');
 
   // Process help_message as a template literal
-  config.twitter_follow_list = config.twitter_follow.join(', ');
-  config.twitter_retweet_w_comment.forEach((tweet) => {
+  config.twitter_retweet_list = config.twitter_retweet?.map((tweet) => tweet.tweet).join(', ');
+  config.twitter_follow_list = config.twitter_follow?.join(', ');
+  config.twitter_retweet_w_comment?.forEach((tweet) => {
     tweet.tag_list = tweet.hashtags.join(', ');
   });
   config.help_message = eval('`' + config.help_message +'`');
