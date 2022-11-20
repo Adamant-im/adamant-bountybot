@@ -3,5 +3,6 @@ logs/
 .vscode/
 tests.js
 config.test
+config.test.jsonc
 .idea
 .editorconfig
