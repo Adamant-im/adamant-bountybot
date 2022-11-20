@@ -91,7 +91,7 @@ module.exports = async () => {
     } catch (e) {
       log.error(`Error in ${helpers.getModuleName(module.id)} module: ${e.toString()}`);
     }
-  });
+  }
 };
 
 const interval = 15 * 1000;
