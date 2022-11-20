@@ -20,8 +20,8 @@ User-friendly instructions: [Carry out a crypto Bounty campaign on ADAMANT platf
 
 ## Requirements
 
-* Ubuntu 18, 20, 22 (we didn't test others)
-* NodeJS v 14+
+* Ubuntu 18+ (we didn't test others)
+* NodeJS v14+
 * MongoDB ([installation instructions](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/))
 
 ## Setup
@@ -35,12 +35,14 @@ npm i
 
 ## Pre-launch tuning
 
+The bot will use `config.jsonc` || `config.json`, if available, or `config.default.jsonc` otherwise.
+
 ```
-cp config.default.json config.json
-nano config.json
+cp config.default.jsonc config.jsonc
+nano config.jsonc
 ```
 
-Parameters: See descriptions in config file.
+Parameters: see comments in config file.
 
 ## Launching
 
@@ -68,7 +70,9 @@ Add string:
 su - adamant
 cd ./adamant-bountybot
 pm2 stop bountybot
-mv config.json config_bup.json && git pull && mv config_bup.json config.json
 npm i
-pm2 start --name bountybot app.js
 ```
+
+Update `config.jsonc` if `config.default.jsonc` changed.
+
+Then `pm2 restart bountybot`.
