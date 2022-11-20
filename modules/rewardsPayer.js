@@ -11,12 +11,14 @@ module.exports = async () => {
   const {PaymentsDb} = db;
   await $u.updateAllBalances();
 
-  (await PaymentsDb.find({
+  const payouts = await PaymentsDb.find({
     isPayed: false,
     isFinished: false,
     outTxid: null,
     outAddress: {$ne: null},
-  })).forEach(async (pay) => {
+  });
+
+  for (const pay of payouts) {
     try {
       pay.trySendCounter = pay.trySendCounter || 0;
       const {
@@ -92,6 +94,15 @@ module.exports = async () => {
   });
 };
 
-setInterval(() => {
-  module.exports();
-}, 15 * 1000);
+const interval = 15 * 1000;
+let isPreviousIterationFinished = true;
+
+setInterval(async () => {
+  if (isPreviousIterationFinished) {
+    isPreviousIterationFinished = false;
+    await module.exports();
+    isPreviousIterationFinished = true;
+  } else {
+    log.log(`Postponing iteration of ${helpers.getModuleName(module.id)} module for ${interval} ms. Previous iteration is in progress yet.`);
+  }
+}, interval);
